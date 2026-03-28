@@ -6,49 +6,64 @@
     <title>노담 노술</title>
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/toss/tossface/dist/tossface.css">
+    
     <style>
         /* 프리미엄 모던 플랫 & 다크모드 설정 */
         :root {
-            --bg-color: #f2f4f8; --text-color: #1d1d1f; --card-bg: #ffffff;
-            --sub-text: #86868b; --tab-bg: #e5e5ea; --modal-bg: rgba(0,0,0,0.4);
-            --accent-smoke: linear-gradient(135deg, #ff416c, #ff4b2b);
-            --accent-drink: linear-gradient(135deg, #4776e6, #8e54e9);
-            --accent-money: linear-gradient(135deg, #11998e, #38ef7d);
-            --shadow-sm: 0 4px 12px rgba(0,0,0,0.05);
-            --shadow-lg: 0 16px 40px rgba(0,0,0,0.08);
+            --bg-color: #F2F4F6; /* 토스 스타일의 밝고 부드러운 회색 */
+            --text-color: #191F28; 
+            --card-bg: #ffffff;
+            --sub-text: #8B95A1; 
+            --tab-bg: #E5E8EB; 
+            --modal-bg: rgba(0,0,0,0.4);
+            
+            /* 파스텔톤 그라데이션으로 변경 */
+            --accent-smoke: linear-gradient(135deg, #FF7B8E, #FF5B73);
+            --smoke-light: linear-gradient(135deg, #FFF0F2, #FFE5E8);
+            
+            --accent-drink: linear-gradient(135deg, #5C80FF, #4068FF);
+            --drink-light: linear-gradient(135deg, #F0F4FF, #E5EDFF);
+            
+            --accent-money: linear-gradient(135deg, #34C759, #30D158);
+            
+            --shadow-sm: 0 4px 16px rgba(0,0,0,0.04);
+            --shadow-lg: 0 20px 40px rgba(0,0,0,0.08);
         }
         @media (prefers-color-scheme: dark) {
             :root {
-                --bg-color: #000000; --text-color: #f5f5f7; --card-bg: #1c1c1e;
-                --sub-text: #98989d; --tab-bg: #2c2c2e; --modal-bg: rgba(0,0,0,0.7);
-                --shadow-sm: 0 4px 12px rgba(0,0,0,0.2);
-                --shadow-lg: 0 16px 40px rgba(0,0,0,0.4);
+                --bg-color: #101013; --text-color: #F9FAFB; --card-bg: #1C1C1F;
+                --sub-text: #8B95A1; --tab-bg: #2C2C35; --modal-bg: rgba(0,0,0,0.7);
+                --smoke-light: linear-gradient(135deg, #3A1D22, #2A1215);
+                --drink-light: linear-gradient(135deg, #1A233A, #12182A);
+                --shadow-sm: 0 4px 16px rgba(0,0,0,0.3);
+                --shadow-lg: 0 20px 40px rgba(0,0,0,0.5);
             }
         }
 
         body {
-            margin: 0; font-family: -apple-system, "Pretendard", sans-serif;
+            margin: 0; 
+            /* 토스페이스 폰트 우선 적용 */
+            font-family: 'Tossface', 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
             background: var(--bg-color); color: var(--text-color);
             height: 100vh; display: flex; flex-direction: column; overflow: hidden;
             user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent;
         }
 
-        /* 헤더 */
         .header {
-            background: var(--bg-color);
+            background: transparent;
             color: var(--text-color); text-align: center;
             padding: calc(env(safe-area-inset-top) + 20px) 15px 15px 15px;
-            font-size: 22px; font-weight: 800; letter-spacing: -0.5px;
+            font-size: 24px; font-weight: 800; letter-spacing: -0.5px;
             z-index: 10;
         }
 
-        /* iOS 스타일 세그먼트 컨트롤 탭 */
         .mode-selector {
-            display: flex; gap: 8px; padding: 5px; margin: 0 20px 15px 20px;
-            background: var(--tab-bg); border-radius: 16px; z-index: 5;
+            display: flex; gap: 8px; padding: 6px; margin: 0 20px 15px 20px;
+            background: var(--tab-bg); border-radius: 20px; z-index: 5;
         }
         .mode-btn {
-            flex: 1; padding: 12px; border: none; border-radius: 12px;
+            flex: 1; padding: 14px; border: none; border-radius: 14px;
             background: transparent; color: var(--sub-text); font-weight: 700; 
             font-size: 15px; cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
@@ -58,140 +73,148 @@
         }
 
         .container {
-            max-width: 500px; margin: auto; padding: 0 20px 20px 20px; display: flex; flex-direction: column; gap: 20px;
+            max-width: 500px; margin: auto; padding: 0 20px 20px 20px; display: flex; flex-direction: column; gap: 25px;
             flex-grow: 1; justify-content: flex-start; width: 100%; box-sizing: border-box; overflow-y: auto;
             scrollbar-width: none;
         }
         .container::-webkit-scrollbar { display: none; }
 
-        /* 카드 디자인 고급화 */
-        .card {
-            background: var(--card-bg); border-radius: 28px; padding: 25px 20px;
-            box-shadow: var(--shadow-lg); position: relative; display: flex; flex-direction: column;
-            text-align: center; gap: 12px; transition: transform 0.2s;
-        }
+        /* [디자인 변경] 카드 레이아웃 앱 스타일로 고도화 */
+       .card {
+    background: var(--card-bg); border-radius: 32px; 
+    box-shadow: var(--shadow-lg); position: relative; display: flex; flex-direction: column;
+    transition: transform 0.2s;
+    overflow: hidden; /* 헤더 둥근 모서리 적용을 위해 */
+    flex-shrink: 0; /* ✨ 이 부분을 추가해 주세요! 카드가 찌그러지는 현상 방지 */
+}
         .card.hidden { display: none !important; }
+
+        /* [추가] 히어로(Hero) 헤더 영역 - 일러스트/아이콘 자리 */
+        .card-hero {
+            height: 120px;
+            display: flex; justify-content: center; align-items: flex-end;
+            position: relative;
+        }
+        .smoke-hero { background: var(--smoke-light); }
+        .drink-hero { background: var(--drink-light); }
         
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .title { font-size: 18px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
-        .icon { font-size: 24px; }
+        .hero-icon {
+            font-size: 50px;
+            background: var(--card-bg);
+            width: 90px; height: 90px;
+            display: flex; justify-content: center; align-items: center;
+            border-radius: 50%;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+            transform: translateY(45px); /* 아래 본문 영역으로 반쯤 내려오게 겹침 */
+            z-index: 2;
+        }
+
+        /* [추가] 카드 본문 영역 */
+        .card-body {
+            padding: 55px 24px 30px 24px; /* 위쪽 여백을 줘서 겹친 아이콘 피하기 */
+            display: flex; flex-direction: column; gap: 16px; text-align: center;
+        }
+        
+        .card-header-text { display: flex; justify-content: center; align-items: center; gap: 8px; margin-bottom: 5px; }
+        .title { font-size: 16px; font-weight: 700; color: var(--sub-text); }
         .streak { 
-            background: rgba(255, 159, 67, 0.15); color: #ff9f43; 
+            background: rgba(255, 159, 67, 0.15); color: #FF8A00; 
             padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 800; 
         }
 
-        .time-display { font-size: clamp(32px, 8vw, 40px); font-weight: 900; letter-spacing: -1.5px; margin: 5px 0; }
+        .time-display { font-size: clamp(34px, 8vw, 42px); font-weight: 900; letter-spacing: -1.5px; margin: 0; color: var(--text-color); }
         
-        /* 절약 금액 UI 강조 */
+        /* 절약 금액 UI 깔끔하게 */
         .saved-money {
-            background: var(--accent-money); color: white;
-            padding: 18px; border-radius: 20px; font-size: 22px; font-weight: 900;
+            background: var(--bg-color); color: var(--text-color);
+            padding: 16px; border-radius: 20px; font-size: 20px; font-weight: 800;
             display: flex; justify-content: center; align-items: center; gap: 8px;
-            box-shadow: 0 10px 25px rgba(56, 239, 125, 0.3);
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 2px solid rgba(52, 199, 89, 0.15);
         }
+        .money-icon { color: #34C759; font-size: 24px; }
 
-        .highlight-stat { font-size: 16px; font-weight: 700; color: var(--sub-text); margin-top: 10px; }
-        .stat-num { font-size: 22px; font-weight: 900; color: #ff6b6b; } /* 실패 숫자는 빨간색 강조 */
-        .stat-num.drink { color: #6c5ce7; } /* 금주 실패 숫자는 보라색 강조 */
+        .highlight-stat { font-size: 15px; font-weight: 600; color: var(--sub-text); background: var(--tab-bg); padding: 12px; border-radius: 16px; }
+        .stat-num { font-size: 18px; font-weight: 800; color: #FF5B73; } 
+        .stat-num.drink { color: #5C80FF; } 
 
-        /* [추가] 건강 회복 상태 메시지 스타일 */
+        /* [디자인 변경] 건강 회복 상태 메시지를 모던 위젯 스타일로 */
         .health-msg {
-            background: rgba(17, 153, 142, 0.1); /* 은은한 민트 베이스 */
-            color: #0e7a6d;
-            padding: 14px 16px;
-            border-radius: 18px;
-            font-size: 14px;
-            font-weight: 700;
+            background: var(--bg-color);
+            border-radius: 20px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
             text-align: left;
             margin-top: 5px;
-            line-height: 1.5;
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
-            box-shadow: inset 0 0 0 1px rgba(17, 153, 142, 0.2);
         }
-        @media (prefers-color-scheme: dark) {
-            .health-msg {
-                background: rgba(56, 239, 125, 0.1);
-                color: #38ef7d;
-                box-shadow: inset 0 0 0 1px rgba(56, 239, 125, 0.2);
-            }
+        .health-icon-wrapper {
+            background: var(--card-bg);
+            width: 44px; height: 44px; flex-shrink: 0;
+            border-radius: 14px;
+            display: flex; justify-content: center; align-items: center;
+            box-shadow: var(--shadow-sm);
+            font-size: 20px;
         }
-        .health-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+        .health-text-content { display: flex; flex-direction: column; gap: 4px; }
+        .health-label { font-size: 12px; font-weight: 800; color: #34C759; }
+        #smokeHealthText, #drinkHealthText { font-size: 14px; font-weight: 600; line-height: 1.4; color: var(--text-color); }
 
-        /* 버튼 디자인 앱 스타일 */
-        .btn-group { display: flex; flex-direction: column; gap: 12px; margin-top: 15px; }
+        .btn-group { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
         .button {
-            padding: 16px; border-radius: 20px; font-weight: 800; font-size: 17px; 
+            padding: 18px; border-radius: 20px; font-weight: 800; font-size: 17px; 
             cursor: pointer; border: none; color: white;
             display: flex; justify-content: center; align-items: center; gap: 8px;
             transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .button:active { transform: scale(0.96); }
-        .smoke-btn { background: var(--accent-smoke); box-shadow: 0 8px 20px rgba(255, 65, 108, 0.3); } 
-        .drink-btn { background: var(--accent-drink); box-shadow: 0 8px 20px rgba(71, 118, 230, 0.3); }
-        .reset-btn { background: transparent; color: var(--sub-text); font-size: 14px; box-shadow: none; padding: 10px; }
+        .smoke-btn { background: var(--accent-smoke); box-shadow: 0 8px 20px rgba(255, 91, 115, 0.25); } 
+        .drink-btn { background: var(--accent-drink); box-shadow: 0 8px 20px rgba(92, 128, 255, 0.25); }
+        .reset-btn { background: transparent; color: var(--sub-text); font-size: 14px; font-weight: 600; text-decoration: underline; text-underline-offset: 4px; box-shadow: none; padding: 10px; margin-top: 5px; }
 
-        /* 하단 설정 영역 */
-        .settings-area {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding-bottom: 10px;
-        }
+        .settings-area { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding-bottom: 10px; }
         .settings-btn {
-            background: var(--card-bg); color: var(--text-color); border: none; padding: 16px;
-            border-radius: 20px; font-size: 14px; font-weight: 700; cursor: pointer; 
+            background: var(--card-bg); color: var(--text-color); border: none; padding: 18px;
+            border-radius: 24px; font-size: 15px; font-weight: 700; cursor: pointer; 
             box-shadow: var(--shadow-sm); display: flex; align-items: center; justify-content: center; gap: 8px;
             transition: transform 0.1s;
         }
         .settings-btn:active { transform: scale(0.96); }
 
-        /* [추가] 하단 안내 문구 */
-        .footer-notice {
-            text-align: center;
-            font-size: 12px;
-            color: var(--sub-text);
-            margin-bottom: 30px;
-            font-weight: 600;
-        }
+        .footer-notice { text-align: center; font-size: 12px; color: var(--sub-text); margin-bottom: 30px; font-weight: 600; }
 
-        /* 모달 UI 고급화 */
+        /* 모달 스타일 유지 & 테두리 곡률 증가 */
         .modal-overlay {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--modal-bg);
             display: flex; justify-content: center; align-items: center; z-index: 1000;
-            opacity: 0; pointer-events: none; transition: opacity 0.25s ease; backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
+            opacity: 0; pointer-events: none; transition: opacity 0.25s ease; backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
         }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
         .modal-box {
-            background: var(--card-bg); padding: 30px 25px; border-radius: 28px; width: 85%; max-width: 320px;
+            background: var(--card-bg); padding: 30px 25px; border-radius: 32px; width: 85%; max-width: 320px;
             text-align: center; box-shadow: var(--shadow-lg); transform: translateY(30px) scale(0.95); transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             max-height: 80vh; overflow-y: auto;
         }
         .modal-overlay.active .modal-box { transform: translateY(0) scale(1); }
-        .modal-msg { font-size: 17px; font-weight: 700; line-height: 1.5; margin-bottom: 25px; white-space: pre-wrap; color: var(--text-color); }
+        .modal-msg { font-size: 18px; font-weight: 800; line-height: 1.5; margin-bottom: 25px; white-space: pre-wrap; color: var(--text-color); }
         
-        .modal-textarea {
-            width: 100%; height: 80px; margin-bottom: 20px; border-radius: 12px; border: 1px solid var(--tab-bg);
-            padding: 12px; box-sizing: border-box; background: var(--bg-color); color: var(--text-color); font-size: 13px;
-        }
+        .modal-textarea { width: 100%; height: 80px; margin-bottom: 20px; border-radius: 16px; border: 1px solid var(--tab-bg); padding: 12px; box-sizing: border-box; background: var(--bg-color); color: var(--text-color); font-size: 13px; }
         
         .input-group { text-align: left; margin-bottom: 18px; }
         .input-group label { display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 700; color: var(--sub-text); margin-bottom: 8px; }
-        .input-group input { 
-            width: 100%; padding: 15px; border-radius: 16px; border: none;
-            background: var(--bg-color); color: var(--text-color); font-size: 18px; font-weight: 800; box-sizing: border-box;
-        }
-        .input-group input:focus { outline: 2px solid #4776e6; }
+        .input-group input { width: 100%; padding: 16px; border-radius: 18px; border: none; background: var(--bg-color); color: var(--text-color); font-size: 18px; font-weight: 800; box-sizing: border-box; }
+        .input-group input:focus { outline: 2px solid #5C80FF; }
 
         .modal-btn-group { display: flex; gap: 12px; margin-top: 10px; }
-        .modal-btn { flex: 1; padding: 16px; border: none; border-radius: 16px; font-weight: 800; font-size: 16px; cursor: pointer; }
-        .btn-cancel { background: var(--bg-color); color: var(--text-color); }
+        .modal-btn { flex: 1; padding: 18px; border: none; border-radius: 20px; font-weight: 800; font-size: 16px; cursor: pointer; }
+        .btn-cancel { background: var(--tab-bg); color: var(--sub-text); }
         .btn-confirm { background: var(--text-color); color: var(--bg-color); }
     </style>
 </head>
 <body>
 
-<div class="header">나의 기록</div>
+<div class="header">나의 기록 🏆</div>
 
 <div class="mode-selector">
     <button class="mode-btn active" data-mode="both">둘 다</button>
@@ -201,64 +224,82 @@
 
 <div class="container">
     <div class="card smoke-card" id="smokeCard">
-        <div class="card-header">
-            <div class="title"><span class="material-symbols-rounded icon">smoking_rooms</span> 금연 시간</div>
-            <div class="streak" id="smokeStreak">🔥 0일째</div>
-        </div>
-        <div class="time-display" id="smokeTime">0일 00:00:00</div>
-        
-        <div class="saved-money">
-            <span class="material-symbols-rounded">savings</span>
-            <span id="smokeMoney" data-val="0">0원 절약!</span>
+        <div class="card-hero smoke-hero">
+            <div class="hero-icon">🚭</div>
         </div>
         
-        <div class="highlight-stat">오늘 피운 담배 🚬 <span class="stat-num" id="todaySmoke">0</span>개비</div>
-        
-        <div id="smokeHealth" class="health-msg">
-            <span class="material-symbols-rounded health-icon">favorite</span>
-            <span id="smokeHealthText">건강 데이터 분석 중...</span>
-        </div>
+        <div class="card-body">
+            <div class="card-header-text">
+                <div class="title">금연 시간</div>
+                <div class="streak" id="smokeStreak">🔥 0일째</div>
+            </div>
+            <div class="time-display" id="smokeTime">0일 00:00:00</div>
+            
+            <div class="saved-money">
+                <span class="material-symbols-rounded money-icon">payments</span>
+                <span id="smokeMoney" data-val="0">0원 절약!</span>
+            </div>
+            
+            <div class="highlight-stat">오늘의 유혹 🚬 <span class="stat-num" id="todaySmoke">0</span>번 실패</div>
+            
+            <div id="smokeHealth" class="health-msg">
+                <div class="health-icon-wrapper">🌿</div>
+                <div class="health-text-content">
+                    <span class="health-label">내 몸의 변화</span>
+                    <span id="smokeHealthText">건강 데이터 분석 중...</span>
+                </div>
+            </div>
 
-        <div class="btn-group">
-            <button class="button smoke-btn" onclick="askRecord('smoke')">
-                <span class="material-symbols-rounded">sentiment_dissatisfied</span> 방금 피웠음
-            </button>
-            <button class="button reset-btn" onclick="askReset('smoke')">기록 초기화</button>
+            <div class="btn-group">
+                <button class="button smoke-btn" onclick="askRecord('smoke')">
+                    방금 피웠음 🥲
+                </button>
+                <button class="button reset-btn" onclick="askReset('smoke')">기록 완전 초기화</button>
+            </div>
         </div>
     </div>
 
     <div class="card drink-card" id="drinkCard">
-        <div class="card-header">
-            <div class="title"><span class="material-symbols-rounded icon">sports_bar</span> 금주 기간</div>
-            <div class="streak" id="drinkStreak">🔥 0일째</div>
-        </div>
-        <div class="time-display" id="drinkDay">0일</div>
-        
-        <div class="saved-money">
-            <span class="material-symbols-rounded">savings</span>
-            <span id="drinkMoney" data-val="0">0원 절약!</span>
+        <div class="card-hero drink-hero">
+            <div class="hero-icon">🚫</div>
         </div>
         
-        <div class="highlight-stat">최근 7일 음주 🍺 <span class="stat-num drink" id="weekDrink">0</span>회</div>
-        
-        <div id="drinkHealth" class="health-msg">
-            <span class="material-symbols-rounded health-icon">favorite</span>
-            <span id="drinkHealthText">건강 데이터 분석 중...</span>
-        </div>
+        <div class="card-body">
+            <div class="card-header-text">
+                <div class="title">금주 기간</div>
+                <div class="streak" id="drinkStreak">🔥 0일째</div>
+            </div>
+            <div class="time-display" id="drinkDay">0일</div>
+            
+            <div class="saved-money">
+                <span class="material-symbols-rounded money-icon">payments</span>
+                <span id="drinkMoney" data-val="0">0원 절약!</span>
+            </div>
+            
+            <div class="highlight-stat">최근 7일 유혹 🍺 <span class="stat-num drink" id="weekDrink">0</span>번 실패</div>
+            
+            <div id="drinkHealth" class="health-msg">
+                <div class="health-icon-wrapper">💧</div>
+                <div class="health-text-content">
+                    <span class="health-label">내 몸의 변화</span>
+                    <span id="drinkHealthText">건강 데이터 분석 중...</span>
+                </div>
+            </div>
 
-        <div class="btn-group">
-            <button class="button drink-btn" onclick="askRecord('drink')">
-                <span class="material-symbols-rounded">sentiment_dissatisfied</span> 방금 마셨음
-            </button>
-            <button class="button reset-btn" onclick="askReset('drink')">기록 초기화</button>
+            <div class="btn-group">
+                <button class="button drink-btn" onclick="askRecord('drink')">
+                    방금 마셨음 🥲
+                </button>
+                <button class="button reset-btn" onclick="askReset('drink')">기록 완전 초기화</button>
+            </div>
         </div>
     </div>
 
     <div class="settings-area">
-        <button class="settings-btn" onclick="openSettingsModal()"><span class="material-symbols-rounded">tune</span> 비용 설정</button>
-        <button class="settings-btn" onclick="setupNotification()"><span class="material-symbols-rounded">notifications</span> 알림 권한</button>
-        <button class="settings-btn" onclick="backupData()"><span class="material-symbols-rounded">save</span> 데이터 백업</button>
-        <button class="settings-btn" onclick="showRestoreModal()"><span class="material-symbols-rounded">restore</span> 데이터 복원</button>
+        <button class="settings-btn" onclick="openSettingsModal()">⚙️ 비용 설정</button>
+        <button class="settings-btn" onclick="setupNotification()">🔔 알림 권한</button>
+        <button class="settings-btn" onclick="backupData()">💾 백업</button>
+        <button class="settings-btn" onclick="showRestoreModal()">📂 복원</button>
     </div>
 
     <div class="footer-notice">※ 건강 정보는 WHO/CDC 기준 평균 데이터 기반 안내입니다</div>
@@ -277,24 +318,22 @@
 
 <div class="modal-overlay" id="settingsModal">
     <div class="modal-box">
-        <div class="title" style="margin-bottom: 25px; justify-content: center;">
-            <span class="material-symbols-rounded">tune</span> 비용 상세 설정
-        </div>
+        <div class="modal-msg" style="margin-bottom: 25px;">⚙️ 비용 상세 설정</div>
         
         <div class="input-group">
-            <label><span class="material-symbols-rounded" style="font-size: 18px;">smoking_rooms</span> 담배 1갑 가격</label>
+            <label>담배 1갑 가격</label>
             <input type="number" id="setSmokePrice" placeholder="예: 4500">
         </div>
         <div class="input-group">
-            <label><span class="material-symbols-rounded" style="font-size: 18px;">calendar_today</span> 하루 평균 흡연량 (개비)</label>
+            <label>하루 평균 흡연량 (개비)</label>
             <input type="number" id="setSmokePerDay" placeholder="예: 10">
         </div>
         <div class="input-group">
-            <label><span class="material-symbols-rounded" style="font-size: 18px;">sports_bar</span> 1주 평균 음주 횟수</label>
+            <label>1주 평균 음주 횟수</label>
             <input type="number" id="setDrinkPerWeek" placeholder="예: 2">
         </div>
         <div class="input-group">
-            <label><span class="material-symbols-rounded" style="font-size: 18px;">payments</span> 1회 평균 음주 비용</label>
+            <label>1회 평균 음주 비용</label>
             <input type="number" id="setDrinkCost" placeholder="예: 50000">
         </div>
 
@@ -306,18 +345,18 @@
 </div>
 
 <script>
-// [추가] 건강 회복 단계 시스템 데이터
+// 건강 회복 단계 시스템 데이터
 const smokeStages = [
     { day: 0, msg: "금연을 결심하셨군요! 몸이 회복될 준비를 시작합니다." },
     { day: 0.013, msg: "마지막 흡연 후 20분: 혈압과 맥박이 정상으로 떨어지기 시작합니다." },
-    { day: 0.5, msg: "12시간 경과: 혈액 속 일산화탄소 농도가 정상 수치로 돌아왔습니다." },
+    { day: 0.5, msg: "12시간 경과: 혈액 속 일산화탄소가 정상 수치로 돌아왔습니다." },
     { day: 1, msg: "1일 경과: 심장마비 위험이 감소하기 시작합니다." },
     { day: 2, msg: "2일 경과: 신경 말단이 회복되며 후각과 미각이 좋아집니다." },
     { day: 3, msg: "3일 경과: 니코틴이 완전히 빠져나가고 기관지가 이완됩니다." },
     { day: 14, msg: "2주 경과: 폐 기능이 향상되고 혈액순환이 크게 개선됩니다." },
     { day: 30, msg: "1개월 경과: 기침과 숨가쁨이 눈에 띄게 줄어듭니다." },
     { day: 90, msg: "3개월 경과: 섬모 기능이 회복되어 폐 감염 위험이 줄어듭니다." },
-    { day: 365, msg: "1년 달성! 관상동맥질환 위험이 흡연자의 절반으로 줄었습니다." },
+    { day: 365, msg: "1년 달성! 관상동맥질환 위험이 절반으로 줄었습니다." },
     { day: 1825, msg: "5년 달성! 각종 암 발생 위험이 절반으로 감소했습니다." }
 ];
 
@@ -325,12 +364,12 @@ const drinkStages = [
     { day: 0, msg: "금주를 시작했습니다! 간이 쉴 수 있는 시간을 주셨네요." },
     { day: 0.5, msg: "12시간 경과: 혈당이 안정화되고 탈수 증상이 개선되기 시작합니다." },
     { day: 1, msg: "1일 경과: 체내 알코올이 완전히 분해되었습니다." },
-    { day: 3, msg: "3일 경과: 숙취가 완전히 사라지고 수면의 질이 크게 향상됩니다." },
+    { day: 3, msg: "3일 경과: 숙취가 완전히 사라지고 수면의 질이 향상됩니다." },
     { day: 7, msg: "1주 경과: 집중력이 좋아지고 피부가 한결 맑아집니다." },
     { day: 14, msg: "2주 경과: 체중 감량 효과가 나타나며 위장 기능이 회복됩니다." },
-    { day: 30, msg: "1개월 경과: 간 내 지방이 눈에 띄게 감소하고 수치가 정상화됩니다." },
+    { day: 30, msg: "1개월 경과: 간 내 지방이 감소하고 수치가 정상화됩니다." },
     { day: 90, msg: "3개월 경과: 에너지가 상승하고 우울/불안감이 크게 감소합니다." },
-    { day: 365, msg: "1년 달성! 면역력이 크게 강화되고 심혈관계 질환 위험이 감소했습니다." }
+    { day: 365, msg: "1년 달성! 면역력이 강화되고 심혈관 질환 위험이 감소했습니다." }
 ];
 
 // 데이터 초기화
@@ -348,7 +387,7 @@ function initData() {
 }
 initData();
 
-// 숫자 촤르륵 올라가는 애니메이션 함수
+// 숫자 애니메이션
 function animateValue(obj, start, end, duration) {
     let startTimestamp = null;
     const step = (timestamp) => {
@@ -388,7 +427,7 @@ confirmBtn.addEventListener('click', () => {
     closeModal();
 });
 
-// 비용 설정 모달 로직
+// 설정 모달 로직
 const settingsModal = document.getElementById('settingsModal');
 function openSettingsModal() {
     document.getElementById('setSmokePrice').value = localStorage.getItem("smokePrice");
@@ -427,22 +466,18 @@ function getDurationText(ms, type) {
     }
 }
 
-// [추가] 현재 단계 계산 함수
+// 건강 메시지 계산
 function getStageMessage(startTime, stages) {
     let elapsedDays = (Date.now() - startTime) / (1000 * 60 * 60 * 24);
     let currentMsg = stages[0].msg;
-    
     for (let i = 0; i < stages.length; i++) {
-        if (elapsedDays >= stages[i].day) {
-            currentMsg = stages[i].msg;
-        } else {
-            break;
-        }
+        if (elapsedDays >= stages[i].day) currentMsg = stages[i].msg;
+        else break;
     }
     return currentMsg;
 }
 
-// 기록 & 초기화 로직
+// 기록 & 초기화
 function askRecord(type) {
     let now = Date.now();
     let startTime = parseInt(localStorage.getItem(type + "Start"));
@@ -460,7 +495,6 @@ function recordEvent(type) {
     logs.push(now);
     localStorage.setItem(type + "Logs", JSON.stringify(logs));
     localStorage.setItem(type + "Start", now);
-    
     document.getElementById(type + "Money").dataset.val = "0";
     update();
 }
@@ -475,7 +509,7 @@ function askReset(type) {
     });
 }
 
-// 백업 복원 및 알림
+// 백업 & 알림
 function backupData() {
     let data = JSON.stringify(localStorage);
     navigator.clipboard.writeText(data).then(() => {
@@ -516,7 +550,7 @@ function checkDailyNotification() {
     }
 }
 
-// 화면 업데이트 로직
+// 화면 업데이트
 function update() {
     let now = Date.now();
     let smokeStart = parseInt(localStorage.getItem("smokeStart"));
@@ -556,7 +590,6 @@ function update() {
         document.getElementById("drinkMoney").dataset.val = targetDrinkMoney;
     }
 
-    // 실패 횟수 통계 처리 (문구 수정 반영)
     let smokeLogs = JSON.parse(localStorage.getItem("smokeLogs")) || [];
     let drinkLogs = JSON.parse(localStorage.getItem("drinkLogs")) || [];
     let todayStart = new Date().setHours(0, 0, 0, 0);
@@ -565,14 +598,12 @@ function update() {
     document.getElementById("todaySmoke").innerText = smokeLogs.filter(t => t > todayStart).length;
     document.getElementById("weekDrink").innerText = drinkLogs.filter(t => t > weekAgo).length;
 
-    // [추가] 건강 상태 메시지 업데이트 적용
     document.getElementById("smokeHealthText").innerText = getStageMessage(smokeStart, smokeStages);
     document.getElementById("drinkHealthText").innerText = getStageMessage(drinkStart, drinkStages);
 
     checkDailyNotification();
 }
 
-// 탭 모드 설정
 const modeBtns = document.querySelectorAll('.mode-btn');
 const smokeCard = document.getElementById('smokeCard');
 const drinkCard = document.getElementById('drinkCard');
