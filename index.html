@@ -10,100 +10,474 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
+        /* ========================================================================
+        🎨 [나만의 컬러 팔레트] 여기서 모든 색상을 쉽게 바꾸세요!
+        VS Code에서 색상 코드(예: #F2F4F6) 왼쪽의 작은 네모를 클릭하면 쉽게 변경 가능합니다.
+        ========================================================================
+        */
         :root {
-            --bg-color: #F2F4F6; --text-color: #191F28; --card-bg: #ffffff;
-            --sub-text: #8B95A1; --tab-bg: #E5E8EB; --modal-bg: rgba(0,0,0,0.4);
+            /* 1. 📱 배경 및 레이아웃 색상 */
+            --app-bg: #F2F4F6;             /* 앱 전체 바탕 배경색 */
+            --card-bg: #ffffff;            /* 하얀색 카드 배경색 */
+            --tab-bg: #E5E8EB;             /* 상단 모드 선택 버튼 및 입력창 배경 */
+            --modal-overlay: rgba(0,0,0,0.4); /* 팝업 뜰 때 뒤에 깔리는 어두운 배경 */
+
+            /* 2. ✍️ 글자 색상 */
+            --text-main: #191F28;          /* 가장 진한 글자 (타이머 숫자, 메인 제목) */
+            --text-sub: #4E5968;           /* 중간 진한 글자 (팝업창 내용, 버튼 글자) */
+            --text-gray: #8B95A1;          /* 연한 회색 글자 (작은 설명글, 차트 날짜) */
+            --text-streak: #FF8A00;        /* 불꽃(며칠째) 강조 글자색 */
+            --bg-streak: rgba(255, 138, 0, 0.15); /* 불꽃(며칠째) 텍스트 배경색 */
+
+            /* 3. 🚭 금연(Smoke) 테마 색상 */
+            --smoke-main: #FF5B73;         /* 금연 메인 포인트 컬러 (차트 막대, 실패 횟수 숫자) */
+            --smoke-bg-light: linear-gradient(135deg, #FFF0F2, #FFE5E8); /* 카드 상단 아이콘 배경 */
+            --smoke-btn-grad: linear-gradient(135deg, #FF416C, #FF4B2B); /* 금연 메인 버튼 색상 */
+            --smoke-btn-shadow: rgba(255, 65, 108, 0.3); /* 금연 버튼 그림자 색 */
+
+            /* 4. 🚫 금주(Drink) 테마 색상 */
+            --drink-main: #5C80FF;         /* 금주 메인 포인트 컬러 (차트 막대, 실패 횟수 숫자) */
+            --drink-bg-light: linear-gradient(135deg, #F0F4FF, #E5EDFF); /* 카드 상단 아이콘 배경 */
+            --drink-btn-grad: linear-gradient(135deg, #4776E6, #8E54E9); /* 금주 메인 버튼 색상 */
+            --drink-btn-shadow: rgba(71, 118, 230, 0.3); /* 금주 버튼 그림자 색 */
+
+            /* 5. 💰 절약(Money) 테마 색상 */
+            --money-main: #34C759;         /* 돈 관련 초록색 포인트 (누적 절약 금액 숫자) */
+            --money-bg-light: rgba(52, 199, 89, 0.2); /* 돈 관련 그림자/배경 */
+            --money-btn-grad: linear-gradient(135deg, #34C759, #30D158); /* 중앙 진행중 금액 배경 */
+
+            /* 6. 🎮 상태 및 게임 색상 */
+            --status-success: #34C759;     /* 성공/통과 색상 (게임 성공, 1단계 텍스트) */
+            --status-fail: #FF5B73;        /* 실패/주의 색상 (게임 실패, 2단계 텍스트) */
             
-            --accent-smoke: linear-gradient(135deg, #FF416C, #FF4B2B); --smoke-color: #FF5B73;
-            --smoke-light: linear-gradient(135deg, #FFF0F2, #FFE5E8);
-            
-            --accent-drink: linear-gradient(135deg, #4776E6, #8E54E9); --drink-color: #5C80FF;
-            --drink-light: linear-gradient(135deg, #F0F4FF, #E5EDFF);
-            
-            --accent-money: linear-gradient(135deg, #34C759, #30D158); --defense-color: #191F28;
-            
-            --shadow-sm: 0 4px 16px rgba(0,0,0,0.04); --shadow-lg: 0 20px 40px rgba(0,0,0,0.08);
+            /* 7. 🖼️ 그림자 효과 (건드리지 않아도 됨) */
+            --shadow-sm: 0 4px 16px rgba(0,0,0,0.04); 
+            --shadow-lg: 0 20px 40px rgba(0,0,0,0.08);
         }
+
+        /* 🌙 다크모드 색상 (기기가 다크모드일 때 자동으로 적용됨) */
         @media (prefers-color-scheme: dark) {
             :root {
-                --bg-color: #101013; --text-color: #F9FAFB; --card-bg: #1C1C1F;
-                --sub-text: #8B95A1; --tab-bg: #2C2C35; --modal-bg: rgba(0,0,0,0.7);
-                --smoke-light: linear-gradient(135deg, #3A1D22, #2A1215);
-                --drink-light: linear-gradient(135deg, #1A233A, #12182A);
-                --shadow-sm: 0 4px 16px rgba(0,0,0,0.3); --shadow-lg: 0 20px 40px rgba(0,0,0,0.5);
-                --defense-color: #F9FAFB;
+                --app-bg: #101013; 
+                --card-bg: #1C1C1F;
+                --tab-bg: #2C2C35; 
+                --text-main: #F9FAFB; 
+                --text-sub: #D1D6DB;
+                --text-gray: #8B95A1;
+                --modal-overlay: rgba(0,0,0,0.7);
+                --smoke-bg-light: linear-gradient(135deg, #3A1D22, #2A1215);
+                --drink-bg-light: linear-gradient(135deg, #1A233A, #12182A);
+                --shadow-sm: 0 4px 16px rgba(0,0,0,0.3); 
+                --shadow-lg: 0 20px 40px rgba(0,0,0,0.5);
             }
         }
+        /* ======================================================================== */
 
-        body { margin: 0; font-family: 'Tossface', 'Pretendard', -apple-system, sans-serif; background: var(--bg-color); color: var(--text-color); height: 100vh; display: flex; flex-direction: column; overflow: hidden; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
-        .header { background: transparent; color: var(--text-color); text-align: center; padding: calc(env(safe-area-inset-top) + 20px) 15px 15px 15px; font-size: 24px; font-weight: 800; letter-spacing: -0.5px; z-index: 10; }
-        .mode-selector { display: flex; gap: 8px; padding: 6px; margin: 0 20px 15px 20px; background: var(--tab-bg); border-radius: 20px; z-index: 5; flex-shrink: 0; }
-        .mode-btn { flex: 1; padding: 14px; border: none; border-radius: 14px; background: transparent; color: var(--sub-text); font-weight: 700; font-size: 15px; cursor: pointer; transition: all 0.3s; }
-        .mode-btn.active { background: var(--card-bg); color: var(--text-color); box-shadow: var(--shadow-sm); }
-        .container { max-width: 500px; margin: auto; padding: 0 20px 40px 20px; display: flex; flex-direction: column; gap: 25px; flex-grow: 1; justify-content: flex-start; width: 100%; box-sizing: border-box; overflow-y: auto; scrollbar-width: none; }
-        .container::-webkit-scrollbar { display: none; }
-        .card { background: var(--card-bg); border-radius: 32px; box-shadow: var(--shadow-lg); position: relative; display: flex; flex-direction: column; transition: transform 0.2s; overflow: hidden; flex-shrink: 0; }
-        .card.hidden { display: none !important; }
-        .card-hero { height: 120px; display: flex; justify-content: center; align-items: flex-end; position: relative; flex-shrink: 0; }
-        .smoke-hero { background: var(--smoke-light); } .drink-hero { background: var(--drink-light); }
-        .hero-icon { font-size: 50px; background: var(--card-bg); width: 90px; height: 90px; display: flex; justify-content: center; align-items: center; border-radius: 50%; box-shadow: 0 10px 25px rgba(0,0,0,0.06); transform: translateY(45px); z-index: 2; }
-        .card-body { padding: 55px 24px 30px 24px; display: flex; flex-direction: column; gap: 16px; text-align: center; }
-        .card-header-text { display: flex; justify-content: center; align-items: center; gap: 8px; margin-bottom: 5px; }
-        .title { font-size: 16px; font-weight: 700; color: var(--sub-text); }
-        .streak { background: rgba(255, 159, 67, 0.15); color: #FF8A00; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 800; }
-        .time-display { font-size: clamp(34px, 8vw, 42px); font-weight: 900; letter-spacing: -1.5px; margin: 0; color: var(--text-color); }
-        .saved-money { background: var(--accent-money); color: white; padding: 18px; border-radius: 20px; font-size: 20px; font-weight: 900; display: flex; justify-content: center; align-items: center; gap: 8px; box-shadow: 0 10px 25px rgba(52, 199, 89, 0.2); }
-        .money-icon { font-size: 24px; color: white; }
-        .ranking-stats { display: flex; gap: 10px; margin-top: 5px; }
-        .ranking-badge { flex: 1; background: var(--tab-bg); padding: 14px 10px; border-radius: 18px; font-size: 12px; font-weight: 700; color: var(--sub-text); display: flex; flex-direction: column; gap: 6px; }
-        .ranking-badge span { font-size: 15px; font-weight: 900; color: var(--text-color); word-break: keep-all; }
-        .ranking-badge .accent-money { color: #34C759; }
-        .highlight-stat { font-size: 15px; font-weight: 600; color: var(--sub-text); background: var(--tab-bg); padding: 14px; border-radius: 16px; display: flex; justify-content: center; align-items: center; gap: 8px; }
-        .stat-num { font-size: 18px; font-weight: 800; color: var(--smoke-color); } 
-        .stat-num.drink { color: var(--drink-color); } 
+        /* 기본 레이아웃 */
+        body { 
+            margin: 0; 
+            font-family: 'Tossface', 'Pretendard', -apple-system, sans-serif; 
+            background: var(--app-bg); 
+            color: var(--text-main); 
+            height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden; 
+            user-select: none; 
+            -webkit-user-select: none; 
+            -webkit-tap-highlight-color: transparent; 
+        }
+
+        .header { 
+            background: transparent; 
+            color: var(--text-main); 
+            text-align: center; 
+            padding: calc(env(safe-area-inset-top) + 20px) 15px 15px 15px; 
+            font-size: 24px; 
+            font-weight: 800; 
+            letter-spacing: -0.5px; 
+            z-index: 10; 
+        }
         
-        .chart-container { background: var(--bg-color); border-radius: 20px; padding: 15px; margin-top: 5px; box-shadow: inset 0 2px 10px rgba(0,0,0,0.02); }
-        .chart-title { font-size: 13px; font-weight: 700; color: var(--sub-text); margin-bottom: 10px; text-align: left; display: flex; align-items: center; gap: 6px; }
-        .chart-wrapper { position: relative; height: 130px; width: 100%; }
+        /* 모드 선택 탭 */
+        .mode-selector { 
+            display: flex; 
+            gap: 8px; 
+            padding: 6px; 
+            margin: 0 20px 15px 20px; 
+            background: var(--tab-bg); 
+            border-radius: 20px; 
+            z-index: 5; 
+            flex-shrink: 0; 
+        }
+        
+        .mode-btn { 
+            flex: 1; 
+            padding: 14px; 
+            border: none; 
+            border-radius: 14px; 
+            background: transparent; 
+            color: var(--text-gray); 
+            font-weight: 700; 
+            font-size: 15px; 
+            cursor: pointer; 
+            transition: all 0.3s; 
+        }
+        
+        .mode-btn.active { 
+            background: var(--card-bg); 
+            color: var(--text-main); 
+            box-shadow: var(--shadow-sm); 
+        }
 
-        .health-msg { background: var(--bg-color); border-radius: 20px; padding: 16px; display: flex; align-items: center; gap: 14px; text-align: left; margin-top: 5px; }
-        .health-icon-wrapper { background: var(--card-bg); width: 44px; height: 44px; flex-shrink: 0; border-radius: 14px; display: flex; justify-content: center; align-items: center; box-shadow: var(--shadow-sm); font-size: 20px; }
+        /* 컨테이너 (스크롤 영역) */
+        .container { 
+            max-width: 500px; 
+            margin: auto; 
+            padding: 0 20px 40px 20px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 25px; 
+            flex-grow: 1; 
+            justify-content: flex-start; 
+            width: 100%; 
+            box-sizing: border-box; 
+            overflow-y: auto; 
+            scrollbar-width: none; 
+        }
+        
+        .container::-webkit-scrollbar { display: none; }
+
+        /* 카드 UI */
+        .card { 
+            background: var(--card-bg); 
+            border-radius: 32px; 
+            box-shadow: var(--shadow-lg); 
+            position: relative; 
+            display: flex; 
+            flex-direction: column; 
+            transition: transform 0.2s; 
+            overflow: hidden; 
+            flex-shrink: 0; 
+        }
+        
+        .card.hidden { display: none !important; }
+
+        .card-hero { 
+            height: 120px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: flex-end; 
+            position: relative; 
+            flex-shrink: 0; 
+        }
+        
+        .smoke-hero { background: var(--smoke-bg-light); } 
+        .drink-hero { background: var(--drink-bg-light); }
+        
+        .hero-icon { 
+            font-size: 50px; 
+            background: var(--card-bg); 
+            width: 90px; 
+            height: 90px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            border-radius: 50%; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.06); 
+            transform: translateY(45px); 
+            z-index: 2; 
+        }
+
+        .card-body { 
+            padding: 55px 24px 30px 24px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 16px; 
+            text-align: center; 
+        }
+        
+        .card-header-text { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            gap: 8px; 
+            margin-bottom: 5px; 
+        }
+        
+        /* 텍스트 스타일 */
+        .title { font-size: 16px; font-weight: 700; color: var(--text-gray); }
+        .streak { background: var(--bg-streak); color: var(--text-streak); padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 800; }
+        .time-display { font-size: clamp(34px, 8vw, 42px); font-weight: 900; letter-spacing: -1.5px; margin: 0; color: var(--text-main); }
+        
+        /* 절약 금액 통장 */
+        .saved-money { 
+            background: var(--money-btn-grad); 
+            color: white; 
+            padding: 18px; 
+            border-radius: 20px; 
+            font-size: 20px; 
+            font-weight: 900; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            gap: 8px; 
+            box-shadow: 0 10px 25px var(--money-bg-light); 
+        }
+        
+        .money-icon { font-size: 24px; color: white; }
+
+        /* 랭킹 뱃지 */
+        .ranking-stats { display: flex; gap: 10px; margin-top: 5px; }
+        
+        .ranking-badge { 
+            flex: 1; 
+            background: var(--tab-bg); 
+            padding: 14px 10px; 
+            border-radius: 18px; 
+            font-size: 12px; 
+            font-weight: 700; 
+            color: var(--text-gray); 
+            display: flex; 
+            flex-direction: column; 
+            gap: 6px; 
+        }
+        
+        .ranking-badge span { font-size: 15px; font-weight: 900; color: var(--text-main); word-break: keep-all; }
+        .ranking-badge .accent-money { color: var(--money-main); }
+
+        /* 하이라이트 통계 (오늘 실패 등) */
+        .highlight-stat { 
+            font-size: 15px; 
+            font-weight: 600; 
+            color: var(--text-sub); 
+            background: var(--tab-bg); 
+            padding: 14px; 
+            border-radius: 16px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            gap: 8px; 
+        }
+        
+        .stat-num { font-size: 18px; font-weight: 800; color: var(--smoke-main); } 
+        .stat-num.drink { color: var(--drink-main); } 
+        
+        /* 스크롤 차트 (30일 막대그래프) */
+        .chart-container { 
+            background: var(--app-bg); 
+            border-radius: 20px; 
+            padding: 15px; 
+            margin-top: 5px; 
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.02); 
+        }
+        
+        .chart-title { 
+            font-size: 13px; 
+            font-weight: 700; 
+            color: var(--text-gray); 
+            margin-bottom: 12px; 
+            text-align: left; 
+            display: flex; 
+            align-items: center; 
+            gap: 6px; 
+        }
+        
+        .scroll-hint { 
+            font-size: 11px; 
+            font-weight: 600; 
+            color: var(--text-streak); 
+            margin-left: auto; 
+            background: var(--bg-streak); 
+            padding: 4px 8px; 
+            border-radius: 10px; 
+        }
+        
+        .scroll-chart-wrapper { 
+            overflow-x: auto; 
+            overflow-y: hidden; 
+            -webkit-overflow-scrolling: touch; 
+            padding-bottom: 5px; 
+        }
+        
+        .scroll-chart-wrapper::-webkit-scrollbar { height: 6px; }
+        .scroll-chart-wrapper::-webkit-scrollbar-track { background: transparent; }
+        .scroll-chart-wrapper::-webkit-scrollbar-thumb { background: var(--text-gray); border-radius: 4px; }
+        
+        .scroll-chart-inner { 
+            width: 1400px; /* 30일이 넓게 펼쳐지도록 길이 확보 */
+            height: 130px; 
+        }
+
+        /* 건강 정보 메세지 */
+        .health-msg { 
+            background: var(--app-bg); 
+            border-radius: 20px; 
+            padding: 16px; 
+            display: flex; 
+            align-items: center; 
+            gap: 14px; 
+            text-align: left; 
+            margin-top: 5px; 
+        }
+        
+        .health-icon-wrapper { 
+            background: var(--card-bg); 
+            width: 44px; 
+            height: 44px; 
+            flex-shrink: 0; 
+            border-radius: 14px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            box-shadow: var(--shadow-sm); 
+            font-size: 20px; 
+        }
+        
         .health-text-content { display: flex; flex-direction: column; gap: 4px; }
-        .health-label { font-size: 12px; font-weight: 800; color: #34C759; }
+        .health-label { font-size: 12px; font-weight: 800; color: var(--money-main); }
 
+        /* 하단 액션 버튼 그룹 */
         .btn-group { display: flex; flex-direction: column; gap: 12px; margin-top: 10px; }
-        .button { padding: 18px; border-radius: 20px; font-weight: 800; font-size: 17px; cursor: pointer; border: none; display: flex; justify-content: center; align-items: center; gap: 8px; transition: transform 0.15s; }
+        
+        .button { 
+            padding: 18px; 
+            border-radius: 20px; 
+            font-weight: 800; 
+            font-size: 17px; 
+            cursor: pointer; 
+            border: none; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            gap: 8px; 
+            transition: transform 0.15s; 
+        }
+        
         .button:active { transform: scale(0.96); }
-        .smoke-btn { background: var(--accent-smoke); color: white; box-shadow: 0 8px 20px rgba(255, 65, 108, 0.3); } 
-        .drink-btn { background: var(--accent-drink); color: white; box-shadow: 0 8px 20px rgba(71, 118, 230, 0.3); }
-        .defense-btn { background: var(--bg-color); color: var(--text-color); border: 1px solid var(--tab-bg); font-size: 15px; }
-        @media (prefers-color-scheme: dark) { .defense-btn { background: var(--tab-bg); border-color: #333; } }
-        .reset-btn { background: transparent; color: var(--sub-text); font-size: 13px; font-weight: 600; text-decoration: underline; text-underline-offset: 4px; box-shadow: none; padding: 10px; margin-top: 0px; }
+        .smoke-btn { background: var(--smoke-btn-grad); color: white; box-shadow: 0 8px 20px var(--smoke-btn-shadow); } 
+        .drink-btn { background: var(--drink-btn-grad); color: white; box-shadow: 0 8px 20px var(--drink-btn-shadow); }
+        
+        .defense-btn { 
+            background: var(--app-bg); 
+            color: var(--text-main); 
+            border: 1px solid var(--tab-bg); 
+            font-size: 15px; 
+        }
+        
+        @media (prefers-color-scheme: dark) { 
+            .defense-btn { background: var(--tab-bg); border-color: transparent; } 
+        }
+        
+        .reset-btn { 
+            background: transparent; 
+            color: var(--text-gray); 
+            font-size: 13px; 
+            font-weight: 600; 
+            text-decoration: underline; 
+            text-underline-offset: 4px; 
+            box-shadow: none; 
+            padding: 10px; 
+            margin-top: 0px; 
+        }
 
+        /* 기타 유틸리티 영역 (백업, 설정) */
         .settings-area { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding-bottom: 10px; }
-        .settings-btn { background: var(--card-bg); color: var(--text-color); border: none; padding: 18px; border-radius: 24px; font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: var(--shadow-sm); display: flex; align-items: center; justify-content: center; gap: 8px; transition: transform 0.1s; flex-shrink: 0;}
+        
+        .settings-btn { 
+            background: var(--card-bg); 
+            color: var(--text-main); 
+            border: none; 
+            padding: 18px; 
+            border-radius: 24px; 
+            font-size: 15px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            box-shadow: var(--shadow-sm); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 8px; 
+            transition: transform 0.1s; 
+            flex-shrink: 0;
+        }
+        
         .settings-btn:active { transform: scale(0.96); }
-        .footer-notice { text-align: center; font-size: 12px; color: var(--sub-text); margin-bottom: 30px; font-weight: 600; flex-shrink: 0;}
+        
+        .footer-notice { text-align: center; font-size: 12px; color: var(--text-gray); margin-bottom: 30px; font-weight: 600; flex-shrink: 0;}
 
-        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--modal-bg); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+        /* 모달창 (팝업) 공통 디자인 */
+        .modal-overlay { 
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0; 
+            background: var(--modal-overlay); 
+            display: flex; justify-content: center; align-items: center; 
+            z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; 
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); 
+        }
+        
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
-        .modal-box { background: var(--card-bg); padding: 30px 25px; border-radius: 32px; width: 85%; max-width: 320px; text-align: center; box-shadow: var(--shadow-lg); transform: translateY(30px) scale(0.95); transition: all 0.25s; max-height: 80vh; overflow-y: auto; }
+        
+        .modal-box { 
+            background: var(--card-bg); 
+            padding: 30px 25px; 
+            border-radius: 32px; 
+            width: 85%; 
+            max-width: 320px; 
+            text-align: center; 
+            box-shadow: var(--shadow-lg); 
+            transform: translateY(30px) scale(0.95); 
+            transition: all 0.25s; 
+            max-height: 80vh; 
+            overflow-y: auto; 
+        }
+        
         .modal-overlay.active .modal-box { transform: translateY(0) scale(1); }
-        .modal-msg { font-size: 17px; font-weight: 800; line-height: 1.5; margin-bottom: 25px; white-space: pre-wrap; color: var(--text-color); word-break: keep-all; }
-        .modal-textarea { width: 100%; height: 80px; margin-bottom: 20px; border-radius: 16px; border: 1px solid var(--tab-bg); padding: 12px; box-sizing: border-box; background: var(--bg-color); color: var(--text-color); font-size: 13px; }
+        
+        .modal-msg { font-size: 17px; font-weight: 800; line-height: 1.5; margin-bottom: 25px; white-space: pre-wrap; color: var(--text-main); word-break: keep-all; }
+        .modal-textarea { width: 100%; height: 80px; margin-bottom: 20px; border-radius: 16px; border: 1px solid var(--tab-bg); padding: 12px; box-sizing: border-box; background: var(--app-bg); color: var(--text-main); font-size: 13px; }
+        
+        /* 모달 내 입력 폼 */
         .input-group { text-align: left; margin-bottom: 18px; }
-        .input-group label { display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 700; color: var(--sub-text); margin-bottom: 8px; }
-        .input-group input { width: 100%; padding: 16px; border-radius: 18px; border: none; background: var(--bg-color); color: var(--text-color); font-size: 18px; font-weight: 800; box-sizing: border-box; }
-        .input-group input:focus { outline: 2px solid #5C80FF; }
+        .input-group label { display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 700; color: var(--text-sub); margin-bottom: 8px; }
+        .input-group input { width: 100%; padding: 16px; border-radius: 18px; border: none; background: var(--app-bg); color: var(--text-main); font-size: 18px; font-weight: 800; box-sizing: border-box; }
+        .input-group input:focus { outline: 2px solid var(--drink-main); }
+        
+        /* 모달 내 버튼 */
         .modal-btn-group { display: flex; gap: 12px; margin-top: 10px; }
         .modal-btn { flex: 1; padding: 18px; border: none; border-radius: 20px; font-weight: 800; font-size: 16px; cursor: pointer; transition: opacity 0.3s; }
-        .btn-cancel { background: var(--tab-bg); color: var(--sub-text); }
-        .btn-confirm { background: var(--text-color); color: var(--bg-color); }
+        .btn-cancel { background: var(--tab-bg); color: var(--text-sub); }
+        .btn-confirm { background: var(--text-main); color: var(--card-bg); }
         .btn-confirm:disabled { opacity: 0.4; cursor: not-allowed; }
 
-        #gameTimer { font-size: 4rem; font-weight: 900; font-variant-numeric: tabular-nums; margin: 5px 0 25px 0; letter-spacing: -2px; color: var(--text-color); }
-        .game-main-btn { width: 100%; padding: 20px; font-size: 1.2rem; font-weight: 800; border: none; border-radius: 24px; cursor: pointer; background: #34C759; color: white; transition: all 0.1s; box-shadow: 0 10px 20px rgba(52, 199, 89, 0.3); }
-        .game-main-btn.stop { background: #FF5B73; box-shadow: 0 10px 20px rgba(255, 91, 115, 0.3); }
+        /* 주의 환기 게임 모달 특화 스타일 */
+        #gameTimer { 
+            font-size: 4rem; 
+            font-weight: 900; 
+            font-variant-numeric: tabular-nums; 
+            margin: 5px 0 25px 0; 
+            letter-spacing: -2px; 
+            color: var(--text-main); 
+        }
+        
+        .game-main-btn { 
+            width: 100%; 
+            padding: 20px; 
+            font-size: 1.2rem; 
+            font-weight: 800; 
+            border: none; 
+            border-radius: 24px; 
+            cursor: pointer; 
+            background: var(--status-success); 
+            color: white; 
+            transition: all 0.1s; 
+            box-shadow: 0 10px 20px var(--money-bg-light); 
+        }
+        
+        .game-main-btn.stop { 
+            background: var(--status-fail); 
+            box-shadow: 0 10px 20px var(--smoke-btn-shadow); 
+        }
+        
         .game-main-btn:active { transform: scale(0.95); }
     </style>
 </head>
@@ -141,8 +515,15 @@
             <div class="highlight-stat">오늘 유혹 실패 🚬 <span class="stat-num" id="todaySmoke">0</span>번</div>
             
             <div class="chart-container">
-                <div class="chart-title"><span class="material-symbols-rounded" style="font-size: 16px;">bar_chart</span>최근 7일 흡연 실패(회)</div>
-                <div class="chart-wrapper"><canvas id="smokeChart"></canvas></div>
+                <div class="chart-title">
+                    <span class="material-symbols-rounded" style="font-size: 16px;">bar_chart</span>최근 30일 흡연 실패
+                    <span class="scroll-hint">◀ 스와이프</span>
+                </div>
+                <div class="scroll-chart-wrapper" id="smokeChartWrapper">
+                    <div class="scroll-chart-inner">
+                        <canvas id="smokeChart"></canvas>
+                    </div>
+                </div>
             </div>
             
             <div id="smokeHealth" class="health-msg">
@@ -181,11 +562,18 @@
                 <div class="ranking-badge">💰 누적 총 절약<span id="drinkTotalMoney" class="accent-money">0원</span></div>
             </div>
             
-            <div class="highlight-stat">최근 7일 유혹 실패 🍺 <span class="stat-num drink" id="weekDrink">0</span>번</div>
+            <div class="highlight-stat">최근 30일 유혹 실패 🍺 <span class="stat-num drink" id="monthDrink">0</span>번</div>
             
             <div class="chart-container">
-                <div class="chart-title"><span class="material-symbols-rounded" style="font-size: 16px;">bar_chart</span>최근 7일 음주 여부 (O/X)</div>
-                <div class="chart-wrapper"><canvas id="drinkChart"></canvas></div>
+                <div class="chart-title">
+                    <span class="material-symbols-rounded" style="font-size: 16px;">bar_chart</span>최근 30일 음주 여부 (O/X)
+                    <span class="scroll-hint">◀ 스와이프</span>
+                </div>
+                <div class="scroll-chart-wrapper" id="drinkChartWrapper">
+                    <div class="scroll-chart-inner">
+                        <canvas id="drinkChart"></canvas>
+                    </div>
+                </div>
             </div>
 
             <div id="drinkHealth" class="health-msg">
@@ -210,7 +598,7 @@
         <button class="settings-btn" onclick="backupData()">💾 백업</button>
         <button class="settings-btn" onclick="showRestoreModal()">📂 복원</button>
     </div>
-
+    
     <div class="footer-notice">※ 건강 정보는 WHO/CDC 기준 평균 데이터 기반 안내입니다</div>
 </div>
 
@@ -228,10 +616,22 @@
 <div class="modal-overlay" id="settingsModal">
     <div class="modal-box">
         <div class="modal-msg" style="margin-bottom: 25px;">⚙️ 비용 상세 설정</div>
-        <div class="input-group"><label>담배 1갑 가격</label><input type="number" id="setSmokePrice"></div>
-        <div class="input-group"><label>하루 평균 흡연량 (개비)</label><input type="number" id="setSmokePerDay"></div>
-        <div class="input-group"><label>1주 평균 음주 횟수</label><input type="number" id="setDrinkPerWeek"></div>
-        <div class="input-group"><label>1회 평균 음주 비용</label><input type="number" id="setDrinkCost"></div>
+        <div class="input-group">
+            <label>담배 1갑 가격</label>
+            <input type="number" id="setSmokePrice">
+        </div>
+        <div class="input-group">
+            <label>하루 평균 흡연량 (개비)</label>
+            <input type="number" id="setSmokePerDay">
+        </div>
+        <div class="input-group">
+            <label>1주 평균 음주 횟수</label>
+            <input type="number" id="setDrinkPerWeek">
+        </div>
+        <div class="input-group">
+            <label>1회 평균 음주 비용</label>
+            <input type="number" id="setDrinkCost">
+        </div>
         <div class="modal-btn-group">
             <button class="modal-btn btn-cancel" onclick="closeSettingsModal()">취소</button>
             <button class="modal-btn btn-confirm" onclick="saveSettings()">저장</button>
@@ -241,15 +641,14 @@
 
 <div class="modal-overlay" id="defenseModal">
     <div class="modal-box" style="width: 90%; max-width: 360px; padding: 40px 25px;">
-        <div style="font-size: 24px; font-weight: 800; margin-bottom: 5px; color: var(--text-color);">🛡️ 주의 환기 게임</div>
-        <div id="defenseStepText" style="font-size: 15px; font-weight: 800; color: #34C759; margin-bottom: 10px;">1단계: 눈으로 10초 맞추기</div>
-        <div style="font-size: 13px; font-weight: 600; color: var(--sub-text); line-height: 1.5; margin-bottom: 20px;">
+        <div style="font-size: 24px; font-weight: 800; margin-bottom: 5px; color: var(--text-main);">🛡️ 주의 환기 게임</div>
+        <div id="defenseStepText" style="font-size: 15px; font-weight: 800; color: var(--status-success); margin-bottom: 10px;">1단계: 눈으로 10초 맞추기</div>
+        <div style="font-size: 13px; font-weight: 600; color: var(--text-sub); line-height: 1.5; margin-bottom: 20px;">
             정확히 10.00초에 맞춰 멈추세요.<br>게임에 집중하는 10초 동안<br>강렬했던 욕구가 서서히 사라집니다.
         </div>
         
         <div id="gameTimer">0.00</div>
-        
-        <div id="gameResult" style="min-height: 48px; font-size: 15px; font-weight: 800; margin-bottom: 25px; color: #FF8A00; line-height: 1.4; display: flex; align-items: center; justify-content: center;"></div>
+        <div id="gameResult" style="min-height: 48px; font-size: 15px; font-weight: 800; margin-bottom: 25px; color: var(--text-streak); line-height: 1.4; display: flex; align-items: center; justify-content: center;"></div>
         
         <button class="game-main-btn" id="gameMainBtn" onclick="handleDefenseBtn()">🔥 10초 버티기 시작</button>
         <button class="button reset-btn" style="width: 100%; margin-top: 15px;" onclick="closeDefenseGame()">종료하고 돌아가기</button>
@@ -257,9 +656,10 @@
 </div>
 
 <script>
+// 간단한 ID 선택자
 const $ = (id) => document.getElementById(id);
 
-// 데이터 및 백업 초기화
+// 1. 초기 데이터 세팅 및 백업
 function initData() {
     let now = Date.now();
     if (!localStorage.getItem("smokeStart")) localStorage.setItem("smokeStart", now);
@@ -277,6 +677,7 @@ function initData() {
     if (!localStorage.getItem("smokeDefenseStep")) localStorage.setItem("smokeDefenseStep", "1");
     if (!localStorage.getItem("drinkDefenseStep")) localStorage.setItem("drinkDefenseStep", "1");
 
+    // 24시간 자동 백업
     let lastBackup = parseInt(localStorage.getItem("lastBackup")) || 0;
     if (now - lastBackup > 86400000) {
         localStorage.setItem("backup_auto", JSON.stringify(localStorage));
@@ -285,7 +686,9 @@ function initData() {
 }
 initData();
 
+// 2. 푸시 알림 타이머
 let hourlyNotiTimer = null;
+
 function startHourlyNotification() {
     if (hourlyNotiTimer) clearInterval(hourlyNotiTimer);
     hourlyNotiTimer = setInterval(() => {
@@ -296,74 +699,161 @@ function startHourlyNotification() {
 }
 startHourlyNotification();
 
-// 차트 로직
-let smokeChartObj = null; let drinkChartObj = null;
+// 3. 차트 (그래프) 렌더링 로직 최적화
+let smokeChartObj = null; 
+let drinkChartObj = null;
 
 function renderCharts() {
-    Chart.defaults.color = '#8B95A1'; Chart.defaults.font.family = "'Pretendard', sans-serif"; Chart.defaults.font.weight = '600';
+    // 테마색상에 맞춰 차트 기본 글자색 지정
+    Chart.defaults.color = getComputedStyle(document.body).getPropertyValue('--text-gray').trim() || '#8B95A1'; 
+    Chart.defaults.font.family = "'Pretendard', sans-serif"; 
+    Chart.defaults.font.weight = '600';
 
-    const labels = []; const smokeData = []; const drinkData = [];
+    // CSS 변수에서 차트 막대 색상 가져오기
+    const rootStyle = getComputedStyle(document.documentElement);
+    const smokeBarColor = rootStyle.getPropertyValue('--smoke-main').trim() || '#FF5B73';
+    const drinkBarColor = rootStyle.getPropertyValue('--drink-main').trim() || '#5C80FF';
+
     let now = new Date();
     let smokeLogs = JSON.parse(localStorage.getItem("smokeLogs")) || [];
     let drinkLogs = JSON.parse(localStorage.getItem("drinkLogs")) || [];
 
-    for (let i = 6; i >= 0; i--) {
+    const labels = []; 
+    const smokeData = []; 
+    const drinkData = [];
+    
+    // 30일치 데이터 생성 (금연/금주 동시 처리)
+    for (let i = 29; i >= 0; i--) {
         let d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
-        let startOfDay = d.setHours(0,0,0,0); let endOfDay = d.setHours(23,59,59,999);
+        let startOfDay = d.setHours(0,0,0,0); 
+        let endOfDay = d.setHours(23,59,59,999);
+        
         labels.push(`${d.getMonth()+1}/${d.getDate()}`);
+        
+        // 금연: 실패한 총 횟수
         smokeData.push(smokeLogs.filter(t => t >= startOfDay && t <= endOfDay).length);
-        drinkData.push(Math.min(1, drinkLogs.filter(t => t >= startOfDay && t <= endOfDay).length));
+        
+        // 금주: 실패 여부 (0 또는 1)
+        drinkData.push(Math.min(1, drinkLogs.filter(t => t >= startOfDay && t <= endOfDay).length)); 
     }
 
+    // 금연 차트 생성 및 갱신
     if (!smokeChartObj) {
         smokeChartObj = new Chart($('smokeChart').getContext('2d'), {
-            type: 'bar', data: { labels: labels, datasets: [{ data: smokeData, backgroundColor: '#FF5B73', borderRadius: 4 }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1, precision: 0 }, border: { display: false } }, x: { grid: { display: false } } }, animation: { duration: 500 } }
+            type: 'bar', 
+            data: { 
+                labels: labels, 
+                datasets: [{ data: smokeData, backgroundColor: smokeBarColor, borderRadius: 4 }] 
+            },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                plugins: { legend: { display: false } }, 
+                scales: { 
+                    y: { beginAtZero: true, ticks: { stepSize: 1, precision: 0 }, border: { display: false } }, 
+                    x: { grid: { display: false } } 
+                }, 
+                animation: { duration: 500 } 
+            }
         });
     } else {
-        smokeChartObj.data.labels = labels; smokeChartObj.data.datasets[0].data = smokeData; smokeChartObj.update();
+        smokeChartObj.data.labels = labels; 
+        smokeChartObj.data.datasets[0].data = smokeData; 
+        smokeChartObj.data.datasets[0].backgroundColor = smokeBarColor; 
+        smokeChartObj.update();
     }
 
+    // 금주 차트 생성 및 갱신
     if (!drinkChartObj) {
         drinkChartObj = new Chart($('drinkChart').getContext('2d'), {
-            type: 'bar', data: { labels: labels, datasets: [{ data: drinkData, backgroundColor: '#5C80FF', borderRadius: 4 }] },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 1, ticks: { stepSize: 1, callback: function(val) { return val === 1 ? 'X (실패)' : 'O (성공)'; } }, border: { display: false } }, x: { grid: { display: false } } }, animation: { duration: 500 } }
+            type: 'bar', 
+            data: { 
+                labels: labels, 
+                datasets: [{ data: drinkData, backgroundColor: drinkBarColor, borderRadius: 4 }] 
+            },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                plugins: { legend: { display: false } }, 
+                scales: { 
+                    y: { 
+                        beginAtZero: true, max: 1, 
+                        ticks: { stepSize: 1, callback: function(val) { return val === 1 ? 'X (실패)' : 'O (성공)'; } }, 
+                        border: { display: false } 
+                    }, 
+                    x: { grid: { display: false } } 
+                }, 
+                animation: { duration: 500 } 
+            }
         });
     } else {
-        drinkChartObj.data.labels = labels; drinkChartObj.data.datasets[0].data = drinkData; drinkChartObj.update();
+        drinkChartObj.data.labels = labels; 
+        drinkChartObj.data.datasets[0].data = drinkData; 
+        drinkChartObj.data.datasets[0].backgroundColor = drinkBarColor;
+        drinkChartObj.update();
     }
+
+    // 로딩 후 스크롤을 맨 오른쪽(최신 날짜)으로 강제 이동
+    setTimeout(() => {
+        const smokeWrapper = $('smokeChartWrapper');
+        if(smokeWrapper) smokeWrapper.scrollLeft = smokeWrapper.scrollWidth;
+        const drinkWrapper = $('drinkChartWrapper');
+        if(drinkWrapper) drinkWrapper.scrollLeft = drinkWrapper.scrollWidth;
+    }, 100);
 }
+
 window.addEventListener('load', renderCharts);
 
-// 10초 게임 로직
-const defenseModal = $('defenseModal'); const gameTimerDisp = $('gameTimer');
-const gameMainBtn = $('gameMainBtn'); const gameResultDisp = $('gameResult');
+// 4. 10초 주의 환기 게임
+const defenseModal = $('defenseModal'); 
+const gameTimerDisp = $('gameTimer');
+const gameMainBtn = $('gameMainBtn'); 
+const gameResultDisp = $('gameResult');
 const defenseStepText = $('defenseStepText');
 
 let gameStartTime, gameTimerId, isGameRunning = false;
-let currentDefenseTarget = null; let currentDefenseStep = 1;
+let currentDefenseTarget = null; 
+let currentDefenseStep = 1;
 
 function openDefenseGame(targetType) {
     currentDefenseTarget = targetType;
     currentDefenseStep = parseInt(localStorage.getItem(targetType + "DefenseStep")) || 1;
+    
     defenseStepText.innerText = currentDefenseStep === 1 ? "1단계: 눈으로 보고 10초 맞추기" : "2단계: 7초 후 감춰지는 10초 맞추기 (블라인드)";
-    defenseStepText.style.color = currentDefenseStep === 1 ? "#34C759" : "#FF5B73";
-    gameTimerDisp.innerText = "0.00"; gameResultDisp.innerText = "";
-    gameMainBtn.innerText = "🔥 10초 버티기 시작"; gameMainBtn.classList.remove('stop');
-    isGameRunning = false; defenseModal.classList.add('active');
+    defenseStepText.style.color = currentDefenseStep === 1 ? "var(--status-success)" : "var(--status-fail)";
+    
+    gameTimerDisp.innerText = "0.00"; 
+    gameResultDisp.innerText = "";
+    
+    gameMainBtn.innerText = "🔥 10초 버티기 시작"; 
+    gameMainBtn.classList.remove('stop');
+    
+    isGameRunning = false; 
+    defenseModal.classList.add('active');
 }
 
 function closeDefenseGame() {
     if (isGameRunning) cancelAnimationFrame(gameTimerId);
-    isGameRunning = false; defenseModal.classList.remove('active'); update();
+    isGameRunning = false; 
+    defenseModal.classList.remove('active'); 
+    update();
 }
 
-function handleDefenseBtn() { if (!isGameRunning) startGame(); else stopGame(); }
+function handleDefenseBtn() { 
+    if (!isGameRunning) startGame(); 
+    else stopGame(); 
+}
 
 function startGame() {
-    isGameRunning = true; gameStartTime = performance.now();
-    gameMainBtn.innerText = "🛑 지금 멈추세요!"; gameMainBtn.classList.add('stop');
-    gameResultDisp.innerText = "집중하세요..."; gameResultDisp.style.color = "var(--sub-text)";
+    isGameRunning = true; 
+    gameStartTime = performance.now();
+    
+    gameMainBtn.innerText = "🛑 지금 멈추세요!"; 
+    gameMainBtn.classList.add('stop');
+    
+    gameResultDisp.innerText = "집중하세요..."; 
+    gameResultDisp.style.color = "var(--text-sub)";
+    
     if (navigator.vibrate) navigator.vibrate(50);
     updateGameTimer();
 }
@@ -371,15 +861,24 @@ function startGame() {
 function updateGameTimer() {
     if (!isGameRunning) return;
     const elapsed = (performance.now() - gameStartTime) / 1000;
-    if (currentDefenseStep >= 2 && elapsed >= 7.0 && elapsed < 12.0) gameTimerDisp.innerText = "?.??";
-    else gameTimerDisp.innerText = elapsed.toFixed(2);
+    
+    // 블라인드 처리 (7초 ~ 12초)
+    if (currentDefenseStep >= 2 && elapsed >= 7.0 && elapsed < 12.0) {
+        gameTimerDisp.innerText = "?.??";
+    } else {
+        gameTimerDisp.innerText = elapsed.toFixed(2);
+    }
     gameTimerId = requestAnimationFrame(updateGameTimer);
 }
 
 function stopGame() {
     if (!isGameRunning) return;
-    isGameRunning = false; cancelAnimationFrame(gameTimerId);
-    gameMainBtn.innerText = "🔄 다시 도전하기"; gameMainBtn.classList.remove('stop');
+    isGameRunning = false; 
+    cancelAnimationFrame(gameTimerId);
+    
+    gameMainBtn.innerText = "🔄 다시 도전하기"; 
+    gameMainBtn.classList.remove('stop');
+    
     const finalTime = (performance.now() - gameStartTime) / 1000;
     gameTimerDisp.innerText = finalTime.toFixed(2);
     
@@ -390,80 +889,126 @@ function stopGame() {
             currentDefenseStep = 2; 
             localStorage.setItem(currentDefenseTarget + "DefenseStep", "2");
             defenseStepText.innerText = "2단계: 7초 후 감춰지는 10초 맞추기 (블라인드)";
-            defenseStepText.style.color = "#FF5B73";
+            defenseStepText.style.color = "var(--status-fail)";
             gameResultDisp.innerHTML = "🎉 완벽합니다 (PERFECT)!<br>다음 도전부터 2단계(블라인드)가 적용됩니다.";
         } else {
             gameResultDisp.innerText = "🎉 대단합니다! 2단계(블라인드) 완벽 성공!";
         }
-        gameResultDisp.style.color = "#34C759";
+        gameResultDisp.style.color = "var(--status-success)";
         if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 100]); 
     } 
     else if (diff <= 0.5) { 
         gameResultDisp.innerHTML = "👍 유혹 방어 성공!<br>(오차 0.05초 이내로 맞추면 2단계로 넘어갑니다)";
-        gameResultDisp.style.color = "#34C759";
+        gameResultDisp.style.color = "var(--status-success)";
         if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
     } else { 
         gameResultDisp.innerText = "😢 아쉽네요. 심호흡하고 다시 해볼까요?";
-        gameResultDisp.style.color = "#FF5B73";
+        gameResultDisp.style.color = "var(--status-fail)";
         if (navigator.vibrate) navigator.vibrate(200);
     }
 }
 
-// 메인 모달 로직 
-const modal = $('customModal'); const modalMsg = $('modalMsg');
-const modalInput = $('modalInput'); const confirmBtn = $('modalConfirmBtn');
-let confirmAction = null; let resetDelayTimer = null;
+// 5. 공통 팝업 모달
+const modal = $('customModal'); 
+const modalMsg = $('modalMsg');
+const modalInput = $('modalInput'); 
+const confirmBtn = $('modalConfirmBtn');
+let confirmAction = null; 
+let resetDelayTimer = null;
 
 function showModal(msg, action, showInput = false, isReset = false) {
-    modalMsg.innerText = msg; confirmAction = action; modalInput.style.display = showInput ? 'block' : 'none';
+    modalMsg.innerText = msg; 
+    confirmAction = action; 
+    modalInput.style.display = showInput ? 'block' : 'none';
     if(showInput) modalInput.value = '';
     
     if (isReset) {
-        confirmBtn.disabled = true; let timeLeft = 3; confirmBtn.innerText = `확인 (${timeLeft})`;
+        confirmBtn.disabled = true; 
+        let timeLeft = 3; 
+        confirmBtn.innerText = `확인 (${timeLeft})`;
+        
         resetDelayTimer = setInterval(() => {
             timeLeft--;
-            if(timeLeft <= 0) { clearInterval(resetDelayTimer); confirmBtn.disabled = false; confirmBtn.innerText = "확인"; } 
-            else { confirmBtn.innerText = `확인 (${timeLeft})`; }
+            if(timeLeft <= 0) { 
+                clearInterval(resetDelayTimer); 
+                confirmBtn.disabled = false; 
+                confirmBtn.innerText = "확인"; 
+            } else { 
+                confirmBtn.innerText = `확인 (${timeLeft})`; 
+            }
         }, 1000);
     } else {
-        confirmBtn.disabled = false; confirmBtn.innerText = "확인";
+        confirmBtn.disabled = false; 
+        confirmBtn.innerText = "확인";
     }
     modal.classList.add('active');
 }
+
 function closeModal() { 
     if(resetDelayTimer) clearInterval(resetDelayTimer); 
-    modal.classList.remove('active'); confirmAction = null; 
+    modal.classList.remove('active'); 
+    confirmAction = null; 
 }
-confirmBtn.addEventListener('click', () => { if (confirmAction) confirmAction(modalInput.value); closeModal(); });
 
-// 비용 설정 모달
+confirmBtn.addEventListener('click', () => { 
+    if (confirmAction) confirmAction(modalInput.value); 
+    closeModal(); 
+});
+
+// 6. 비용 설정 모달
 const settingsModal = $('settingsModal');
+
 function openSettingsModal() {
-    $('setSmokePrice').value = localStorage.getItem("smokePrice"); $('setSmokePerDay').value = localStorage.getItem("smokePerDay");
-    $('setDrinkPerWeek').value = localStorage.getItem("drinkPerWeek"); $('setDrinkCost').value = localStorage.getItem("drinkCost");
+    $('setSmokePrice').value = localStorage.getItem("smokePrice"); 
+    $('setSmokePerDay').value = localStorage.getItem("smokePerDay");
+    $('setDrinkPerWeek').value = localStorage.getItem("drinkPerWeek"); 
+    $('setDrinkCost').value = localStorage.getItem("drinkCost");
     settingsModal.classList.add('active');
 }
-function closeSettingsModal() { settingsModal.classList.remove('active'); }
+
+function closeSettingsModal() { 
+    settingsModal.classList.remove('active'); 
+}
+
 function saveSettings() {
     localStorage.setItem("smokePrice", Math.max(1, parseInt($('setSmokePrice').value) || 4500));
     localStorage.setItem("smokePerDay", Math.max(1, parseInt($('setSmokePerDay').value) || 10));
     localStorage.setItem("drinkPerWeek", Math.max(1, parseInt($('setDrinkPerWeek').value) || 2));
     localStorage.setItem("drinkCost", Math.max(1, parseInt($('setDrinkCost').value) || 50000));
-    closeSettingsModal(); $('smokeMoney').dataset.val = "0"; $('drinkMoney').dataset.val = "0"; update(); 
+    closeSettingsModal(); 
+    
+    $('smokeMoney').dataset.val = "0"; 
+    $('drinkMoney').dataset.val = "0"; 
+    update(); 
 }
 
+// 7. 데이터 및 메세지 로직
 const smokeStages = [
-    { day: 0, msg: "몸이 회복될 준비를 시작합니다." }, { day: 0.013, msg: "20분 경과: 혈압/맥박 정상화!" }, { day: 0.5, msg: "12시간: 일산화탄소 정상 수치 회복!" }, { day: 1, msg: "1일: 심장마비 위험 감소 시작!" }, { day: 2, msg: "2일: 후각과 미각 향상!" }, { day: 3, msg: "3일: 니코틴 완전 배출!" }, { day: 14, msg: "2주: 폐 기능과 혈액순환 대폭 개선!" }, { day: 30, msg: "1개월: 기침과 숨가쁨 감소!" }, { day: 365, msg: "1년 달성! 심장질환 위험 50% 감소!" }
+    { day: 0, msg: "몸이 회복될 준비를 시작합니다." }, 
+    { day: 0.013, msg: "20분 경과: 혈압/맥박 정상화!" }, 
+    { day: 0.5, msg: "12시간: 일산화탄소 정상 수치 회복!" }, 
+    { day: 1, msg: "1일: 심장마비 위험 감소 시작!" }, 
+    { day: 2, msg: "2일: 후각과 미각 향상!" }, 
+    { day: 3, msg: "3일: 니코틴 완전 배출!" }, 
+    { day: 14, msg: "2주: 폐 기능과 혈액순환 대폭 개선!" }, 
+    { day: 30, msg: "1개월: 기침과 숨가쁨 감소!" }, 
+    { day: 365, msg: "1년 달성! 심장질환 위험 50% 감소!" }
 ];
 const drinkStages = [
-    { day: 0, msg: "간이 쉴 수 있는 시간을 주셨네요." }, { day: 0.5, msg: "12시간: 탈수 증상 개선!" }, { day: 1, msg: "1일: 알코올 완전 분해 완료!" }, { day: 3, msg: "3일: 숙취 소멸, 수면의 질 상승!" }, { day: 7, msg: "1주: 피부 맑아짐, 집중력 향상!" }, { day: 14, msg: "2주: 체중 감량 효과, 위장 회복!" }, { day: 30, msg: "1개월: 간 수치 정상화!" }, { day: 365, msg: "1년 달성! 심혈관 질환 위험 크게 감소!" }
+    { day: 0, msg: "간이 쉴 수 있는 시간을 주셨네요." }, 
+    { day: 0.5, msg: "12시간: 탈수 증상 개선!" }, 
+    { day: 1, msg: "1일: 알코올 완전 분해 완료!" }, 
+    { day: 3, msg: "3일: 숙취 소멸, 수면의 질 상승!" }, 
+    { day: 7, msg: "1주: 피부 맑아짐, 집중력 향상!" }, 
+    { day: 14, msg: "2주: 체중 감량 효과, 위장 회복!" }, 
+    { day: 30, msg: "1개월: 간 수치 정상화!" }, 
+    { day: 365, msg: "1년 달성! 심혈관 질환 위험 크게 감소!" }
 ];
 
-// [수정] 초과된 금액 반복 애니메이션 버그 수정
 function animateValue(obj, start, end, duration) {
     if(!obj) return;
     let startTimestamp = null;
-    obj.dataset.val = end; // 즉시 목표값을 넣어 중복 실행 방어
+    obj.dataset.val = end; 
     const step = (timestamp) => {
         if (!startTimestamp) startTimestamp = timestamp;
         const progress = Math.min((timestamp - startTimestamp) / duration, 1);
@@ -480,15 +1025,26 @@ function getTime(ms) {
     let sec = Math.floor(ms / 1000), min = Math.floor(sec / 60), hour = Math.floor(min / 60), day = Math.floor(hour / 24);
     return { day, hour: hour % 24, min: min % 60, sec: sec % 60 };
 }
+
 function getExactDurationText(ms) {
-    let s = getTime(ms); if (s.day > 0) return `${s.day}일 ${s.hour}시간`; if (s.hour > 0) return `${s.hour}시간 ${s.min}분`; return `${s.min}분`;
+    let s = getTime(ms); 
+    if (s.day > 0) return `${s.day}일 ${s.hour}시간`; 
+    if (s.hour > 0) return `${s.hour}시간 ${s.min}분`; 
+    return `${s.min}분`;
 }
+
 function getDurationText(ms, type) {
-    let s = getTime(ms); if (type === 'smoke') return s.day > 0 ? `${s.day}일 ${s.hour}시간` : (s.hour > 0 ? `${s.hour}시간 ${s.min}분` : `${s.min}분`); return s.day > 0 ? `${s.day}일` : (s.hour > 0 ? `${s.hour}시간` : `방금 전`);
+    let s = getTime(ms); 
+    if (type === 'smoke') return s.day > 0 ? `${s.day}일 ${s.hour}시간` : (s.hour > 0 ? `${s.hour}시간 ${s.min}분` : `${s.min}분`); 
+    return s.day > 0 ? `${s.day}일` : (s.hour > 0 ? `${s.hour}시간` : `방금 전`);
 }
+
 function getStageMessage(startTime, stages) {
     let elapsedDays = (Date.now() - startTime) / (1000 * 60 * 60 * 24), currentMsg = stages[0].msg;
-    for (let i = 0; i < stages.length; i++) { if (elapsedDays >= stages[i].day) currentMsg = stages[i].msg; else break; }
+    for (let i = 0; i < stages.length; i++) { 
+        if (elapsedDays >= stages[i].day) currentMsg = stages[i].msg; 
+        else break; 
+    }
     return currentMsg;
 }
 
@@ -499,8 +1055,11 @@ function askRecord(type) {
 
 function recordEvent(type) {
     if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
-    let now = Date.now(), logs = JSON.parse(localStorage.getItem(type + "Logs")) || [];
-    logs.push(now); localStorage.setItem(type + "Logs", JSON.stringify(logs));
+    
+    let now = Date.now();
+    let logs = JSON.parse(localStorage.getItem(type + "Logs")) || [];
+    logs.push(now); 
+    localStorage.setItem(type + "Logs", JSON.stringify(logs));
     
     let startTime = parseInt(localStorage.getItem(type + "Start"));
     let elapsedDaysExact = Math.max(0, (now - startTime) / (1000 * 60 * 60 * 24));
@@ -515,49 +1074,75 @@ function recordEvent(type) {
     
     localStorage.setItem(type + "Start", now); 
     $(type + 'Money').dataset.val = "0"; 
-    renderCharts(); update();
+    renderCharts(); 
+    update();
 }
 
 function askReset(type) {
     let name = type === 'smoke' ? '금연' : '금주';
     showModal(`⚠️ ${name} 관련 '모든 기록(랭킹, 통계, 게임 등)'을 완전히 초기화할까요?`, () => {
-        localStorage.setItem(type + "Start", Date.now()); localStorage.setItem(type + "Logs", JSON.stringify([]));
+        localStorage.setItem(type + "Start", Date.now()); 
+        localStorage.setItem(type + "Logs", JSON.stringify([]));
         localStorage.setItem(type === 'smoke' ? "bestSmokeMs" : "bestDrinkMs", "0"); 
         localStorage.setItem(type === 'smoke' ? "totalSmokeMoney" : "totalDrinkMoney", "0");
         localStorage.setItem(type + "DefenseStep", "1");
         localStorage.removeItem(type === 'smoke' ? "alertedStreak_smoke" : "alertedStreak_drink");
         
         $(type + 'Money').dataset.val = "0"; 
-        renderCharts(); update();
+        renderCharts(); 
+        update();
     }, false, true); 
 }
 
 function backupData() {
     let data = JSON.stringify(localStorage);
-    navigator.clipboard.writeText(data).then(() => showModal("✅ 백업 완료!\n클립보드에 복사되었습니다.", null)).catch(() => { showModal("아래 텍스트를 모두 복사하세요.", null, true); $('modalInput').value = data; });
+    navigator.clipboard.writeText(data).then(() => {
+        showModal("✅ 백업 완료!\n클립보드에 복사되었습니다.", null);
+    }).catch(() => { 
+        showModal("아래 텍스트를 모두 복사하세요.", null, true); 
+        $('modalInput').value = data; 
+    });
 }
+
 function showRestoreModal() {
     showModal("📂 복원할 백업 텍스트를 붙여넣으세요.", (inputData) => {
-        try { let data = JSON.parse(inputData); for (let key in data) localStorage.setItem(key, data[key]); renderCharts(); update(); setTimeout(() => alert("복원 완료!"), 100); } catch(e) { alert("잘못된 데이터입니다."); }
+        try { 
+            let data = JSON.parse(inputData); 
+            for (let key in data) localStorage.setItem(key, data[key]); 
+            renderCharts(); 
+            update(); 
+            setTimeout(() => alert("복원 완료!"), 100); 
+        } catch(e) { 
+            alert("잘못된 데이터입니다."); 
+        }
     }, true);
 }
+
 function setupNotification() {
     if (!("Notification" in window)) return alert("알림을 지원하지 않는 기기입니다.");
-    Notification.requestPermission().then(p => showModal(p === "granted" ? "✅ 알림 권한 허용됨\n(1시간마다 응원 알림이 도착합니다)" : "알림 권한이 거부되었습니다.", null));
+    Notification.requestPermission().then(p => {
+        showModal(p === "granted" ? "✅ 알림 권한 허용됨\n(1시간마다 응원 알림이 도착합니다)" : "알림 권한이 거부되었습니다.", null);
+    });
 }
 
+// 8. 메인 실시간 루프 (1초마다 업데이트)
 function update() {
-    let now = Date.now(), smokeStart = parseInt(localStorage.getItem("smokeStart")), drinkStart = parseInt(localStorage.getItem("drinkStart"));
+    let now = Date.now();
+    let smokeStart = parseInt(localStorage.getItem("smokeStart"));
+    let drinkStart = parseInt(localStorage.getItem("drinkStart"));
 
-    let s = getTime(now - smokeStart), dDay = Math.floor((now - drinkStart) / (24 * 60 * 60 * 1000));
+    let s = getTime(now - smokeStart);
+    let dDay = Math.floor((now - drinkStart) / (24 * 60 * 60 * 1000));
+    
     if($('smokeTime')) $('smokeTime').innerText = `${s.day}일 ${String(s.hour).padStart(2, '0')}:${String(s.min).padStart(2, '0')}:${String(s.sec).padStart(2, '0')}`;
     if($('drinkDay')) $('drinkDay').innerText = `${dDay}일`;
-    if($('smokeStreak')) $('smokeStreak').innerText = `🔥 ${s.day}일째`; if($('drinkStreak')) $('drinkStreak').innerText = `🔥 ${dDay}일째`;
+    
+    if($('smokeStreak')) $('smokeStreak').innerText = `🔥 ${s.day}일째`; 
+    if($('drinkStreak')) $('drinkStreak').innerText = `🔥 ${dDay}일째`;
 
     let targetSmokeMoney = Math.floor(Math.max(0, (now - smokeStart) / (1000 * 60 * 60 * 24)) * Math.max(1, parseInt(localStorage.getItem("smokePerDay"))) * (Math.max(1, parseInt(localStorage.getItem("smokePrice"))) / 20));
     let targetDrinkMoney = Math.floor(Math.max(0, (now - drinkStart) / (1000 * 60 * 60 * 24)) * (Math.max(1, parseInt(localStorage.getItem("drinkPerWeek"))) / 7) * Math.max(1, parseInt(localStorage.getItem("drinkCost"))));
 
-    // [수정] 금액이 비정상적으로 높을 때 애니메이션 루프 방지 로직 보강
     let currentSmokeVal = parseInt($('smokeMoney').dataset.val) || 0;
     if (currentSmokeVal === 0 && targetSmokeMoney > 0) animateValue($('smokeMoney'), 0, targetSmokeMoney, 1200); 
     else { $('smokeMoney').innerText = targetSmokeMoney.toLocaleString() + "원 진행중!"; $('smokeMoney').dataset.val = targetSmokeMoney; }
@@ -569,15 +1154,23 @@ function update() {
     let bestSmokeMs = parseInt(localStorage.getItem("bestSmokeMs")) || 0;
     let currentSmokeMs = now - smokeStart;
     if (currentSmokeMs > bestSmokeMs) { 
-        if (bestSmokeMs > 0 && localStorage.getItem("alertedStreak_smoke") !== smokeStart.toString()) { showModal(`🎉 대단합니다!\n이전 금연 최고 기록을 방금 돌파했습니다!`, null); localStorage.setItem("alertedStreak_smoke", smokeStart.toString()); }
-        localStorage.setItem("bestSmokeMs", currentSmokeMs); bestSmokeMs = currentSmokeMs;
+        if (bestSmokeMs > 0 && localStorage.getItem("alertedStreak_smoke") !== smokeStart.toString()) { 
+            showModal(`🎉 대단합니다!\n이전 금연 최고 기록을 방금 돌파했습니다!`, null); 
+            localStorage.setItem("alertedStreak_smoke", smokeStart.toString()); 
+        }
+        localStorage.setItem("bestSmokeMs", currentSmokeMs); 
+        bestSmokeMs = currentSmokeMs;
     }
     
     let bestDrinkMs = parseInt(localStorage.getItem("bestDrinkMs")) || 0;
     let currentDrinkMs = now - drinkStart;
     if (currentDrinkMs > bestDrinkMs) { 
-        if (bestDrinkMs > 0 && localStorage.getItem("alertedStreak_drink") !== drinkStart.toString()) { showModal(`🎉 대단합니다!\n이전 금주 최고 기록을 방금 돌파했습니다!`, null); localStorage.setItem("alertedStreak_drink", drinkStart.toString()); }
-        localStorage.setItem("bestDrinkMs", currentDrinkMs); bestDrinkMs = currentDrinkMs;
+        if (bestDrinkMs > 0 && localStorage.getItem("alertedStreak_drink") !== drinkStart.toString()) { 
+            showModal(`🎉 대단합니다!\n이전 금주 최고 기록을 방금 돌파했습니다!`, null); 
+            localStorage.setItem("alertedStreak_drink", drinkStart.toString()); 
+        }
+        localStorage.setItem("bestDrinkMs", currentDrinkMs); 
+        bestDrinkMs = currentDrinkMs;
     }
 
     if($('smokeBest')) $('smokeBest').innerText = getExactDurationText(bestSmokeMs); 
@@ -587,22 +1180,41 @@ function update() {
 
     let todayStart = new Date().setHours(0, 0, 0, 0);
     if($('todaySmoke')) $('todaySmoke').innerText = (JSON.parse(localStorage.getItem("smokeLogs")) || []).filter(t => t > todayStart).length;
-    let weekAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
-    if($('weekDrink')) $('weekDrink').innerText = (JSON.parse(localStorage.getItem("drinkLogs")) || []).filter(t => t > weekAgo).length;
+    
+    let monthAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
+    if($('monthDrink')) $('monthDrink').innerText = (JSON.parse(localStorage.getItem("drinkLogs")) || []).filter(t => t > monthAgo).length;
 
     if($('smokeHealthText')) $('smokeHealthText').innerText = getStageMessage(smokeStart, smokeStages);
     if($('drinkHealthText')) $('drinkHealthText').innerText = getStageMessage(drinkStart, drinkStages);
 }
 
 const modeBtns = document.querySelectorAll('.mode-btn');
+
 function setMode(mode) {
-    localStorage.setItem('appMode', mode); modeBtns.forEach(btn => btn.classList.toggle('active', btn.dataset.mode === mode));
-    if($('smokeCard')) $('smokeCard').classList.toggle('hidden', mode === 'drink'); if($('drinkCard')) $('drinkCard').classList.toggle('hidden', mode === 'smoke');
+    localStorage.setItem('appMode', mode); 
+    
+    modeBtns.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mode === mode);
+    });
+    
+    if($('smokeCard')) $('smokeCard').classList.toggle('hidden', mode === 'drink'); 
+    if($('drinkCard')) $('drinkCard').classList.toggle('hidden', mode === 'smoke');
+    
+    setTimeout(() => {
+        renderCharts();
+    }, 50);
 }
+
+// 초기 모드 세팅
 setMode(localStorage.getItem('appMode') || 'both');
+
+// 탭 버튼 이벤트 연결
 modeBtns.forEach(btn => btn.addEventListener('click', () => setMode(btn.dataset.mode)));
 
-setInterval(update, 1000); update();
+// 1초 타이머 시작
+setInterval(update, 1000); 
+update();
+
 </script>
 </body>
 </html>
