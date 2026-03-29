@@ -7,28 +7,22 @@
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/toss/tossface/dist/tossface.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
         :root {
-            --bg-color: #F2F4F6;
-            --text-color: #191F28; 
-            --card-bg: #ffffff;
-            --sub-text: #8B95A1; 
-            --tab-bg: #E5E8EB; 
-            --modal-bg: rgba(0,0,0,0.4);
+            --bg-color: #F2F4F6; --text-color: #191F28; --card-bg: #ffffff;
+            --sub-text: #8B95A1; --tab-bg: #E5E8EB; --modal-bg: rgba(0,0,0,0.4);
             
-            /* 강조 컬러 복구 */
-            --accent-smoke: linear-gradient(135deg, #FF416C, #FF4B2B);
+            --accent-smoke: linear-gradient(135deg, #FF416C, #FF4B2B); --smoke-color: #FF5B73;
             --smoke-light: linear-gradient(135deg, #FFF0F2, #FFE5E8);
             
-            --accent-drink: linear-gradient(135deg, #4776E6, #8E54E9);
+            --accent-drink: linear-gradient(135deg, #4776E6, #8E54E9); --drink-color: #5C80FF;
             --drink-light: linear-gradient(135deg, #F0F4FF, #E5EDFF);
             
-            --accent-money: linear-gradient(135deg, #34C759, #30D158);
-            --defense-color: #191F28;
+            --accent-money: linear-gradient(135deg, #34C759, #30D158); --defense-color: #191F28;
             
-            --shadow-sm: 0 4px 16px rgba(0,0,0,0.04);
-            --shadow-lg: 0 20px 40px rgba(0,0,0,0.08);
+            --shadow-sm: 0 4px 16px rgba(0,0,0,0.04); --shadow-lg: 0 20px 40px rgba(0,0,0,0.08);
         }
         @media (prefers-color-scheme: dark) {
             :root {
@@ -36,127 +30,78 @@
                 --sub-text: #8B95A1; --tab-bg: #2C2C35; --modal-bg: rgba(0,0,0,0.7);
                 --smoke-light: linear-gradient(135deg, #3A1D22, #2A1215);
                 --drink-light: linear-gradient(135deg, #1A233A, #12182A);
-                --shadow-sm: 0 4px 16px rgba(0,0,0,0.3);
-                --shadow-lg: 0 20px 40px rgba(0,0,0,0.5);
+                --shadow-sm: 0 4px 16px rgba(0,0,0,0.3); --shadow-lg: 0 20px 40px rgba(0,0,0,0.5);
                 --defense-color: #F9FAFB;
             }
         }
 
-        body {
-            margin: 0; 
-            font-family: 'Tossface', 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-            background: var(--bg-color); color: var(--text-color);
-            height: 100vh; display: flex; flex-direction: column; overflow: hidden;
-            user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent;
-        }
-
-        .header {
-            background: transparent; color: var(--text-color); text-align: center;
-            padding: calc(env(safe-area-inset-top) + 20px) 15px 15px 15px;
-            font-size: 24px; font-weight: 800; letter-spacing: -0.5px; z-index: 10;
-        }
-
-        .mode-selector {
-            display: flex; gap: 8px; padding: 6px; margin: 0 20px 15px 20px;
-            background: var(--tab-bg); border-radius: 20px; z-index: 5;
-        }
-        .mode-btn {
-            flex: 1; padding: 14px; border: none; border-radius: 14px; background: transparent; color: var(--sub-text); font-weight: 700; font-size: 15px; cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-        }
+        body { margin: 0; font-family: 'Tossface', 'Pretendard', -apple-system, sans-serif; background: var(--bg-color); color: var(--text-color); height: 100vh; display: flex; flex-direction: column; overflow: hidden; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
+        .header { background: transparent; color: var(--text-color); text-align: center; padding: calc(env(safe-area-inset-top) + 20px) 15px 15px 15px; font-size: 24px; font-weight: 800; letter-spacing: -0.5px; z-index: 10; }
+        .mode-selector { display: flex; gap: 8px; padding: 6px; margin: 0 20px 15px 20px; background: var(--tab-bg); border-radius: 20px; z-index: 5; flex-shrink: 0; }
+        .mode-btn { flex: 1; padding: 14px; border: none; border-radius: 14px; background: transparent; color: var(--sub-text); font-weight: 700; font-size: 15px; cursor: pointer; transition: all 0.3s; }
         .mode-btn.active { background: var(--card-bg); color: var(--text-color); box-shadow: var(--shadow-sm); }
-
-        .container {
-            max-width: 500px; margin: auto; padding: 0 20px 20px 20px; display: flex; flex-direction: column; gap: 25px; flex-grow: 1; justify-content: flex-start; width: 100%; box-sizing: border-box; overflow-y: auto; scrollbar-width: none;
-        }
+        .container { max-width: 500px; margin: auto; padding: 0 20px 40px 20px; display: flex; flex-direction: column; gap: 25px; flex-grow: 1; justify-content: flex-start; width: 100%; box-sizing: border-box; overflow-y: auto; scrollbar-width: none; }
         .container::-webkit-scrollbar { display: none; }
-
-        .card {
-            background: var(--card-bg); border-radius: 32px; box-shadow: var(--shadow-lg); position: relative; display: flex; flex-direction: column; transition: transform 0.2s; overflow: hidden; flex-shrink: 0;
-        }
+        .card { background: var(--card-bg); border-radius: 32px; box-shadow: var(--shadow-lg); position: relative; display: flex; flex-direction: column; transition: transform 0.2s; overflow: hidden; flex-shrink: 0; }
         .card.hidden { display: none !important; }
-
-        .card-hero { height: 120px; display: flex; justify-content: center; align-items: flex-end; position: relative; }
-        .smoke-hero { background: var(--smoke-light); }
-        .drink-hero { background: var(--drink-light); }
-        
-        .hero-icon {
-            font-size: 50px; background: var(--card-bg); width: 90px; height: 90px; display: flex; justify-content: center; align-items: center; border-radius: 50%; box-shadow: 0 10px 25px rgba(0,0,0,0.06); transform: translateY(45px); z-index: 2;
-        }
-
+        .card-hero { height: 120px; display: flex; justify-content: center; align-items: flex-end; position: relative; flex-shrink: 0; }
+        .smoke-hero { background: var(--smoke-light); } .drink-hero { background: var(--drink-light); }
+        .hero-icon { font-size: 50px; background: var(--card-bg); width: 90px; height: 90px; display: flex; justify-content: center; align-items: center; border-radius: 50%; box-shadow: 0 10px 25px rgba(0,0,0,0.06); transform: translateY(45px); z-index: 2; }
         .card-body { padding: 55px 24px 30px 24px; display: flex; flex-direction: column; gap: 16px; text-align: center; }
-        
         .card-header-text { display: flex; justify-content: center; align-items: center; gap: 8px; margin-bottom: 5px; }
         .title { font-size: 16px; font-weight: 700; color: var(--sub-text); }
         .streak { background: rgba(255, 159, 67, 0.15); color: #FF8A00; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 800; }
-
-        /* 타이머 강조 */
         .time-display { font-size: clamp(34px, 8vw, 42px); font-weight: 900; letter-spacing: -1.5px; margin: 0; color: var(--text-color); }
-        
-        /* [수정] 절약 금액 눈에 띄게 복구 */
-        .saved-money {
-            background: var(--accent-money); color: white; padding: 18px; border-radius: 20px; font-size: 20px; font-weight: 900; display: flex; justify-content: center; align-items: center; gap: 8px; box-shadow: 0 10px 25px rgba(52, 199, 89, 0.2);
-        }
+        .saved-money { background: var(--accent-money); color: white; padding: 18px; border-radius: 20px; font-size: 20px; font-weight: 900; display: flex; justify-content: center; align-items: center; gap: 8px; box-shadow: 0 10px 25px rgba(52, 199, 89, 0.2); }
         .money-icon { font-size: 24px; color: white; }
-
         .ranking-stats { display: flex; gap: 10px; margin-top: 5px; }
-        .ranking-badge {
-            flex: 1; background: var(--tab-bg); padding: 14px 10px; border-radius: 18px; font-size: 12px; font-weight: 700; color: var(--sub-text); display: flex; flex-direction: column; gap: 6px;
-        }
+        .ranking-badge { flex: 1; background: var(--tab-bg); padding: 14px 10px; border-radius: 18px; font-size: 12px; font-weight: 700; color: var(--sub-text); display: flex; flex-direction: column; gap: 6px; }
         .ranking-badge span { font-size: 15px; font-weight: 900; color: var(--text-color); word-break: keep-all; }
         .ranking-badge .accent-money { color: #34C759; }
-
-        /* [수정] 방어 성공 통계 삭제 후 실패 통계만 꽉 차게 복구 */
-        .highlight-stat { font-size: 15px; font-weight: 600; color: var(--sub-text); background: var(--tab-bg); padding: 14px; border-radius: 16px; }
-        .stat-num { font-size: 18px; font-weight: 800; color: #FF5B73; } 
-        .stat-num.drink { color: #5C80FF; } 
+        .highlight-stat { font-size: 15px; font-weight: 600; color: var(--sub-text); background: var(--tab-bg); padding: 14px; border-radius: 16px; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .stat-num { font-size: 18px; font-weight: 800; color: var(--smoke-color); } 
+        .stat-num.drink { color: var(--drink-color); } 
+        
+        .chart-container { background: var(--bg-color); border-radius: 20px; padding: 15px; margin-top: 5px; box-shadow: inset 0 2px 10px rgba(0,0,0,0.02); }
+        .chart-title { font-size: 13px; font-weight: 700; color: var(--sub-text); margin-bottom: 10px; text-align: left; display: flex; align-items: center; gap: 6px; }
+        .chart-wrapper { position: relative; height: 130px; width: 100%; }
 
         .health-msg { background: var(--bg-color); border-radius: 20px; padding: 16px; display: flex; align-items: center; gap: 14px; text-align: left; margin-top: 5px; }
         .health-icon-wrapper { background: var(--card-bg); width: 44px; height: 44px; flex-shrink: 0; border-radius: 14px; display: flex; justify-content: center; align-items: center; box-shadow: var(--shadow-sm); font-size: 20px; }
         .health-text-content { display: flex; flex-direction: column; gap: 4px; }
         .health-label { font-size: 12px; font-weight: 800; color: #34C759; }
-        #smokeHealthText, #drinkHealthText { font-size: 14px; font-weight: 600; line-height: 1.4; color: var(--text-color); }
 
         .btn-group { display: flex; flex-direction: column; gap: 12px; margin-top: 10px; }
-        .button {
-            padding: 18px; border-radius: 20px; font-weight: 800; font-size: 17px; cursor: pointer; border: none; display: flex; justify-content: center; align-items: center; gap: 8px; transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+        .button { padding: 18px; border-radius: 20px; font-weight: 800; font-size: 17px; cursor: pointer; border: none; display: flex; justify-content: center; align-items: center; gap: 8px; transition: transform 0.15s; }
         .button:active { transform: scale(0.96); }
-        
-        /* [수정] 메인 액션(기록) 버튼들 강렬하게 복구 */
         .smoke-btn { background: var(--accent-smoke); color: white; box-shadow: 0 8px 20px rgba(255, 65, 108, 0.3); } 
         .drink-btn { background: var(--accent-drink); color: white; box-shadow: 0 8px 20px rgba(71, 118, 230, 0.3); }
-        
-        /* [수정] 유혹 방어(게임) 버튼을 보조 버튼으로 톤 다운 */
         .defense-btn { background: var(--bg-color); color: var(--text-color); border: 1px solid var(--tab-bg); font-size: 15px; }
         @media (prefers-color-scheme: dark) { .defense-btn { background: var(--tab-bg); border-color: #333; } }
-
         .reset-btn { background: transparent; color: var(--sub-text); font-size: 13px; font-weight: 600; text-decoration: underline; text-underline-offset: 4px; box-shadow: none; padding: 10px; margin-top: 0px; }
 
         .settings-area { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding-bottom: 10px; }
-        .settings-btn { background: var(--card-bg); color: var(--text-color); border: none; padding: 18px; border-radius: 24px; font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: var(--shadow-sm); display: flex; align-items: center; justify-content: center; gap: 8px; transition: transform 0.1s; }
+        .settings-btn { background: var(--card-bg); color: var(--text-color); border: none; padding: 18px; border-radius: 24px; font-size: 15px; font-weight: 700; cursor: pointer; box-shadow: var(--shadow-sm); display: flex; align-items: center; justify-content: center; gap: 8px; transition: transform 0.1s; flex-shrink: 0;}
         .settings-btn:active { transform: scale(0.96); }
-
-        .footer-notice { text-align: center; font-size: 12px; color: var(--sub-text); margin-bottom: 30px; font-weight: 600; }
+        .footer-notice { text-align: center; font-size: 12px; color: var(--sub-text); margin-bottom: 30px; font-weight: 600; flex-shrink: 0;}
 
         .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--modal-bg); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
-        .modal-box { background: var(--card-bg); padding: 30px 25px; border-radius: 32px; width: 85%; max-width: 320px; text-align: center; box-shadow: var(--shadow-lg); transform: translateY(30px) scale(0.95); transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275); max-height: 80vh; overflow-y: auto; }
+        .modal-box { background: var(--card-bg); padding: 30px 25px; border-radius: 32px; width: 85%; max-width: 320px; text-align: center; box-shadow: var(--shadow-lg); transform: translateY(30px) scale(0.95); transition: all 0.25s; max-height: 80vh; overflow-y: auto; }
         .modal-overlay.active .modal-box { transform: translateY(0) scale(1); }
         .modal-msg { font-size: 17px; font-weight: 800; line-height: 1.5; margin-bottom: 25px; white-space: pre-wrap; color: var(--text-color); word-break: keep-all; }
-        
         .modal-textarea { width: 100%; height: 80px; margin-bottom: 20px; border-radius: 16px; border: 1px solid var(--tab-bg); padding: 12px; box-sizing: border-box; background: var(--bg-color); color: var(--text-color); font-size: 13px; }
-        
         .input-group { text-align: left; margin-bottom: 18px; }
         .input-group label { display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 700; color: var(--sub-text); margin-bottom: 8px; }
         .input-group input { width: 100%; padding: 16px; border-radius: 18px; border: none; background: var(--bg-color); color: var(--text-color); font-size: 18px; font-weight: 800; box-sizing: border-box; }
         .input-group input:focus { outline: 2px solid #5C80FF; }
-
         .modal-btn-group { display: flex; gap: 12px; margin-top: 10px; }
-        .modal-btn { flex: 1; padding: 18px; border: none; border-radius: 20px; font-weight: 800; font-size: 16px; cursor: pointer; }
+        .modal-btn { flex: 1; padding: 18px; border: none; border-radius: 20px; font-weight: 800; font-size: 16px; cursor: pointer; transition: opacity 0.3s; }
         .btn-cancel { background: var(--tab-bg); color: var(--sub-text); }
         .btn-confirm { background: var(--text-color); color: var(--bg-color); }
+        .btn-confirm:disabled { opacity: 0.4; cursor: not-allowed; }
 
-        #gameTimer { font-size: 4rem; font-weight: 900; font-variant-numeric: tabular-nums; margin: 15px 0 25px 0; letter-spacing: -2px; color: var(--text-color); }
+        #gameTimer { font-size: 4rem; font-weight: 900; font-variant-numeric: tabular-nums; margin: 5px 0 25px 0; letter-spacing: -2px; color: var(--text-color); }
         .game-main-btn { width: 100%; padding: 20px; font-size: 1.2rem; font-weight: 800; border: none; border-radius: 24px; cursor: pointer; background: #34C759; color: white; transition: all 0.1s; box-shadow: 0 10px 20px rgba(52, 199, 89, 0.3); }
         .game-main-btn.stop { background: #FF5B73; box-shadow: 0 10px 20px rgba(255, 91, 115, 0.3); }
         .game-main-btn:active { transform: scale(0.95); }
@@ -194,6 +139,11 @@
             </div>
             
             <div class="highlight-stat">오늘 유혹 실패 🚬 <span class="stat-num" id="todaySmoke">0</span>번</div>
+            
+            <div class="chart-container">
+                <div class="chart-title"><span class="material-symbols-rounded" style="font-size: 16px;">bar_chart</span>최근 7일 흡연 실패(회)</div>
+                <div class="chart-wrapper"><canvas id="smokeChart"></canvas></div>
+            </div>
             
             <div id="smokeHealth" class="health-msg">
                 <div class="health-icon-wrapper">🌿</div>
@@ -233,6 +183,11 @@
             
             <div class="highlight-stat">최근 7일 유혹 실패 🍺 <span class="stat-num drink" id="weekDrink">0</span>번</div>
             
+            <div class="chart-container">
+                <div class="chart-title"><span class="material-symbols-rounded" style="font-size: 16px;">bar_chart</span>최근 7일 음주 여부 (O/X)</div>
+                <div class="chart-wrapper"><canvas id="drinkChart"></canvas></div>
+            </div>
+
             <div id="drinkHealth" class="health-msg">
                 <div class="health-icon-wrapper">💧</div>
                 <div class="health-text-content">
@@ -286,14 +241,15 @@
 
 <div class="modal-overlay" id="defenseModal">
     <div class="modal-box" style="width: 90%; max-width: 360px; padding: 40px 25px;">
-        <div style="font-size: 24px; font-weight: 800; margin-bottom: 10px; color: var(--text-color);">🛡️ 주의 환기 게임</div>
-        <div style="font-size: 14px; font-weight: 600; color: var(--sub-text); line-height: 1.5; margin-bottom: 20px;">
+        <div style="font-size: 24px; font-weight: 800; margin-bottom: 5px; color: var(--text-color);">🛡️ 주의 환기 게임</div>
+        <div id="defenseStepText" style="font-size: 15px; font-weight: 800; color: #34C759; margin-bottom: 10px;">1단계: 눈으로 10초 맞추기</div>
+        <div style="font-size: 13px; font-weight: 600; color: var(--sub-text); line-height: 1.5; margin-bottom: 20px;">
             정확히 10.00초에 맞춰 멈추세요.<br>게임에 집중하는 10초 동안<br>강렬했던 욕구가 서서히 사라집니다.
         </div>
         
         <div id="gameTimer">0.00</div>
         
-        <div id="gameResult" style="min-height: 24px; font-size: 16px; font-weight: 800; margin-bottom: 25px; color: #FF8A00;"></div>
+        <div id="gameResult" style="min-height: 48px; font-size: 15px; font-weight: 800; margin-bottom: 25px; color: #FF8A00; line-height: 1.4; display: flex; align-items: center; justify-content: center;"></div>
         
         <button class="game-main-btn" id="gameMainBtn" onclick="handleDefenseBtn()">🔥 10초 버티기 시작</button>
         <button class="button reset-btn" style="width: 100%; margin-top: 15px;" onclick="closeDefenseGame()">종료하고 돌아가기</button>
@@ -301,36 +257,97 @@
 </div>
 
 <script>
-// 데이터 초기화
+const $ = (id) => document.getElementById(id);
+
+// 데이터 및 백업 초기화
 function initData() {
     let now = Date.now();
     if (!localStorage.getItem("smokeStart")) localStorage.setItem("smokeStart", now);
     if (!localStorage.getItem("drinkStart")) localStorage.setItem("drinkStart", now);
     if (!localStorage.getItem("smokeLogs")) localStorage.setItem("smokeLogs", JSON.stringify([]));
     if (!localStorage.getItem("drinkLogs")) localStorage.setItem("drinkLogs", JSON.stringify([]));
-    
     if (!localStorage.getItem("smokePrice")) localStorage.setItem("smokePrice", "4500");
     if (!localStorage.getItem("smokePerDay")) localStorage.setItem("smokePerDay", "10");
     if (!localStorage.getItem("drinkPerWeek")) localStorage.setItem("drinkPerWeek", "2");
     if (!localStorage.getItem("drinkCost")) localStorage.setItem("drinkCost", "50000");
-
-    // [수정] 최고 기록을 ms(밀리초) 단위로 정밀하게 관리하기 위한 새로운 변수 사용
     if (!localStorage.getItem("bestSmokeMs")) localStorage.setItem("bestSmokeMs", "0");
     if (!localStorage.getItem("bestDrinkMs")) localStorage.setItem("bestDrinkMs", "0");
     if (!localStorage.getItem("totalSmokeMoney")) localStorage.setItem("totalSmokeMoney", "0");
     if (!localStorage.getItem("totalDrinkMoney")) localStorage.setItem("totalDrinkMoney", "0");
+    if (!localStorage.getItem("smokeDefenseStep")) localStorage.setItem("smokeDefenseStep", "1");
+    if (!localStorage.getItem("drinkDefenseStep")) localStorage.setItem("drinkDefenseStep", "1");
+
+    let lastBackup = parseInt(localStorage.getItem("lastBackup")) || 0;
+    if (now - lastBackup > 86400000) {
+        localStorage.setItem("backup_auto", JSON.stringify(localStorage));
+        localStorage.setItem("lastBackup", now);
+    }
 }
 initData();
 
-// 유혹 방어 게임(10초 게임) 관련 로직
-const defenseModal = document.getElementById('defenseModal');
-const gameTimerDisp = document.getElementById('gameTimer');
-const gameMainBtn = document.getElementById('gameMainBtn');
-const gameResultDisp = document.getElementById('gameResult');
+let hourlyNotiTimer = null;
+function startHourlyNotification() {
+    if (hourlyNotiTimer) clearInterval(hourlyNotiTimer);
+    hourlyNotiTimer = setInterval(() => {
+        if (Notification.permission === "granted") {
+            new Notification("🔥 잘 참고 있습니다!", { body: "조금만 더 버티면 기록 갱신입니다! 화이팅!" });
+        }
+    }, 3600000);
+}
+startHourlyNotification();
+
+// 차트 로직
+let smokeChartObj = null; let drinkChartObj = null;
+
+function renderCharts() {
+    Chart.defaults.color = '#8B95A1'; Chart.defaults.font.family = "'Pretendard', sans-serif"; Chart.defaults.font.weight = '600';
+
+    const labels = []; const smokeData = []; const drinkData = [];
+    let now = new Date();
+    let smokeLogs = JSON.parse(localStorage.getItem("smokeLogs")) || [];
+    let drinkLogs = JSON.parse(localStorage.getItem("drinkLogs")) || [];
+
+    for (let i = 6; i >= 0; i--) {
+        let d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
+        let startOfDay = d.setHours(0,0,0,0); let endOfDay = d.setHours(23,59,59,999);
+        labels.push(`${d.getMonth()+1}/${d.getDate()}`);
+        smokeData.push(smokeLogs.filter(t => t >= startOfDay && t <= endOfDay).length);
+        drinkData.push(Math.min(1, drinkLogs.filter(t => t >= startOfDay && t <= endOfDay).length));
+    }
+
+    if (!smokeChartObj) {
+        smokeChartObj = new Chart($('smokeChart').getContext('2d'), {
+            type: 'bar', data: { labels: labels, datasets: [{ data: smokeData, backgroundColor: '#FF5B73', borderRadius: 4 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1, precision: 0 }, border: { display: false } }, x: { grid: { display: false } } }, animation: { duration: 500 } }
+        });
+    } else {
+        smokeChartObj.data.labels = labels; smokeChartObj.data.datasets[0].data = smokeData; smokeChartObj.update();
+    }
+
+    if (!drinkChartObj) {
+        drinkChartObj = new Chart($('drinkChart').getContext('2d'), {
+            type: 'bar', data: { labels: labels, datasets: [{ data: drinkData, backgroundColor: '#5C80FF', borderRadius: 4 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 1, ticks: { stepSize: 1, callback: function(val) { return val === 1 ? 'X (실패)' : 'O (성공)'; } }, border: { display: false } }, x: { grid: { display: false } } }, animation: { duration: 500 } }
+        });
+    } else {
+        drinkChartObj.data.labels = labels; drinkChartObj.data.datasets[0].data = drinkData; drinkChartObj.update();
+    }
+}
+window.addEventListener('load', renderCharts);
+
+// 10초 게임 로직
+const defenseModal = $('defenseModal'); const gameTimerDisp = $('gameTimer');
+const gameMainBtn = $('gameMainBtn'); const gameResultDisp = $('gameResult');
+const defenseStepText = $('defenseStepText');
 
 let gameStartTime, gameTimerId, isGameRunning = false;
+let currentDefenseTarget = null; let currentDefenseStep = 1;
 
 function openDefenseGame(targetType) {
+    currentDefenseTarget = targetType;
+    currentDefenseStep = parseInt(localStorage.getItem(targetType + "DefenseStep")) || 1;
+    defenseStepText.innerText = currentDefenseStep === 1 ? "1단계: 눈으로 보고 10초 맞추기" : "2단계: 7초 후 감춰지는 10초 맞추기 (블라인드)";
+    defenseStepText.style.color = currentDefenseStep === 1 ? "#34C759" : "#FF5B73";
     gameTimerDisp.innerText = "0.00"; gameResultDisp.innerText = "";
     gameMainBtn.innerText = "🔥 10초 버티기 시작"; gameMainBtn.classList.remove('stop');
     isGameRunning = false; defenseModal.classList.add('active');
@@ -354,7 +371,7 @@ function startGame() {
 function updateGameTimer() {
     if (!isGameRunning) return;
     const elapsed = (performance.now() - gameStartTime) / 1000;
-    if (elapsed >= 7.0 && elapsed < 12.0) gameTimerDisp.innerText = "?.??";
+    if (currentDefenseStep >= 2 && elapsed >= 7.0 && elapsed < 12.0) gameTimerDisp.innerText = "?.??";
     else gameTimerDisp.innerText = elapsed.toFixed(2);
     gameTimerId = requestAnimationFrame(updateGameTimer);
 }
@@ -366,88 +383,109 @@ function stopGame() {
     const finalTime = (performance.now() - gameStartTime) / 1000;
     gameTimerDisp.innerText = finalTime.toFixed(2);
     
-    if (Math.abs(10.00 - finalTime) <= 0.5) {
-        gameResultDisp.innerText = "🎉 대단합니다! 욕구가 조금 가라앉았나요?";
+    const diff = Math.abs(10.00 - finalTime);
+    
+    if (diff <= 0.05) {
+        if (currentDefenseStep === 1) {
+            currentDefenseStep = 2; 
+            localStorage.setItem(currentDefenseTarget + "DefenseStep", "2");
+            defenseStepText.innerText = "2단계: 7초 후 감춰지는 10초 맞추기 (블라인드)";
+            defenseStepText.style.color = "#FF5B73";
+            gameResultDisp.innerHTML = "🎉 완벽합니다 (PERFECT)!<br>다음 도전부터 2단계(블라인드)가 적용됩니다.";
+        } else {
+            gameResultDisp.innerText = "🎉 대단합니다! 2단계(블라인드) 완벽 성공!";
+        }
         gameResultDisp.style.color = "#34C759";
         if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 100]); 
-    } else {
+    } 
+    else if (diff <= 0.5) { 
+        gameResultDisp.innerHTML = "👍 유혹 방어 성공!<br>(오차 0.05초 이내로 맞추면 2단계로 넘어갑니다)";
+        gameResultDisp.style.color = "#34C759";
+        if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+    } else { 
         gameResultDisp.innerText = "😢 아쉽네요. 심호흡하고 다시 해볼까요?";
         gameResultDisp.style.color = "#FF5B73";
         if (navigator.vibrate) navigator.vibrate(200);
     }
 }
 
-// 기존 메인 로직 
+// 메인 모달 로직 
+const modal = $('customModal'); const modalMsg = $('modalMsg');
+const modalInput = $('modalInput'); const confirmBtn = $('modalConfirmBtn');
+let confirmAction = null; let resetDelayTimer = null;
+
+function showModal(msg, action, showInput = false, isReset = false) {
+    modalMsg.innerText = msg; confirmAction = action; modalInput.style.display = showInput ? 'block' : 'none';
+    if(showInput) modalInput.value = '';
+    
+    if (isReset) {
+        confirmBtn.disabled = true; let timeLeft = 3; confirmBtn.innerText = `확인 (${timeLeft})`;
+        resetDelayTimer = setInterval(() => {
+            timeLeft--;
+            if(timeLeft <= 0) { clearInterval(resetDelayTimer); confirmBtn.disabled = false; confirmBtn.innerText = "확인"; } 
+            else { confirmBtn.innerText = `확인 (${timeLeft})`; }
+        }, 1000);
+    } else {
+        confirmBtn.disabled = false; confirmBtn.innerText = "확인";
+    }
+    modal.classList.add('active');
+}
+function closeModal() { 
+    if(resetDelayTimer) clearInterval(resetDelayTimer); 
+    modal.classList.remove('active'); confirmAction = null; 
+}
+confirmBtn.addEventListener('click', () => { if (confirmAction) confirmAction(modalInput.value); closeModal(); });
+
+// 비용 설정 모달
+const settingsModal = $('settingsModal');
+function openSettingsModal() {
+    $('setSmokePrice').value = localStorage.getItem("smokePrice"); $('setSmokePerDay').value = localStorage.getItem("smokePerDay");
+    $('setDrinkPerWeek').value = localStorage.getItem("drinkPerWeek"); $('setDrinkCost').value = localStorage.getItem("drinkCost");
+    settingsModal.classList.add('active');
+}
+function closeSettingsModal() { settingsModal.classList.remove('active'); }
+function saveSettings() {
+    localStorage.setItem("smokePrice", Math.max(1, parseInt($('setSmokePrice').value) || 4500));
+    localStorage.setItem("smokePerDay", Math.max(1, parseInt($('setSmokePerDay').value) || 10));
+    localStorage.setItem("drinkPerWeek", Math.max(1, parseInt($('setDrinkPerWeek').value) || 2));
+    localStorage.setItem("drinkCost", Math.max(1, parseInt($('setDrinkCost').value) || 50000));
+    closeSettingsModal(); $('smokeMoney').dataset.val = "0"; $('drinkMoney').dataset.val = "0"; update(); 
+}
+
 const smokeStages = [
-    { day: 0, msg: "몸이 회복될 준비를 시작합니다." }, { day: 0.013, msg: "20분 경과: 혈압과 맥박이 정상화됩니다." }, { day: 0.5, msg: "12시간: 일산화탄소가 정상 수치로!" }, { day: 1, msg: "1일: 심장마비 위험이 감소합니다." }, { day: 2, msg: "2일: 후각과 미각이 좋아집니다." }, { day: 3, msg: "3일: 니코틴이 완전히 빠져나갔습니다." }, { day: 14, msg: "2주: 폐 기능과 혈액순환이 크게 개선됨." }, { day: 30, msg: "1개월: 기침과 숨가쁨이 줄어듭니다." }, { day: 365, msg: "1년 달성! 관상동맥질환 위험 절반 감소." }
+    { day: 0, msg: "몸이 회복될 준비를 시작합니다." }, { day: 0.013, msg: "20분 경과: 혈압/맥박 정상화!" }, { day: 0.5, msg: "12시간: 일산화탄소 정상 수치 회복!" }, { day: 1, msg: "1일: 심장마비 위험 감소 시작!" }, { day: 2, msg: "2일: 후각과 미각 향상!" }, { day: 3, msg: "3일: 니코틴 완전 배출!" }, { day: 14, msg: "2주: 폐 기능과 혈액순환 대폭 개선!" }, { day: 30, msg: "1개월: 기침과 숨가쁨 감소!" }, { day: 365, msg: "1년 달성! 심장질환 위험 50% 감소!" }
 ];
-
 const drinkStages = [
-    { day: 0, msg: "간이 쉴 수 있는 시간을 주셨네요." }, { day: 0.5, msg: "12시간: 혈당 안정화, 탈수 증상 개선." }, { day: 1, msg: "1일: 알코올이 완전히 분해되었습니다." }, { day: 3, msg: "3일: 숙취 소멸, 수면의 질 향상." }, { day: 7, msg: "1주: 피부가 맑아지고 집중력 상승." }, { day: 14, msg: "2주: 체중 감량 효과, 위장 기능 회복." }, { day: 30, msg: "1개월: 간 수치가 정상화됩니다." }, { day: 365, msg: "1년 달성! 심혈관 질환 위험 크게 감소." }
+    { day: 0, msg: "간이 쉴 수 있는 시간을 주셨네요." }, { day: 0.5, msg: "12시간: 탈수 증상 개선!" }, { day: 1, msg: "1일: 알코올 완전 분해 완료!" }, { day: 3, msg: "3일: 숙취 소멸, 수면의 질 상승!" }, { day: 7, msg: "1주: 피부 맑아짐, 집중력 향상!" }, { day: 14, msg: "2주: 체중 감량 효과, 위장 회복!" }, { day: 30, msg: "1개월: 간 수치 정상화!" }, { day: 365, msg: "1년 달성! 심혈관 질환 위험 크게 감소!" }
 ];
 
+// [수정] 초과된 금액 반복 애니메이션 버그 수정
 function animateValue(obj, start, end, duration) {
+    if(!obj) return;
     let startTimestamp = null;
+    obj.dataset.val = end; // 즉시 목표값을 넣어 중복 실행 방어
     const step = (timestamp) => {
         if (!startTimestamp) startTimestamp = timestamp;
         const progress = Math.min((timestamp - startTimestamp) / duration, 1);
         const easeOut = 1 - Math.pow(1 - progress, 4);
         const currentVal = Math.floor(easeOut * (end - start) + start);
         obj.innerText = currentVal.toLocaleString() + "원 진행중!";
-        if (progress < 1) window.requestAnimationFrame(step); else obj.dataset.val = end;
+        if (progress < 1) window.requestAnimationFrame(step); 
+        else obj.innerText = end.toLocaleString() + "원 진행중!";
     };
     window.requestAnimationFrame(step);
-}
-
-const modal = document.getElementById('customModal');
-const modalMsg = document.getElementById('modalMsg');
-const modalInput = document.getElementById('modalInput');
-const confirmBtn = document.getElementById('modalConfirmBtn');
-let confirmAction = null;
-
-function showModal(msg, action, showInput = false) {
-    modalMsg.innerText = msg; confirmAction = action; modalInput.style.display = showInput ? 'block' : 'none';
-    if(showInput) modalInput.value = ''; modal.classList.add('active');
-}
-function closeModal() { modal.classList.remove('active'); confirmAction = null; }
-confirmBtn.addEventListener('click', () => { if (confirmAction) confirmAction(modalInput.value); closeModal(); });
-
-const settingsModal = document.getElementById('settingsModal');
-function openSettingsModal() {
-    document.getElementById('setSmokePrice').value = localStorage.getItem("smokePrice");
-    document.getElementById('setSmokePerDay').value = localStorage.getItem("smokePerDay");
-    document.getElementById('setDrinkPerWeek').value = localStorage.getItem("drinkPerWeek");
-    document.getElementById('setDrinkCost').value = localStorage.getItem("drinkCost");
-    settingsModal.classList.add('active');
-}
-function closeSettingsModal() { settingsModal.classList.remove('active'); }
-function saveSettings() {
-    localStorage.setItem("smokePrice", document.getElementById('setSmokePrice').value || 4500);
-    localStorage.setItem("smokePerDay", document.getElementById('setSmokePerDay').value || 10);
-    localStorage.setItem("drinkPerWeek", document.getElementById('setDrinkPerWeek').value || 2);
-    localStorage.setItem("drinkCost", document.getElementById('setDrinkCost').value || 50000);
-    closeSettingsModal(); document.getElementById("smokeMoney").dataset.val = "0"; document.getElementById("drinkMoney").dataset.val = "0"; update(); 
 }
 
 function getTime(ms) {
     let sec = Math.floor(ms / 1000), min = Math.floor(sec / 60), hour = Math.floor(min / 60), day = Math.floor(hour / 24);
     return { day, hour: hour % 24, min: min % 60, sec: sec % 60 };
 }
-
-// [수정] 최고 기록 표시용 텍스트 포맷 (일/시간/분 정밀 표시)
 function getExactDurationText(ms) {
-    let s = getTime(ms);
-    if (s.day > 0) return `${s.day}일 ${s.hour}시간`;
-    if (s.hour > 0) return `${s.hour}시간 ${s.min}분`;
-    return `${s.min}분`;
+    let s = getTime(ms); if (s.day > 0) return `${s.day}일 ${s.hour}시간`; if (s.hour > 0) return `${s.hour}시간 ${s.min}분`; return `${s.min}분`;
 }
-
 function getDurationText(ms, type) {
-    let s = getTime(ms);
-    if (type === 'smoke') return s.day > 0 ? `${s.day}일 ${s.hour}시간` : (s.hour > 0 ? `${s.hour}시간 ${s.min}분` : `${s.min}분`);
-    return s.day > 0 ? `${s.day}일` : (s.hour > 0 ? `${s.hour}시간` : `방금 전`);
+    let s = getTime(ms); if (type === 'smoke') return s.day > 0 ? `${s.day}일 ${s.hour}시간` : (s.hour > 0 ? `${s.hour}시간 ${s.min}분` : `${s.min}분`); return s.day > 0 ? `${s.day}일` : (s.hour > 0 ? `${s.hour}시간` : `방금 전`);
 }
-
 function getStageMessage(startTime, stages) {
     let elapsedDays = (Date.now() - startTime) / (1000 * 60 * 60 * 24), currentMsg = stages[0].msg;
     for (let i = 0; i < stages.length; i++) { if (elapsedDays >= stages[i].day) currentMsg = stages[i].msg; else break; }
@@ -456,7 +494,7 @@ function getStageMessage(startTime, stages) {
 
 function askRecord(type) {
     let text = getDurationText(Date.now() - parseInt(localStorage.getItem(type + "Start")), type);
-    showModal(`😢 ${text}이나 참았는데 정말 실패하셨나요?\n\n(타이머는 초기화 되지만, 지금까지 아낀 돈은 누적 통장에 안전하게 저장됩니다.)`, () => recordEvent(type));
+    showModal(`😢 ${text}이나 참았는데 정말 실패하셨나요?\n\n(타이머는 초기화 되지만, 아낀 돈은 누적 통장에 저장됩니다.)`, () => recordEvent(type));
 }
 
 function recordEvent(type) {
@@ -468,104 +506,98 @@ function recordEvent(type) {
     let elapsedDaysExact = Math.max(0, (now - startTime) / (1000 * 60 * 60 * 24));
     
     if (type === 'smoke') {
-        let moneyToAdd = Math.floor(elapsedDaysExact * parseInt(localStorage.getItem("smokePerDay")) * (parseInt(localStorage.getItem("smokePrice")) / 20));
-        localStorage.setItem("totalSmokeMoney", (parseInt(localStorage.getItem("totalSmokeMoney")) || 0) + moneyToAdd);
+        let moneyToAdd = Math.floor(elapsedDaysExact * Math.max(1, parseInt(localStorage.getItem("smokePerDay"))) * (Math.max(1, parseInt(localStorage.getItem("smokePrice"))) / 20));
+        localStorage.setItem("totalSmokeMoney", (parseInt(localStorage.getItem("totalSmokeMoney")) || 0) + (moneyToAdd || 0));
     } else {
-        let moneyToAdd = Math.floor(elapsedDaysExact * (parseInt(localStorage.getItem("drinkPerWeek")) / 7) * parseInt(localStorage.getItem("drinkCost")));
-        localStorage.setItem("totalDrinkMoney", (parseInt(localStorage.getItem("totalDrinkMoney")) || 0) + moneyToAdd);
+        let moneyToAdd = Math.floor(elapsedDaysExact * (Math.max(1, parseInt(localStorage.getItem("drinkPerWeek"))) / 7) * Math.max(1, parseInt(localStorage.getItem("drinkCost"))));
+        localStorage.setItem("totalDrinkMoney", (parseInt(localStorage.getItem("totalDrinkMoney")) || 0) + (moneyToAdd || 0));
     }
     
-    // [수정] 실패 시 최고 기록 갱신 모달 억제를 위해 세션 값 초기화
-    sessionStorage.removeItem("isNewRecord_smoke");
-    sessionStorage.removeItem("isNewRecord_drink");
-
-    localStorage.setItem(type + "Start", now); document.getElementById(type + "Money").dataset.val = "0"; update();
+    localStorage.setItem(type + "Start", now); 
+    $(type + 'Money').dataset.val = "0"; 
+    renderCharts(); update();
 }
 
 function askReset(type) {
     let name = type === 'smoke' ? '금연' : '금주';
-    showModal(`⚠️ ${name} 관련 '모든 기록(랭킹, 누적 금액 등)'을 완전히 초기화할까요?`, () => {
+    showModal(`⚠️ ${name} 관련 '모든 기록(랭킹, 통계, 게임 등)'을 완전히 초기화할까요?`, () => {
         localStorage.setItem(type + "Start", Date.now()); localStorage.setItem(type + "Logs", JSON.stringify([]));
         localStorage.setItem(type === 'smoke' ? "bestSmokeMs" : "bestDrinkMs", "0"); 
         localStorage.setItem(type === 'smoke' ? "totalSmokeMoney" : "totalDrinkMoney", "0");
-        document.getElementById(type + "Money").dataset.val = "0"; update();
-    });
+        localStorage.setItem(type + "DefenseStep", "1");
+        localStorage.removeItem(type === 'smoke' ? "alertedStreak_smoke" : "alertedStreak_drink");
+        
+        $(type + 'Money').dataset.val = "0"; 
+        renderCharts(); update();
+    }, false, true); 
 }
 
 function backupData() {
     let data = JSON.stringify(localStorage);
-    navigator.clipboard.writeText(data).then(() => showModal("✅ 백업 완료!\n클립보드에 복사되었습니다.", null)).catch(() => { showModal("아래 텍스트를 모두 복사하세요.", null, true); document.getElementById('modalInput').value = data; });
+    navigator.clipboard.writeText(data).then(() => showModal("✅ 백업 완료!\n클립보드에 복사되었습니다.", null)).catch(() => { showModal("아래 텍스트를 모두 복사하세요.", null, true); $('modalInput').value = data; });
 }
 function showRestoreModal() {
     showModal("📂 복원할 백업 텍스트를 붙여넣으세요.", (inputData) => {
-        try { let data = JSON.parse(inputData); for (let key in data) localStorage.setItem(key, data[key]); update(); setTimeout(() => alert("복원 완료!"), 100); } catch(e) { alert("잘못된 데이터입니다."); }
+        try { let data = JSON.parse(inputData); for (let key in data) localStorage.setItem(key, data[key]); renderCharts(); update(); setTimeout(() => alert("복원 완료!"), 100); } catch(e) { alert("잘못된 데이터입니다."); }
     }, true);
 }
 function setupNotification() {
     if (!("Notification" in window)) return alert("알림을 지원하지 않는 기기입니다.");
-    Notification.requestPermission().then(p => showModal(p === "granted" ? "✅ 알림 권한 허용됨" : "알림 권한이 거부되었습니다.", null));
+    Notification.requestPermission().then(p => showModal(p === "granted" ? "✅ 알림 권한 허용됨\n(1시간마다 응원 알림이 도착합니다)" : "알림 권한이 거부되었습니다.", null));
 }
 
 function update() {
     let now = Date.now(), smokeStart = parseInt(localStorage.getItem("smokeStart")), drinkStart = parseInt(localStorage.getItem("drinkStart"));
 
     let s = getTime(now - smokeStart), dDay = Math.floor((now - drinkStart) / (24 * 60 * 60 * 1000));
-    document.getElementById("smokeTime").innerText = `${s.day}일 ${String(s.hour).padStart(2, '0')}:${String(s.min).padStart(2, '0')}:${String(s.sec).padStart(2, '0')}`;
-    document.getElementById("drinkDay").innerText = `${dDay}일`;
-    document.getElementById("smokeStreak").innerText = `🔥 ${s.day}일째`; document.getElementById("drinkStreak").innerText = `🔥 ${dDay}일째`;
+    if($('smokeTime')) $('smokeTime').innerText = `${s.day}일 ${String(s.hour).padStart(2, '0')}:${String(s.min).padStart(2, '0')}:${String(s.sec).padStart(2, '0')}`;
+    if($('drinkDay')) $('drinkDay').innerText = `${dDay}일`;
+    if($('smokeStreak')) $('smokeStreak').innerText = `🔥 ${s.day}일째`; if($('drinkStreak')) $('drinkStreak').innerText = `🔥 ${dDay}일째`;
 
-    let targetSmokeMoney = Math.floor(Math.max(0, (now - smokeStart) / (1000 * 60 * 60 * 24)) * parseInt(localStorage.getItem("smokePerDay")) * (parseInt(localStorage.getItem("smokePrice")) / 20));
-    let targetDrinkMoney = Math.floor(Math.max(0, (now - drinkStart) / (1000 * 60 * 60 * 24)) * (parseInt(localStorage.getItem("drinkPerWeek")) / 7) * parseInt(localStorage.getItem("drinkCost")));
+    let targetSmokeMoney = Math.floor(Math.max(0, (now - smokeStart) / (1000 * 60 * 60 * 24)) * Math.max(1, parseInt(localStorage.getItem("smokePerDay"))) * (Math.max(1, parseInt(localStorage.getItem("smokePrice"))) / 20));
+    let targetDrinkMoney = Math.floor(Math.max(0, (now - drinkStart) / (1000 * 60 * 60 * 24)) * (Math.max(1, parseInt(localStorage.getItem("drinkPerWeek"))) / 7) * Math.max(1, parseInt(localStorage.getItem("drinkCost"))));
 
-    let currentSmokeVal = parseInt(document.getElementById("smokeMoney").dataset.val) || 0;
-    if (Math.abs(targetSmokeMoney - currentSmokeVal) > 100) animateValue(document.getElementById("smokeMoney"), 0, targetSmokeMoney, 1200); else { document.getElementById("smokeMoney").innerText = targetSmokeMoney.toLocaleString() + "원 진행중!"; document.getElementById("smokeMoney").dataset.val = targetSmokeMoney; }
+    // [수정] 금액이 비정상적으로 높을 때 애니메이션 루프 방지 로직 보강
+    let currentSmokeVal = parseInt($('smokeMoney').dataset.val) || 0;
+    if (currentSmokeVal === 0 && targetSmokeMoney > 0) animateValue($('smokeMoney'), 0, targetSmokeMoney, 1200); 
+    else { $('smokeMoney').innerText = targetSmokeMoney.toLocaleString() + "원 진행중!"; $('smokeMoney').dataset.val = targetSmokeMoney; }
 
-    let currentDrinkVal = parseInt(document.getElementById("drinkMoney").dataset.val) || 0;
-    if (Math.abs(targetDrinkMoney - currentDrinkVal) > 100) animateValue(document.getElementById("drinkMoney"), 0, targetDrinkMoney, 1200); else { document.getElementById("drinkMoney").innerText = targetDrinkMoney.toLocaleString() + "원 진행중!"; document.getElementById("drinkMoney").dataset.val = targetDrinkMoney; }
+    let currentDrinkVal = parseInt($('drinkMoney').dataset.val) || 0;
+    if (currentDrinkVal === 0 && targetDrinkMoney > 0) animateValue($('drinkMoney'), 0, targetDrinkMoney, 1200); 
+    else { $('drinkMoney').innerText = targetDrinkMoney.toLocaleString() + "원 진행중!"; $('drinkMoney').dataset.val = targetDrinkMoney; }
 
-    // [수정] 최고 기록 실시간 업데이트 로직 (ms 단위 비교)
     let bestSmokeMs = parseInt(localStorage.getItem("bestSmokeMs")) || 0;
     let currentSmokeMs = now - smokeStart;
     if (currentSmokeMs > bestSmokeMs) { 
-        if (bestSmokeMs > 0 && !sessionStorage.getItem("isNewRecord_smoke")) {
-            showModal(`🎉 대단합니다!\n이전 금연 최고 기록을 방금 돌파했습니다!`, null);
-            sessionStorage.setItem("isNewRecord_smoke", "true"); // 이번 도전에선 알림 한 번만
-        }
-        localStorage.setItem("bestSmokeMs", currentSmokeMs); 
-        bestSmokeMs = currentSmokeMs;
+        if (bestSmokeMs > 0 && localStorage.getItem("alertedStreak_smoke") !== smokeStart.toString()) { showModal(`🎉 대단합니다!\n이전 금연 최고 기록을 방금 돌파했습니다!`, null); localStorage.setItem("alertedStreak_smoke", smokeStart.toString()); }
+        localStorage.setItem("bestSmokeMs", currentSmokeMs); bestSmokeMs = currentSmokeMs;
     }
     
     let bestDrinkMs = parseInt(localStorage.getItem("bestDrinkMs")) || 0;
     let currentDrinkMs = now - drinkStart;
     if (currentDrinkMs > bestDrinkMs) { 
-        if (bestDrinkMs > 0 && !sessionStorage.getItem("isNewRecord_drink")) {
-            showModal(`🎉 대단합니다!\n이전 금주 최고 기록을 방금 돌파했습니다!`, null);
-            sessionStorage.setItem("isNewRecord_drink", "true");
-        }
-        localStorage.setItem("bestDrinkMs", currentDrinkMs); 
-        bestDrinkMs = currentDrinkMs;
+        if (bestDrinkMs > 0 && localStorage.getItem("alertedStreak_drink") !== drinkStart.toString()) { showModal(`🎉 대단합니다!\n이전 금주 최고 기록을 방금 돌파했습니다!`, null); localStorage.setItem("alertedStreak_drink", drinkStart.toString()); }
+        localStorage.setItem("bestDrinkMs", currentDrinkMs); bestDrinkMs = currentDrinkMs;
     }
 
-    // 포맷팅 적용 (0분이어도 깔끔하게 표시됨)
-    document.getElementById("smokeBest").innerText = getExactDurationText(bestSmokeMs); 
-    document.getElementById("drinkBest").innerText = getExactDurationText(bestDrinkMs);
-    
-    document.getElementById("smokeTotalMoney").innerText = ((parseInt(localStorage.getItem("totalSmokeMoney")) || 0) + targetSmokeMoney).toLocaleString() + "원";
-    document.getElementById("drinkTotalMoney").innerText = ((parseInt(localStorage.getItem("totalDrinkMoney")) || 0) + targetDrinkMoney).toLocaleString() + "원";
+    if($('smokeBest')) $('smokeBest').innerText = getExactDurationText(bestSmokeMs); 
+    if($('drinkBest')) $('drinkBest').innerText = getExactDurationText(bestDrinkMs);
+    if($('smokeTotalMoney')) $('smokeTotalMoney').innerText = ((parseInt(localStorage.getItem("totalSmokeMoney")) || 0) + targetSmokeMoney).toLocaleString() + "원";
+    if($('drinkTotalMoney')) $('drinkTotalMoney').innerText = ((parseInt(localStorage.getItem("totalDrinkMoney")) || 0) + targetDrinkMoney).toLocaleString() + "원";
 
     let todayStart = new Date().setHours(0, 0, 0, 0);
-    document.getElementById("todaySmoke").innerText = (JSON.parse(localStorage.getItem("smokeLogs")) || []).filter(t => t > todayStart).length;
-    document.getElementById("weekDrink").innerText = (JSON.parse(localStorage.getItem("drinkLogs")) || []).filter(t => t > todayStart).length; 
+    if($('todaySmoke')) $('todaySmoke').innerText = (JSON.parse(localStorage.getItem("smokeLogs")) || []).filter(t => t > todayStart).length;
+    let weekAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
+    if($('weekDrink')) $('weekDrink').innerText = (JSON.parse(localStorage.getItem("drinkLogs")) || []).filter(t => t > weekAgo).length;
 
-    document.getElementById("smokeHealthText").innerText = getStageMessage(smokeStart, smokeStages);
-    document.getElementById("drinkHealthText").innerText = getStageMessage(drinkStart, drinkStages);
+    if($('smokeHealthText')) $('smokeHealthText').innerText = getStageMessage(smokeStart, smokeStages);
+    if($('drinkHealthText')) $('drinkHealthText').innerText = getStageMessage(drinkStart, drinkStages);
 }
 
 const modeBtns = document.querySelectorAll('.mode-btn');
-const smokeCard = document.getElementById('smokeCard'); const drinkCard = document.getElementById('drinkCard');
 function setMode(mode) {
     localStorage.setItem('appMode', mode); modeBtns.forEach(btn => btn.classList.toggle('active', btn.dataset.mode === mode));
-    smokeCard.classList.toggle('hidden', mode === 'drink'); drinkCard.classList.toggle('hidden', mode === 'smoke');
+    if($('smokeCard')) $('smokeCard').classList.toggle('hidden', mode === 'drink'); if($('drinkCard')) $('drinkCard').classList.toggle('hidden', mode === 'smoke');
 }
 setMode(localStorage.getItem('appMode') || 'both');
 modeBtns.forEach(btn => btn.addEventListener('click', () => setMode(btn.dataset.mode)));
