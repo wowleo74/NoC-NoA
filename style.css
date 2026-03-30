@@ -1,0 +1,921 @@
+@charset "UTF-8";
+
+:root {
+    /* 🎨 기본 배경 및 카드 색상 */
+    --app-bg: #F5F7F9;
+    --card-bg: #ffffff;
+    --tab-bg: #E8EAED;
+    --modal-overlay: rgba(0, 0, 0, 0.5);
+
+    /* 폰트 색상 */
+    --text-main: #000000;
+    --text-sub: #333D4B;
+    --text-gray: #8B95A1;
+    --text-streak: #FF8A00;
+    --bg-streak: rgba(255, 138, 0, 0.15);
+
+    /* 🚬 담배 테마 색상 (Pink) */
+    --smoke-main: #FF5B73;
+    --smoke-light: #FFF0F2;
+    --smoke-btn-grad: linear-gradient(135deg, #FF416C, #FF4B2B);
+    --smoke-btn-shadow: rgba(255, 65, 108, 0.3);
+
+    /* 🍺 술 테마 색상 (Blue) */
+    --drink-main: #5C80FF;
+    --drink-light: #F0F4FF;
+    --drink-btn-grad: linear-gradient(135deg, #4776E6, #8E54E9);
+    --drink-btn-shadow: rgba(71, 118, 230, 0.3);
+
+    /* 💰 금액 및 성공 색상 (Green) */
+    --money-main: #34C759;
+    --money-bg-light: rgba(52, 199, 89, 0.2);
+    --money-btn-grad: linear-gradient(135deg, #34C759, #30D158);
+
+    /* 상태 색상 */
+    --status-success: #34C759;
+    --status-fail: #FF5B73;
+
+    /* 그림자 및 기타 */
+    --shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.03);
+    --shadow-lg: 0 16px 36px rgba(0, 0, 0, 0.06);
+    --max-gold: linear-gradient(90deg, #FFD700, #FFA500);
+}
+
+/* 🌙 다크모드 대응 */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --app-bg: #000000;
+        --card-bg: #1C1C1E;
+        --tab-bg: #2C2C2E;
+        --text-main: #FFFFFF;
+        --text-sub: #D1D6DB;
+        --text-gray: #8B95A1;
+        --modal-overlay: rgba(0, 0, 0, 0.7);
+        --smoke-light: rgba(255, 91, 115, 0.12);
+        --drink-light: rgba(92, 128, 255, 0.12);
+        --shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.3);
+        --shadow-lg: 0 16px 32px rgba(0, 0, 0, 0.4);
+    }
+}
+
+/* 📱 글로벌 설정 */
+body {
+    margin: 0;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif, 'Tossface';
+    background: var(--app-bg);
+    color: var(--text-main);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+
+/* 숫자 표시용 고정폭 폰트 적용 */
+.time-display,
+#smokeBoardText,
+#drinkBoardText,
+.money-badge span,
+.health-percent,
+.stat-num,
+#gameTimer,
+.setting-row input {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif !important;
+}
+
+/* 🚀 메인 레이아웃 */
+.header {
+    background: transparent;
+    text-align: center;
+    padding: calc(env(safe-area-inset-top) + 20px) 15px 15px 15px;
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    z-index: 10;
+}
+
+.container {
+    max-width: 500px;
+    margin: auto;
+    padding: 0 20px 40px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    flex-grow: 1;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+.container::-webkit-scrollbar {
+    display: none;
+}
+
+/* 💳 카드 디자인 */
+.card {
+    background: var(--card-bg);
+    border-radius: 36px;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.card.hidden {
+    display: none !important;
+}
+
+.card-hero {
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.smoke-hero {
+    background: var(--smoke-light);
+}
+
+.drink-hero {
+    background: var(--drink-light);
+}
+
+.hero-icon {
+    font-size: 52px;
+    background: var(--card-bg);
+    width: 96px;
+    height: 96px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    transform: translateY(48px);
+    z-index: 2;
+}
+
+.card-body {
+    padding: 64px 24px 32px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+}
+
+.card-header-text {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 2px;
+}
+
+.title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-gray);
+}
+
+.streak {
+    background: var(--bg-streak);
+    color: var(--text-streak);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.time-display {
+    font-size: clamp(38px, 9.5vw, 48px);
+    font-weight: 900;
+    letter-spacing: -2px;
+    margin: 0;
+    color: var(--text-main);
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* 💎 금액 및 달성률 메인 보드 */
+.saved-money {
+    padding: 22px;
+    border-radius: 24px;
+    font-size: 22px;
+    font-weight: 900;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s;
+}
+
+.saved-money span {
+    color: #ffffff !important;
+}
+
+.money-icon {
+    font-size: 26px;
+    color: #ffffff !important;
+}
+
+/* [중요] 줄이기 모드일 때 메인 보드 색상 및 요소 숨김 */
+.card.mode-reduce .smoke-card #smokeMainBoard {
+    background: var(--smoke-main);
+    box-shadow: 0 10px 20px var(--smoke-btn-shadow);
+}
+
+.card.mode-reduce .drink-card #drinkMainBoard {
+    background: var(--drink-main);
+    box-shadow: 0 10px 20px var(--drink-btn-shadow);
+}
+
+.card.mode-reduce .hide-on-reduce {
+    display: none !important;
+}
+
+/* 🩺 건강 섹션 및 기타 박스 공통 */
+.health-msg,
+.ranking-badge,
+.highlight-stat,
+.chart-container {
+    border-radius: 24px;
+    padding: 20px;
+    text-align: left;
+}
+
+.smoke-card .health-msg,
+.smoke-card .ranking-badge,
+.smoke-card .highlight-stat,
+.smoke-card .chart-container {
+    background: var(--smoke-light);
+}
+
+.drink-card .health-msg,
+.drink-card .ranking-badge,
+.drink-card .highlight-stat,
+.drink-card .chart-container {
+    background: var(--drink-light);
+}
+
+.health-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.health-title-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.health-icon-wrapper {
+    background: var(--card-bg);
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: var(--shadow-sm);
+    font-size: 20px;
+}
+
+.health-label {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--money-main);
+    display: block;
+    margin-bottom: 2px;
+}
+
+.health-current-msg {
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 1.3;
+}
+
+.health-percent {
+    font-size: 18px;
+    font-weight: 900;
+}
+
+.health-body {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.progress-bg {
+    background: rgba(255, 255, 255, 0.6);
+    height: 12px;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+}
+
+@media (prefers-color-scheme: dark) {
+    .progress-bg {
+        background: rgba(0, 0, 0, 0.3);
+    }
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 6px;
+}
+
+.progress-bar.smoke {
+    background: var(--smoke-main);
+}
+
+.progress-bar.drink {
+    background: var(--drink-main);
+}
+
+.progress-bar.max {
+    background: var(--max-gold);
+}
+
+.health-footer {
+    display: flex;
+    justify-content: flex-start;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-gray);
+}
+
+.health-next-target {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.roadmap-btn {
+    margin-top: 4px;
+    background: var(--card-bg);
+    border: none;
+    padding: 14px;
+    border-radius: 16px;
+    color: var(--text-sub);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 800;
+    transition: all 0.15s;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+}
+
+.roadmap-btn:active {
+    transform: scale(0.97);
+    opacity: 0.8;
+}
+
+/* 🏆 명예의 전당 및 스탯 */
+.ranking-stats {
+    display: flex;
+    gap: 12px;
+}
+
+.ranking-badge {
+    flex: 1;
+    padding: 16px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.ranking-badge .title {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--text-gray);
+    text-align: center;
+    margin-bottom: 4px;
+}
+
+.rank-item {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.rank-item.sub {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-sub);
+    margin-top: -2px;
+}
+
+.ranking-badge.money-badge {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.ranking-badge.money-badge span {
+    font-size: 21px;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+}
+
+.highlight-stat {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-sub);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    padding: 18px;
+}
+
+.stat-num {
+    font-size: 18px;
+    font-weight: 900;
+    color: var(--smoke-main);
+}
+
+.stat-num.drink {
+    color: var(--drink-main);
+}
+
+/* 📊 차트 영역 */
+.chart-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-gray);
+    margin-bottom: 14px;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.scroll-hint {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-streak);
+    margin-left: auto;
+    background: var(--bg-streak);
+    padding: 6px 10px;
+    border-radius: 12px;
+}
+
+.scroll-chart-wrapper {
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 5px;
+}
+
+.scroll-chart-wrapper::-webkit-scrollbar {
+    height: 6px;
+}
+
+.scroll-chart-wrapper::-webkit-scrollbar-thumb {
+    background: rgba(139, 149, 161, 0.3);
+    border-radius: 4px;
+}
+
+.scroll-chart-inner {
+    width: 1400px;
+    height: 130px;
+}
+
+/* 🔘 메인 버튼 그룹 */
+.btn-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 5px;
+}
+
+.button {
+    padding: 20px;
+    border-radius: 24px;
+    font-weight: 800;
+    font-size: 17px;
+    cursor: pointer;
+    border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.15s;
+}
+
+.button:active {
+    transform: scale(0.95);
+    opacity: 0.9;
+}
+
+.smoke-btn {
+    background: var(--smoke-btn-grad);
+    color: white;
+    box-shadow: 0 10px 24px var(--smoke-btn-shadow);
+}
+
+.drink-btn {
+    background: var(--drink-btn-grad);
+    color: white;
+    box-shadow: 0 10px 24px var(--drink-btn-shadow);
+}
+
+.defense-btn {
+    background: var(--card-bg);
+    color: var(--text-main);
+    font-size: 15px;
+    font-weight: 700;
+}
+
+@media (prefers-color-scheme: dark) {
+    .defense-btn {
+        background: var(--tab-bg);
+    }
+}
+
+/* ⚙️ 하단 설정 버튼 및 푸터 */
+.settings-area {
+    padding-bottom: 15px;
+}
+
+.settings-btn {
+    width: 100%;
+    background: var(--card-bg);
+    border: none;
+    padding: 22px;
+    border-radius: 24px;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.15s;
+    color: var(--text-main);
+}
+
+.settings-btn:active {
+    transform: scale(0.96);
+    background: var(--tab-bg);
+}
+
+.footer-notice {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-gray);
+    margin-bottom: 30px;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+/* 🪟 모달 공통 레이아웃 */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--modal-overlay);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    padding: 20px;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal-box {
+    background: var(--card-bg);
+    padding: 32px 24px;
+    border-radius: 32px;
+    width: 100%;
+    max-width: 340px;
+    text-align: center;
+    box-shadow: var(--shadow-lg);
+    transform: translateY(30px) scale(0.95);
+    transition: all 0.3s;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+.modal-box.settings-box {
+    background: var(--app-bg);
+    padding: 24px 20px;
+}
+
+/* 네이티브 설정창용 배경 */
+.modal-box::-webkit-scrollbar {
+    display: none;
+}
+
+.modal-msg {
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 1.5;
+    margin-bottom: 25px;
+    white-space: pre-wrap;
+    word-break: keep-all;
+    color: var(--text-main);
+}
+
+
+/* ==========================================================
+   🚨 [핵심 복원 구역] 아이폰(iOS) 스타일 동적 설정창 전용 CSS
+   ========================================================== */
+
+.settings-group {
+    margin-bottom: 24px;
+}
+
+.settings-title {
+    text-align: left;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--text-sub);
+    margin-bottom: 10px;
+    padding-left: 4px;
+}
+
+/* 탭 전환 (세그먼트 컨트롤) 디자인 */
+.segment-group {
+    display: flex;
+    background: var(--tab-bg);
+    border-radius: 12px;
+    padding: 4px;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+.segment-group input[type="radio"] {
+    display: none;
+}
+
+.segment-group label {
+    flex: 1;
+    text-align: center;
+    padding: 10px 0;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-gray);
+    cursor: pointer;
+    border-radius: 8px;
+    transition: 0.2s;
+}
+
+.segment-group input[type="radio"]:checked+label {
+    background: var(--card-bg);
+    color: var(--text-main);
+    box-shadow: var(--shadow-sm);
+    font-weight: 800;
+}
+
+/* 하얀색 박스 안에 들어가는 리스트(Inset Grouped List) 디자인 */
+.settings-list {
+    background: var(--card-bg);
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.setting-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid var(--app-bg);
+}
+
+.setting-row:last-child {
+    border-bottom: none;
+}
+
+.setting-row span {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+/* 테두리가 없는 깔끔한 우측 정렬 인풋 디자인 */
+.setting-row input {
+    text-align: right;
+    border: none;
+    font-size: 16px;
+    font-weight: 900;
+    color: var(--smoke-main);
+    width: 80px;
+    background: transparent;
+}
+
+.setting-row input:focus {
+    outline: none;
+}
+
+.setting-row input::placeholder {
+    color: var(--text-gray);
+    font-weight: 500;
+}
+
+/* 음주 설정창의 인풋 색상은 파란색으로 오버라이드 */
+#wrapDrinkCost input,
+#wrapDrinkOriginal input,
+#wrapDrinkTarget input {
+    color: var(--drink-main);
+}
+
+
+/* 모달 하단 버튼 및 리셋 영역 */
+.modal-btn-group {
+    display: flex;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+.modal-btn {
+    flex: 1;
+    padding: 20px;
+    border: none;
+    border-radius: 20px;
+    font-weight: 800;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.modal-btn:active {
+    transform: scale(0.96);
+}
+
+.btn-cancel {
+    background: var(--tab-bg);
+    color: var(--text-sub);
+}
+
+.btn-confirm {
+    background: var(--text-main);
+    color: var(--card-bg);
+}
+
+.reset-zone {
+    margin-top: 30px;
+    border-top: 2px dashed var(--tab-bg);
+    padding-top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.reset-btn {
+    background: var(--card-bg);
+    color: var(--status-fail);
+    font-size: 14px;
+    padding: 16px;
+    border-radius: 16px;
+    font-weight: 800;
+    border: none;
+    transition: transform 0.1s;
+}
+
+.reset-btn:active {
+    transform: scale(0.97);
+}
+
+/* 🗺️ 로드맵 (도감) 모달 UI */
+.roadmap-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    text-align: left;
+    margin-top: 15px;
+    margin-bottom: 20px;
+}
+
+.roadmap-item {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    padding: 16px;
+    border-radius: 20px;
+    background: var(--app-bg);
+    transition: all 0.3s;
+}
+
+.roadmap-item.past {
+    opacity: 0.5;
+}
+
+.roadmap-item.past .rm-icon {
+    filter: grayscale(100%);
+}
+
+.roadmap-item.current.smoke-theme {
+    border: 2px solid var(--smoke-main);
+    background: var(--smoke-light);
+    opacity: 1;
+    box-shadow: var(--shadow-sm);
+    transform: scale(1.02);
+}
+
+.roadmap-item.current.drink-theme {
+    border: 2px solid var(--drink-main);
+    background: var(--drink-light);
+    opacity: 1;
+    box-shadow: var(--shadow-sm);
+    transform: scale(1.02);
+}
+
+.roadmap-item.future {
+    opacity: 0.3;
+    filter: grayscale(1);
+}
+
+.rm-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.rm-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.rm-label {
+    font-size: 12px;
+    font-weight: 900;
+    color: var(--text-sub);
+}
+
+.roadmap-item.current .rm-label {
+    color: var(--smoke-main);
+}
+
+.roadmap-item.current.drink-theme .rm-label {
+    color: var(--drink-main);
+}
+
+.rm-msg {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--text-main);
+    line-height: 1.4;
+}
+
+/* 🛡️ 10초 방어 게임 UI */
+#gameTimer {
+    font-size: 4.5rem;
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+    margin: 5px 0 25px 0;
+    letter-spacing: -2px;
+    color: var(--text-main);
+}
+
+.game-main-btn {
+    width: 100%;
+    padding: 20px;
+    font-size: 1.2rem;
+    font-weight: 800;
+    border: none;
+    border-radius: 24px;
+    cursor: pointer;
+    background: var(--status-success);
+    color: white;
+    box-shadow: 0 10px 20px var(--money-bg-light);
+    transition: all 0.15s;
+}
+
+.game-main-btn:active {
+    transform: scale(0.95);
+}
+
+.game-main-btn.stop {
+    background: var(--status-fail);
+    box-shadow: 0 10px 20px var(--smoke-btn-shadow);
+}
