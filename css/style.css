@@ -1,47 +1,33 @@
 @charset "UTF-8";
 
 :root {
-    /* 🎨 기본 배경 및 카드 색상 */
     --app-bg: #F5F7F9;
     --card-bg: #ffffff;
     --tab-bg: #E8EAED;
     --modal-overlay: rgba(0, 0, 0, 0.5);
-
-    /* 폰트 색상 */
     --text-main: #000000;
     --text-sub: #333D4B;
     --text-gray: #8B95A1;
     --text-streak: #FF8A00;
     --bg-streak: rgba(255, 138, 0, 0.15);
-
-    /* 🚬 담배 테마 색상 (Pink) */
     --smoke-main: #FF5B73;
     --smoke-light: #FFF0F2;
     --smoke-btn-grad: linear-gradient(135deg, #FF416C, #FF4B2B);
     --smoke-btn-shadow: rgba(255, 65, 108, 0.3);
-
-    /* 🍺 술 테마 색상 (Blue) */
     --drink-main: #5C80FF;
     --drink-light: #F0F4FF;
     --drink-btn-grad: linear-gradient(135deg, #4776E6, #8E54E9);
     --drink-btn-shadow: rgba(71, 118, 230, 0.3);
-
-    /* 💰 금액 및 성공 색상 (Green) */
     --money-main: #34C759;
     --money-bg-light: rgba(52, 199, 89, 0.2);
     --money-btn-grad: linear-gradient(135deg, #34C759, #30D158);
-
-    /* 상태 색상 */
     --status-success: #34C759;
     --status-fail: #FF5B73;
-
-    /* 그림자 및 기타 */
     --shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.03);
     --shadow-lg: 0 16px 36px rgba(0, 0, 0, 0.06);
     --max-gold: linear-gradient(90deg, #FFD700, #FFA500);
 }
 
-/* 🌙 다크모드 대응 */
 @media (prefers-color-scheme: dark) {
     :root {
         --app-bg: #000000;
@@ -58,7 +44,6 @@
     }
 }
 
-/* 📱 글로벌 설정 */
 body {
     margin: 0;
     font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif, 'Tossface';
@@ -74,7 +59,6 @@ body {
     touch-action: manipulation;
 }
 
-/* 숫자 표시용 고정폭 폰트 적용 */
 .time-display,
 #smokeBoardText,
 #drinkBoardText,
@@ -86,21 +70,52 @@ body {
     font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif !important;
 }
 
-/* 🚀 메인 레이아웃 */
-.header {
-    background: transparent;
-    text-align: center;
-    padding: calc(env(safe-area-inset-top) + 20px) 15px 15px 15px;
-    font-size: 24px;
+/* 🚀 상단 고정 네비게이션 바 디자인 */
+.top-nav {
+    position: sticky;
+    top: 0;
+    background: rgba(245, 247, 249, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: space-between;
+    padding: calc(env(safe-area-inset-top) + 15px) 20px 15px 20px;
+    z-index: 100;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    gap: 8px;
+}
+
+@media (prefers-color-scheme: dark) {
+    .top-nav {
+        background: rgba(0, 0, 0, 0.85);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+}
+
+.nav-btn {
+    flex: 1;
+    background: var(--card-bg);
+    border: none;
+    padding: 12px 0;
+    border-radius: 14px;
+    font-size: 13px;
     font-weight: 800;
-    letter-spacing: -0.5px;
-    z-index: 10;
+    color: var(--text-sub);
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    transition: transform 0.1s;
+    white-space: nowrap;
+}
+
+.nav-btn:active {
+    transform: scale(0.95);
+    background: var(--tab-bg);
 }
 
 .container {
     max-width: 500px;
     margin: auto;
-    padding: 0 20px 40px 20px;
+    padding: 15px 20px 40px 20px;
     display: flex;
     flex-direction: column;
     gap: 28px;
@@ -115,7 +130,6 @@ body {
     display: none;
 }
 
-/* 💳 카드 디자인 */
 .card {
     background: var(--card-bg);
     border-radius: 36px;
@@ -166,7 +180,7 @@ body {
     padding: 64px 24px 32px 24px;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 24px;
     text-align: center;
 }
 
@@ -179,7 +193,7 @@ body {
 }
 
 .title {
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 700;
     color: var(--text-gray);
 }
@@ -194,7 +208,7 @@ body {
 }
 
 .time-display {
-    font-size: clamp(38px, 9.5vw, 48px);
+    font-size: clamp(34px, 8vw, 44px);
     font-weight: 900;
     letter-spacing: -2px;
     margin: 0;
@@ -203,7 +217,6 @@ body {
     text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-/* 💎 금액 및 달성률 메인 보드 */
 .saved-money {
     padding: 22px;
     border-radius: 24px;
@@ -226,7 +239,6 @@ body {
     color: #ffffff !important;
 }
 
-/* [중요] 줄이기 모드일 때 메인 보드 색상 및 요소 숨김 */
 .card.mode-reduce .smoke-card #smokeMainBoard {
     background: var(--smoke-main);
     box-shadow: 0 10px 20px var(--smoke-btn-shadow);
@@ -241,7 +253,6 @@ body {
     display: none !important;
 }
 
-/* 🩺 건강 섹션 및 기타 박스 공통 */
 .health-msg,
 .ranking-badge,
 .highlight-stat,
@@ -301,11 +312,19 @@ body {
 .health-current-msg {
     font-size: 15px;
     font-weight: 800;
-    line-height: 1.3;
+    line-height: 1.4;
+    word-break: keep-all;
+    white-space: normal;
+}
+
+.health-text-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 .health-percent {
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 900;
 }
 
@@ -385,7 +404,6 @@ body {
     opacity: 0.8;
 }
 
-/* 🏆 명예의 전당 및 스탯 */
 .ranking-stats {
     display: flex;
     gap: 12px;
@@ -409,9 +427,11 @@ body {
 
 .rank-item {
     display: flex;
+    justify-content: space-between;
     align-items: center;
     font-size: 14px;
     font-weight: 800;
+    width: 100%;
 }
 
 .rank-item.sub {
@@ -419,6 +439,10 @@ body {
     font-weight: 700;
     color: var(--text-sub);
     margin-top: -2px;
+}
+
+.rank-item span {
+    white-space: nowrap;
 }
 
 .ranking-badge.money-badge {
@@ -454,7 +478,6 @@ body {
     color: var(--drink-main);
 }
 
-/* 📊 차트 영역 */
 .chart-title {
     font-size: 13px;
     font-weight: 700;
@@ -467,13 +490,13 @@ body {
 }
 
 .scroll-hint {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--text-streak);
+    font-size: 10px;
+    opacity: 0.6;
+    background: none;
+    padding: 0;
     margin-left: auto;
-    background: var(--bg-streak);
-    padding: 6px 10px;
-    border-radius: 12px;
+    font-weight: 600;
+    color: var(--text-gray);
 }
 
 .scroll-chart-wrapper {
@@ -497,7 +520,6 @@ body {
     height: 130px;
 }
 
-/* 🔘 메인 버튼 그룹 */
 .btn-group {
     display: flex;
     flex-direction: column;
@@ -506,7 +528,6 @@ body {
 }
 
 .button {
-    padding: 20px;
     border-radius: 24px;
     font-weight: 800;
     font-size: 17px;
@@ -519,62 +540,24 @@ body {
     transition: all 0.15s;
 }
 
-.button:active {
-    transform: scale(0.95);
-    opacity: 0.9;
-}
-
 .smoke-btn {
+    padding: 20px;
     background: var(--smoke-btn-grad);
     color: white;
     box-shadow: 0 10px 24px var(--smoke-btn-shadow);
 }
 
 .drink-btn {
+    padding: 20px;
     background: var(--drink-btn-grad);
     color: white;
     box-shadow: 0 10px 24px var(--drink-btn-shadow);
 }
 
-.defense-btn {
-    background: var(--card-bg);
-    color: var(--text-main);
-    font-size: 15px;
-    font-weight: 700;
-}
-
-@media (prefers-color-scheme: dark) {
-    .defense-btn {
-        background: var(--tab-bg);
-    }
-}
-
-/* ⚙️ 하단 설정 버튼 및 푸터 */
-.settings-area {
-    padding-bottom: 15px;
-}
-
-.settings-btn {
-    width: 100%;
-    background: var(--card-bg);
-    border: none;
-    padding: 22px;
-    border-radius: 24px;
-    font-size: 16px;
-    font-weight: 800;
-    cursor: pointer;
-    box-shadow: var(--shadow-sm);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    transition: all 0.15s;
-    color: var(--text-main);
-}
-
-.settings-btn:active {
-    transform: scale(0.96);
-    background: var(--tab-bg);
+.smoke-btn:active,
+.drink-btn:active {
+    transform: scale(0.95);
+    opacity: 0.9;
 }
 
 .footer-notice {
@@ -586,7 +569,6 @@ body {
     flex-shrink: 0;
 }
 
-/* 🪟 모달 공통 레이아웃 */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -631,7 +613,6 @@ body {
     padding: 24px 20px;
 }
 
-/* 네이티브 설정창용 배경 */
 .modal-box::-webkit-scrollbar {
     display: none;
 }
@@ -646,11 +627,6 @@ body {
     color: var(--text-main);
 }
 
-
-/* ==========================================================
-   🚨 [핵심 복원 구역] 아이폰(iOS) 스타일 동적 설정창 전용 CSS
-   ========================================================== */
-
 .settings-group {
     margin-bottom: 24px;
 }
@@ -664,7 +640,6 @@ body {
     padding-left: 4px;
 }
 
-/* 탭 전환 (세그먼트 컨트롤) 디자인 */
 .segment-group {
     display: flex;
     background: var(--tab-bg);
@@ -697,7 +672,6 @@ body {
     font-weight: 800;
 }
 
-/* 하얀색 박스 안에 들어가는 리스트(Inset Grouped List) 디자인 */
 .settings-list {
     background: var(--card-bg);
     border-radius: 16px;
@@ -722,7 +696,6 @@ body {
     color: var(--text-main);
 }
 
-/* 테두리가 없는 깔끔한 우측 정렬 인풋 디자인 */
 .setting-row input {
     text-align: right;
     border: none;
@@ -742,15 +715,12 @@ body {
     font-weight: 500;
 }
 
-/* 음주 설정창의 인풋 색상은 파란색으로 오버라이드 */
 #wrapDrinkCost input,
 #wrapDrinkOriginal input,
 #wrapDrinkTarget input {
     color: var(--drink-main);
 }
 
-
-/* 모달 하단 버튼 및 리셋 영역 */
 .modal-btn-group {
     display: flex;
     gap: 12px;
@@ -806,7 +776,6 @@ body {
     transform: scale(0.97);
 }
 
-/* 🗺️ 로드맵 (도감) 모달 UI */
 .roadmap-list {
     display: flex;
     flex-direction: column;
@@ -887,7 +856,6 @@ body {
     line-height: 1.4;
 }
 
-/* 🛡️ 10초 방어 게임 UI */
 #gameTimer {
     font-size: 4.5rem;
     font-weight: 900;

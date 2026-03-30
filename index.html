@@ -1,297 +1,238 @@
 <!DOCTYPE html>
 <html lang="ko">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
     <meta name="format-detection" content="telephone=no, date=no, email=no, address=no">
-    <title>노담 노술</title>
+    <title>노담 노술 관리자</title>
     <link rel="icon" href="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
     <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
-    <link rel="stylesheet" crossorigin
-        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
+    <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/toss/tossface/dist/tossface.css">
-
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
-
     <link rel="stylesheet" href="css/style.css">
 </head>
-
 <body>
 
-    <div class="header">나의 기록 🏆</div>
+<div class="top-nav">
+    <button class="nav-btn" id="navSmoke">🚬 금연</button>
+    <button class="nav-btn" id="navDrink">🍺 금주</button>
+    <button class="nav-btn" id="navDefense">🛡️ 10초게임</button>
+    <button class="nav-btn" id="navSettings">⚙️ 설정</button>
+</div>
 
-    <div class="container">
-        <div class="card smoke-card" id="smokeCard">
-            <div class="card-hero smoke-hero">
-                <div class="hero-icon">🚭</div>
+<div class="container">
+    <div class="card smoke-card" id="smokeCard">
+        <div class="card-hero smoke-hero"><div class="hero-icon">🚭</div></div>
+        <div class="card-body">
+            <div class="card-header-text">
+                <div class="title" id="smokeTitle">금연 시간</div>
+                <div class="streak" id="smokeStreak">🔥 0일째</div>
             </div>
-            <div class="card-body">
-                <div class="card-header-text">
-                    <div class="title" id="smokeTitle">금연 시간</div>
-                    <div class="streak" id="smokeStreak">🔥 0일째</div>
-                </div>
-                <div class="time-display" id="smokeTime">0일 00:00:00</div>
+            <div class="time-display" id="smokeTime">0일 00:00:00</div>
+            
+            <div class="saved-money" id="smokeMainBoard">
+                <span class="material-symbols-rounded money-icon" id="smokeBoardIcon">payments</span>
+                <span id="smokeBoardText">0원 절약중!</span>
+            </div>
 
-                <div class="saved-money" id="smokeMainBoard">
-                    <span class="material-symbols-rounded money-icon" id="smokeBoardIcon">payments</span>
-                    <span id="smokeBoardText">0원 절약중!</span>
-                </div>
-
-                <div id="smokeHealth" class="health-msg">
-                    <div class="health-header">
-                        <div class="health-title-area">
-                            <div class="health-icon-wrapper">🌿</div>
-                            <div class="health-text-content">
-                                <span class="health-label">내 몸의 변화</span>
-                                <span id="smokeHealthText" class="health-current-msg">분석 중...</span>
-                            </div>
+            <div id="smokeHealth" class="health-msg">
+                <div class="health-header">
+                    <div class="health-title-area">
+                        <div class="health-icon-wrapper">🌿</div>
+                        <div class="health-text-content">
+                            <span class="health-label">내 몸의 변화</span>
+                            <span id="smokeHealthText" class="health-current-msg">분석 중...</span>
                         </div>
-                        <span id="smokeHealthPercent" class="health-percent">0.0%</span>
                     </div>
-                    <div class="health-body">
-                        <div class="progress-bg">
-                            <div id="smokeHealthBar" class="progress-bar smoke"></div>
+                    <span id="smokeHealthPercent" class="health-percent">0.0%</span>
+                </div>
+                <div class="health-body">
+                    <div class="progress-bg"><div id="smokeHealthBar" class="progress-bar smoke"></div></div>
+                    <div class="health-footer"><span id="smokeHealthNext" class="health-next-target">👉 다음: 계산 중...</span></div>
+                    <button class="roadmap-btn" id="btnRoadmapSmoke">🗺️ 전체 여정 도감 보기</button>
+                </div>
+            </div>
+
+            <div class="ranking-stats hide-on-reduce">
+                <div class="ranking-badge">
+                    <div class="title">🏆 명예의 전당</div>
+                    <div class="rank-item"><span>🥇 1위</span> <span id="smokeTop1Val">기록 없음</span></div>
+                    <div class="rank-item sub"><span>🥈 2위</span> <span id="smokeTop2Val">기록 없음</span></div>
+                    <div class="rank-item sub"><span>🥉 3위</span> <span id="smokeTop3Val">기록 없음</span></div>
+                </div>
+                <div class="ranking-badge money-badge">
+                    <div class="title" style="margin-bottom: 8px;">💰 누적 총 절약</div>
+                    <span id="smokeTotalMoney">0원</span>
+                </div>
+            </div>
+            
+            <div class="highlight-stat hide-on-reduce">오늘 유혹 실패 🚬 <span class="stat-num" id="todaySmoke">0</span>번</div>
+            
+            <div class="chart-container">
+                <div class="chart-title">
+                    <span class="material-symbols-rounded" style="font-size: 16px;">bar_chart</span>최근 30일 실패 기록
+                    <span class="scroll-hint">◀ 옆으로 넘기기</span>
+                </div>
+                <div class="scroll-chart-wrapper" id="smokeChartWrapper">
+                    <div class="scroll-chart-inner"><canvas id="smokeChart"></canvas></div>
+                </div>
+            </div>
+            
+            <div class="btn-group">
+                <button class="button smoke-btn" id="btnRecordSmoke">방금 피웠음 🥲</button>
+                </div>
+        </div>
+    </div>
+
+    <div class="card drink-card" id="drinkCard">
+        <div class="card-hero drink-hero"><div class="hero-icon">🚫</div></div>
+        <div class="card-body">
+            <div class="card-header-text">
+                <div class="title" id="drinkTitle">금주 시간</div>
+                <div class="streak" id="drinkStreak">🔥 0일째</div>
+            </div>
+            <div class="time-display" id="drinkDay">0일 0시간</div>
+            
+            <div class="saved-money" id="drinkMainBoard">
+                <span class="material-symbols-rounded money-icon" id="drinkBoardIcon">payments</span>
+                <span id="drinkBoardText">0원 절약중!</span>
+            </div>
+
+            <div id="drinkHealth" class="health-msg">
+                <div class="health-header">
+                    <div class="health-title-area">
+                        <div class="health-icon-wrapper">💧</div>
+                        <div class="health-text-content">
+                            <span class="health-label">내 몸의 변화</span>
+                            <span id="drinkHealthText" class="health-current-msg">분석 중...</span>
                         </div>
-                        <div class="health-footer"><span id="smokeHealthNext" class="health-next-target">👉 다음: 계산
-                                중...</span></div>
-                        <button class="roadmap-btn" onclick="UI.openRoadmap('smoke')">🗺️ 전체 여정 도감 보기</button>
                     </div>
+                    <span id="drinkHealthPercent" class="health-percent">0.0%</span>
                 </div>
-
-                <div class="ranking-stats hide-on-reduce">
-                    <div class="ranking-badge">
-                        <div class="title">🏆 명예의 전당</div>
-                        <div class="rank-item" id="smokeTop1">🥇 1위: 기록 없음</div>
-                        <div class="rank-item sub" id="smokeTop2">🥈 2위: 기록 없음</div>
-                        <div class="rank-item sub" id="smokeTop3">🥉 3위: 기록 없음</div>
-                    </div>
-                    <div class="ranking-badge money-badge">
-                        <div class="title" style="margin-bottom: 8px;">💰 누적 총 절약</div>
-                        <span id="smokeTotalMoney">0원</span>
-                    </div>
-                </div>
-
-                <div class="highlight-stat hide-on-reduce">오늘 유혹 실패 🚬 <span class="stat-num" id="todaySmoke">0</span>번
-                </div>
-
-                <div class="chart-container">
-                    <div class="chart-title">
-                        <span class="material-symbols-rounded" style="font-size: 16px;">bar_chart</span>최근 30일 실패 기록
-                        <span class="scroll-hint">◀ 옆으로 넘기기</span>
-                    </div>
-                    <div class="scroll-chart-wrapper" id="smokeChartWrapper">
-                        <div class="scroll-chart-inner"><canvas id="smokeChart"></canvas></div>
-                    </div>
-                </div>
-
-                <div class="btn-group">
-                    <button class="button smoke-btn" id="btnRecordSmoke">방금 피웠음 🥲</button>
-                    <button class="button defense-btn" onclick="App.openDefenseGame('smoke')">🛡️ 참기 힘든가요? (10초
-                        방어)</button>
+                <div class="health-body">
+                    <div class="progress-bg"><div id="drinkHealthBar" class="progress-bar drink"></div></div>
+                    <div class="health-footer"><span id="drinkHealthNext" class="health-next-target">👉 다음: 계산 중...</span></div>
+                    <button class="roadmap-btn" id="btnRoadmapDrink">🗺️ 전체 여정 도감 보기</button>
                 </div>
             </div>
-        </div>
 
-        <div class="card drink-card" id="drinkCard">
-            <div class="card-hero drink-hero">
-                <div class="hero-icon">🚫</div>
-            </div>
-            <div class="card-body">
-                <div class="card-header-text">
-                    <div class="title" id="drinkTitle">금주 시간</div>
-                    <div class="streak" id="drinkStreak">🔥 0일째</div>
+            <div class="ranking-stats hide-on-reduce">
+                <div class="ranking-badge">
+                    <div class="title">🏆 명예의 전당</div>
+                    <div class="rank-item"><span>🥇 1위</span> <span id="drinkTop1Val">기록 없음</span></div>
+                    <div class="rank-item sub"><span>🥈 2위</span> <span id="drinkTop2Val">기록 없음</span></div>
+                    <div class="rank-item sub"><span>🥉 3위</span> <span id="drinkTop3Val">기록 없음</span></div>
                 </div>
-                <div class="time-display" id="drinkDay">0일 0시간</div>
-
-                <div class="saved-money" id="drinkMainBoard">
-                    <span class="material-symbols-rounded money-icon" id="drinkBoardIcon">payments</span>
-                    <span id="drinkBoardText">0원 절약중!</span>
-                </div>
-
-                <div id="drinkHealth" class="health-msg">
-                    <div class="health-header">
-                        <div class="health-title-area">
-                            <div class="health-icon-wrapper">💧</div>
-                            <div class="health-text-content">
-                                <span class="health-label">내 몸의 변화</span>
-                                <span id="drinkHealthText" class="health-current-msg">분석 중...</span>
-                            </div>
-                        </div>
-                        <span id="drinkHealthPercent" class="health-percent">0.0%</span>
-                    </div>
-                    <div class="health-body">
-                        <div class="progress-bg">
-                            <div id="drinkHealthBar" class="progress-bar drink"></div>
-                        </div>
-                        <div class="health-footer"><span id="drinkHealthNext" class="health-next-target">👉 다음: 계산
-                                중...</span></div>
-                        <button class="roadmap-btn" onclick="UI.openRoadmap('drink')">🗺️ 전체 여정 도감 보기</button>
-                    </div>
-                </div>
-
-                <div class="ranking-stats hide-on-reduce">
-                    <div class="ranking-badge">
-                        <div class="title">🏆 명예의 전당</div>
-                        <div class="rank-item" id="drinkTop1">🥇 1위: 기록 없음</div>
-                        <div class="rank-item sub" id="drinkTop2">🥈 2위: 기록 없음</div>
-                        <div class="rank-item sub" id="drinkTop3">🥉 3위: 기록 없음</div>
-                    </div>
-                    <div class="ranking-badge money-badge">
-                        <div class="title" style="margin-bottom: 8px;">💰 누적 총 절약</div>
-                        <span id="drinkTotalMoney">0원</span>
-                    </div>
-                </div>
-
-                <div class="highlight-stat hide-on-reduce">최근 30일 실패 기록 🍺 <span class="stat-num drink"
-                        id="monthDrink">0</span>번</div>
-
-                <div class="chart-container">
-                    <div class="chart-title">
-                        <span class="material-symbols-rounded" style="font-size: 16px;">bar_chart</span>최근 30일 실패 기록
-                        <span class="scroll-hint">◀ 옆으로 넘기기</span>
-                    </div>
-                    <div class="scroll-chart-wrapper" id="drinkChartWrapper">
-                        <div class="scroll-chart-inner"><canvas id="drinkChart"></canvas></div>
-                    </div>
-                </div>
-
-                <div class="btn-group">
-                    <button class="button drink-btn" id="btnRecordDrink">방금 마셨음 🥲</button>
-                    <button class="button defense-btn" onclick="App.openDefenseGame('drink')">🛡️ 참기 힘든가요? (10초
-                        방어)</button>
+                <div class="ranking-badge money-badge">
+                    <div class="title" style="margin-bottom: 8px;">💰 누적 총 절약</div>
+                    <span id="drinkTotalMoney">0원</span>
                 </div>
             </div>
-        </div>
-
-        <div class="settings-area">
-            <button class="settings-btn" onclick="UI.openSettingsModal()">⚙️ 앱 설정 (목표 및 비용)</button>
-        </div>
-        <div class="footer-notice">※ 건강 정보는 WHO/CDC 기준 평균 데이터 기반 안내입니다</div>
-    </div>
-
-    <div class="modal-overlay" id="customModal">
-        <div class="modal-box">
-            <div class="modal-msg" id="modalMsg">메시지</div>
-            <div class="modal-btn-group">
-                <button class="modal-btn btn-cancel" onclick="UI.closeModal()">취소</button>
-                <button class="modal-btn btn-confirm" id="modalConfirmBtn">확인</button>
+            
+            <div class="highlight-stat hide-on-reduce">최근 30일 실패 기록 🍺 <span class="stat-num drink" id="monthDrink">0</span>번</div>
+            
+            <div class="chart-container">
+                <div class="chart-title">
+                    <span class="material-symbols-rounded" style="font-size: 16px;">bar_chart</span>최근 30일 실패 기록
+                    <span class="scroll-hint">◀ 옆으로 넘기기</span>
+                </div>
+                <div class="scroll-chart-wrapper" id="drinkChartWrapper">
+                    <div class="scroll-chart-inner"><canvas id="drinkChart"></canvas></div>
+                </div>
             </div>
+
+            <div class="btn-group">
+                <button class="button drink-btn" id="btnRecordDrink">방금 마셨음 🥲</button>
+                </div>
         </div>
     </div>
 
-    <div class="modal-overlay" id="settingsModal">
-        <div class="modal-box settings-box">
-            <div class="modal-msg" style="margin-bottom: 20px; font-size: 20px;">⚙️ 앱 설정</div>
+    <div class="footer-notice">※ 건강 정보는 WHO/CDC 기준 평균 데이터 기반 안내입니다</div>
+</div>
 
-            <div class="settings-group">
-                <div class="settings-title">🚬 담배 목표 설정</div>
-                <div class="segment-group">
-                    <input type="radio" name="setSmokeMode" id="sm_quit" value="quit"
-                        onchange="UI.toggleSettingsInputs()"><label for="sm_quit">완전 금연</label>
-                    <input type="radio" name="setSmokeMode" id="sm_reduce" value="reduce"
-                        onchange="UI.toggleSettingsInputs()"><label for="sm_reduce">줄이기</label>
-                    <input type="radio" name="setSmokeMode" id="sm_off" value="off"
-                        onchange="UI.toggleSettingsInputs()"><label for="sm_off">끄기</label>
-                </div>
-
-                <div class="settings-list">
-                    <div class="setting-row" id="wrapSmokePrice">
-                        <span>1갑 가격 (원)</span>
-                        <input type="number" id="setSmokePrice" placeholder="4500">
-                    </div>
-                    <div class="setting-row" id="wrapSmokeOriginal">
-                        <span>원래 하루 흡연량 (개비)</span>
-                        <input type="number" id="setSmokePerDay" placeholder="10">
-                    </div>
-                    <div class="setting-row" id="wrapSmokeTarget" style="display:none;">
-                        <span>목표 하루 흡연량 (개비)</span>
-                        <input type="number" id="setSmokeTarget" placeholder="5">
-                    </div>
-                </div>
-            </div>
-
-            <div class="settings-group">
-                <div class="settings-title">🍺 술 목표 설정</div>
-                <div class="segment-group">
-                    <input type="radio" name="setDrinkMode" id="dr_quit" value="quit"
-                        onchange="UI.toggleSettingsInputs()"><label for="dr_quit">완전 금주</label>
-                    <input type="radio" name="setDrinkMode" id="dr_reduce" value="reduce"
-                        onchange="UI.toggleSettingsInputs()"><label for="dr_reduce">줄이기</label>
-                    <input type="radio" name="setDrinkMode" id="dr_off" value="off"
-                        onchange="UI.toggleSettingsInputs()"><label for="dr_off">끄기</label>
-                </div>
-
-                <div class="settings-list">
-                    <div class="setting-row" id="wrapDrinkCost">
-                        <span>1회 평균 비용 (원)</span>
-                        <input type="number" id="setDrinkCost" placeholder="50000">
-                    </div>
-                    <div class="setting-row" id="wrapDrinkOriginal">
-                        <span>원래 1주 음주 (회)</span>
-                        <input type="number" id="setDrinkPerWeek" placeholder="2">
-                    </div>
-                    <div class="setting-row" id="wrapDrinkTarget" style="display:none;">
-                        <span>목표 1주 음주 (회)</span>
-                        <input type="number" id="setDrinkTarget" placeholder="1">
-                    </div>
-                </div>
-            </div>
-
-            <div class="modal-btn-group">
-                <button class="modal-btn btn-cancel" onclick="UI.closeSettingsModal()">취소</button>
-                <button class="modal-btn btn-confirm" onclick="App.saveSettings()">저장</button>
-            </div>
-
-            <div class="reset-zone">
-                <button class="reset-btn" onclick="App.askReset('smoke')">⚠️ 담배 기록 완전 초기화</button>
-                <button class="reset-btn" onclick="App.askReset('drink')">⚠️ 술 기록 완전 초기화</button>
-            </div>
+<div class="modal-overlay" id="customModal">
+    <div class="modal-box">
+        <div class="modal-msg" id="modalMsg">메시지</div>
+        <div class="modal-btn-group">
+            <button class="modal-btn btn-cancel" id="btnModalCancel">취소</button>
+            <button class="modal-btn btn-confirm" id="modalConfirmBtn">확인</button>
         </div>
     </div>
+</div>
 
-    <div class="modal-overlay" id="roadmapModal">
-        <div class="modal-box" style="width: 90%; max-width: 380px;">
-            <div class="modal-msg" id="roadmapTitle" style="margin-bottom: 5px; font-size: 20px;">🌿 회복 도감</div>
-            <div style="font-size: 13px; color: var(--text-gray); font-weight: 700; margin-bottom: 15px;">앞으로 다가올 내 몸의
-                기적같은 변화들</div>
-            <div class="roadmap-list" id="roadmapList"></div>
-            <button class="button reset-btn"
-                style="width: 100%; margin-top: 10px; background: transparent; padding: 15px; font-size: 15px; color: var(--text-sub);"
-                onclick="document.getElementById('roadmapModal').classList.remove('active')">닫기</button>
+<div class="modal-overlay" id="settingsModal">
+    <div class="modal-box settings-box">
+        <div class="modal-msg" style="margin-bottom: 20px; font-size: 20px;">⚙️ 앱 설정</div>
+        
+        <div class="settings-group">
+            <div class="settings-title">🚬 담배 목표 설정</div>
+            <div class="segment-group">
+                <input type="radio" name="setSmokeMode" id="sm_quit" value="quit"><label for="sm_quit">완전 금연</label>
+                <input type="radio" name="setSmokeMode" id="sm_reduce" value="reduce"><label for="sm_reduce">줄이기</label>
+                <input type="radio" name="setSmokeMode" id="sm_off" value="off"><label for="sm_off">끄기</label>
+            </div>
+            <div class="settings-list">
+                <div class="setting-row" id="wrapSmokePrice"><span>1갑 가격 (원)</span><input type="number" id="setSmokePrice" placeholder="4500"></div>
+                <div class="setting-row" id="wrapSmokeOriginal"><span>원래 하루 흡연량 (개비)</span><input type="number" id="setSmokePerDay" placeholder="10"></div>
+                <div class="setting-row" id="wrapSmokeTarget" style="display:none;"><span>목표 하루 흡연량 (개비)</span><input type="number" id="setSmokeTarget" placeholder="5"></div>
+            </div>
+        </div>
+
+        <div class="settings-group">
+            <div class="settings-title">🍺 술 목표 설정</div>
+            <div class="segment-group">
+                <input type="radio" name="setDrinkMode" id="dr_quit" value="quit"><label for="dr_quit">완전 금주</label>
+                <input type="radio" name="setDrinkMode" id="dr_reduce" value="reduce"><label for="dr_reduce">줄이기</label>
+                <input type="radio" name="setDrinkMode" id="dr_off" value="off"><label for="dr_off">끄기</label>
+            </div>
+            <div class="settings-list">
+                <div class="setting-row" id="wrapDrinkCost"><span>1회 평균 비용 (원)</span><input type="number" id="setDrinkCost" placeholder="50000"></div>
+                <div class="setting-row" id="wrapDrinkOriginal"><span>원래 1주 음주 (회)</span><input type="number" id="setDrinkPerWeek" placeholder="2"></div>
+                <div class="setting-row" id="wrapDrinkTarget" style="display:none;"><span>목표 1주 음주 (회)</span><input type="number" id="setDrinkTarget" placeholder="1"></div>
+            </div>
+        </div>
+        
+        <div class="modal-btn-group">
+            <button class="modal-btn btn-cancel" id="btnSettingsClose">취소</button>
+            <button class="modal-btn btn-confirm" id="btnSettingsSave">저장</button>
+        </div>
+
+        <div class="reset-zone">
+            <button class="reset-btn" id="btnResetSmoke">⚠️ 담배 기록 완전 초기화</button>
+            <button class="reset-btn" id="btnResetDrink">⚠️ 술 기록 완전 초기화</button>
         </div>
     </div>
+</div>
 
-    <div class="modal-overlay" id="defenseModal">
-        <div class="modal-box" style="width: 90%; max-width: 360px; padding: 40px 25px;">
-            <div style="font-size: 24px; font-weight: 800; margin-bottom: 5px; color: var(--text-main);">🛡️ 극강의 10.00초
-            </div>
-            <div id="defenseStepText"
-                style="font-size: 15px; font-weight: 800; color: var(--status-success); margin-bottom: 10px;">1단계: 눈으로
-                보고 누르기</div>
-            <div
-                style="font-size: 13px; font-weight: 600; color: var(--text-sub); line-height: 1.5; margin-bottom: 20px;">
-                <span style="color:var(--status-fail);">정확히 10.00초</span>에 맞춰 멈추세요.<br>단 0.01초의 오차도 허용되지 않습니다.
-            </div>
-            <div id="gameTimer">0.00</div>
-            <div id="gameResult"
-                style="min-height: 48px; font-size: 15px; font-weight: 800; margin-bottom: 25px; color: var(--text-streak); line-height: 1.4; display: flex; align-items: center; justify-content: center;">
-            </div>
-            <button class="game-main-btn" id="gameMainBtn" onclick="App.handleDefenseBtn()">🔥 10초 버티기 시작</button>
-            <button class="button reset-btn"
-                style="width: 100%; margin-top: 15px; background: transparent; color: var(--text-sub);"
-                onclick="App.closeDefenseGame()">종료하고 돌아가기</button>
-        </div>
+<div class="modal-overlay" id="roadmapModal">
+    <div class="modal-box" style="width: 90%; max-width: 380px;">
+        <div class="modal-msg" id="roadmapTitle" style="margin-bottom: 5px; font-size: 20px;">🌿 회복 도감</div>
+        <div style="font-size: 13px; color: var(--text-gray); font-weight: 700; margin-bottom: 15px;">앞으로 다가올 내 몸의 기적같은 변화들</div>
+        <div class="roadmap-list" id="roadmapList"></div>
+        <button class="button reset-btn" id="btnRoadmapClose" style="width: 100%; margin-top: 10px; background: transparent; padding: 15px; font-size: 15px; color: var(--text-sub);">닫기</button>
     </div>
+</div>
 
-    <script src="js/data.js"></script>
-    <script src="js/ui.js"></script>
-    <script src="js/app.js"></script>
+<div class="modal-overlay" id="defenseModal">
+    <div class="modal-box" style="width: 90%; max-width: 360px; padding: 40px 25px;">
+        <div style="font-size: 24px; font-weight: 800; margin-bottom: 5px; color: var(--text-main);">🛡️ 극강의 10.00초</div>
+        <div id="defenseStepText" style="font-size: 15px; font-weight: 800; color: var(--status-success); margin-bottom: 10px;">1단계: 눈으로 보고 누르기</div>
+        <div style="font-size: 13px; font-weight: 600; color: var(--text-sub); line-height: 1.5; margin-bottom: 20px;">
+            <span style="color:var(--status-fail);">정확히 10.00초</span>에 맞춰 멈추세요.<br>단 0.01초의 오차도 허용되지 않습니다.
+        </div>
+        <div id="gameTimer">0.00</div>
+        <div id="gameResult" style="min-height: 48px; font-size: 15px; font-weight: 800; margin-bottom: 25px; color: var(--text-streak); line-height: 1.4; display: flex; align-items: center; justify-content: center;"></div>
+        <button class="game-main-btn" id="gameMainBtn">🔥 10초 버티기 시작</button>
+        <button class="button reset-btn" id="btnDefenseClose" style="width: 100%; margin-top: 15px; background: transparent; color: var(--text-sub);">종료하고 돌아가기</button>
+    </div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/app.js"></script>
 </body>
-
 </html>
