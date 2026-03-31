@@ -1,64 +1,51 @@
 const App = {
     init() {
-        Data.init();
-        this.bindEvents();
-        UI.updateAll(); 
-        setInterval(() => UI.updateTime(), 1000); 
-        setTimeout(() => UI.renderCharts(), 200);
+        Data.init(); this.bindEvents(); UI.updateAll();
+        setInterval(() => UI.updateTime(), 1000);
     },
 
     bindEvents() {
-        // 🚀 새롭게 추가된 상단 네비게이션 버튼들 연결
-        document.getElementById('navSmoke').addEventListener('click', () => {
-            document.getElementById('smokeCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
-        });
-        document.getElementById('navDrink').addEventListener('click', () => {
-            document.getElementById('drinkCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
-        });
-        document.getElementById('navDefense').addEventListener('click', () => this.openDefenseGame());
-        document.getElementById('navSettings').addEventListener('click', () => UI.openSettingsModal());
+        const $ = id => document.getElementById(id);
 
-        document.getElementById('btnRecordSmoke').addEventListener('click', () => {
-            UI.showCustomModal('정말 실패하셨나요? 타이머가 초기화됩니다.', () => { 
-                Data.addLog('smoke'); UI.updateAll(); 
+        // 🚨 방어 코드(?.) 적용: HTML 요소를 못 찾아도 에러로 멈추지 않음!
+        $('tabSmoke')?.addEventListener('click', () => UI.switchTab('smoke'));
+        $('tabDrink')?.addEventListener('click', () => UI.switchTab('drink'));
+
+        $('navDefense')?.addEventListener('click', () => this.openDefenseGame());
+        $('navSettings')?.addEventListener('click', () => UI.openSettingsModal());
+
+        $('btnRecordSmoke')?.addEventListener('click', () => {
+            UI.showCustomModal('정말 실패하셨나요? 타이머가 초기화됩니다.', () => { Data.addLog('smoke'); UI.updateAll(); });
+        });
+
+        $('btnRecordDrink')?.addEventListener('click', () => {
+            UI.showCustomModal('정말 마셨나요? (하루 1회만 카운트됩니다)', () => {
+                let success = Data.addLog('drink');
+                if (!success) { setTimeout(() => alert('오늘은 이미 실패를 기록하셨습니다. (하루 1회 제한)'), 100); }
+                UI.updateAll();
             });
         });
 
-        document.getElementById('btnRecordDrink').addEventListener('click', () => {
-            UI.showCustomModal('정말 실패하셨나요? 타이머가 초기화됩니다.', () => { 
-                Data.addLog('drink'); UI.updateAll(); 
-            });
-        });
-
-        // 🚨 모달 더블클릭 버그 방지
-        document.getElementById('modalConfirmBtn').addEventListener('click', () => {
-            if (window.currentModalAction) {
-                window.currentModalAction();
-                window.currentModalAction = null; // 중복 실행 차단
-            }
+        $('modalConfirmBtn')?.addEventListener('click', () => {
+            if (window.currentModalAction) { window.currentModalAction(); window.currentModalAction = null; }
             UI.closeModal();
         });
-        
-        document.getElementById('btnModalCancel').addEventListener('click', () => {
-            UI.closeModal();
-        });
+        $('btnModalCancel')?.addEventListener('click', () => UI.closeModal());
 
-        document.getElementById('gameMainBtn').addEventListener('click', () => this.handleDefenseBtn());
-        document.getElementById('btnDefenseClose').addEventListener('click', () => this.closeDefenseGame());
+        $('btnSettingsClose')?.addEventListener('click', () => UI.closeSettingsModal());
+        $('btnSettingsSave')?.addEventListener('click', () => this.saveSettings());
 
-        document.getElementById('btnRoadmapSmoke').addEventListener('click', () => UI.openRoadmap('smoke'));
-        document.getElementById('btnRoadmapDrink').addEventListener('click', () => UI.openRoadmap('drink'));
-        document.getElementById('btnRoadmapClose').addEventListener('click', () => document.getElementById('roadmapModal').classList.remove('active'));
+        document.querySelectorAll('input[name="setSmokeMode"], input[name="setDrinkMode"]').forEach(radio => radio.addEventListener('change', () => UI.toggleSettingsInputs()));
 
-        document.getElementById('btnSettingsClose').addEventListener('click', () => UI.closeSettingsModal());
-        document.getElementById('btnSettingsSave').addEventListener('click', () => this.saveSettings());
+        $('gameMainBtn')?.addEventListener('click', () => this.handleDefenseBtn());
+        $('btnDefenseClose')?.addEventListener('click', () => this.closeDefenseGame());
 
-        document.getElementById('btnResetSmoke').addEventListener('click', () => this.askReset('smoke'));
-        document.getElementById('btnResetDrink').addEventListener('click', () => this.askReset('drink'));
+        $('btnRoadmapSmoke')?.addEventListener('click', () => UI.openRoadmap('smoke'));
+        $('btnRoadmapDrink')?.addEventListener('click', () => UI.openRoadmap('drink'));
+        $('btnRoadmapClose')?.addEventListener('click', () => document.getElementById('roadmapModal').classList.remove('active'));
 
-        document.querySelectorAll('input[name="setSmokeMode"], input[name="setDrinkMode"]').forEach(radio => {
-            radio.addEventListener('change', () => UI.toggleSettingsInputs());
-        });
+        $('btnResetSmoke')?.addEventListener('click', () => this.askReset('smoke'));
+        $('btnResetDrink')?.addEventListener('click', () => this.askReset('drink'));
     },
 
     saveSettings() {
@@ -68,12 +55,12 @@ const App = {
 
         Data.saveSettings({
             "smokeMode": sMode, "drinkMode": dMode,
-            "smokePrice": Math.max(1, document.getElementById('setSmokePrice').value),
-            "smokePerDay": Math.max(1, document.getElementById('setSmokePerDay').value),
-            "smokeTarget": Math.max(1, document.getElementById('setSmokeTarget').value),
-            "drinkCost": Math.max(1, document.getElementById('setDrinkCost').value),
-            "drinkPerWeek": Math.max(1, document.getElementById('setDrinkPerWeek').value),
-            "drinkTarget": Math.max(1, document.getElementById('setDrinkTarget').value)
+            "smokePrice": Math.max(1, document.getElementById('setSmokePrice').value || 4500),
+            "smokePerDay": Math.max(1, document.getElementById('setSmokePerDay').value || 10),
+            "smokeTarget": Math.max(1, document.getElementById('setSmokeTarget').value || 5),
+            "drinkCost": Math.max(1, document.getElementById('setDrinkCost').value || 50000),
+            "drinkPerWeek": Math.max(1, document.getElementById('setDrinkPerWeek').value || 2),
+            "drinkTarget": Math.max(1, document.getElementById('setDrinkTarget').value || 1)
         });
         UI.closeSettingsModal(); UI.updateAll();
     },
@@ -88,14 +75,9 @@ const App = {
 
     gameTimerId: null, isGameRunning: false, gameStartTime: 0,
     openDefenseGame() {
-        document.getElementById('defenseStepText').innerText = "1단계: 눈으로 보고 누르기";
-        document.getElementById('gameTimer').innerText = "0.00";
-        document.getElementById('gameResult').innerText = "";
-        let btn = document.getElementById('gameMainBtn');
-        btn.innerText = "🔥 10초 버티기 시작";
-        btn.classList.remove('stop');
-        this.isGameRunning = false;
-        document.getElementById('defenseModal').classList.add('active');
+        document.getElementById('gameTimer').innerText = "0.00"; document.getElementById('gameResult').innerText = "";
+        let btn = document.getElementById('gameMainBtn'); btn.innerText = "🔥 10초 버티기 시작"; btn.classList.remove('stop');
+        this.isGameRunning = false; document.getElementById('defenseModal').classList.add('active');
     },
     closeDefenseGame() { cancelAnimationFrame(this.gameTimerId); document.getElementById('defenseModal').classList.remove('active'); },
     handleDefenseBtn() {
@@ -107,7 +89,7 @@ const App = {
             this.isGameRunning = false; cancelAnimationFrame(this.gameTimerId);
             let finalTime = ((performance.now() - this.gameStartTime) / 1000).toFixed(2);
             document.getElementById('gameTimer').innerText = finalTime;
-            document.getElementById('gameMainBtn').innerText = "🔄 다시 도전"; document.getElementById('gameMainBtn').classList.remove('stop');
+            let btn = document.getElementById('gameMainBtn'); btn.innerText = "🔄 다시 도전"; btn.classList.remove('stop');
             document.getElementById('gameResult').innerText = finalTime === "10.00" ? "🎉 완벽합니다!" : `😢 실패! (${finalTime}초)`;
         }
     },
