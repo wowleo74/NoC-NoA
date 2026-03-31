@@ -1,6 +1,5 @@
 const MINUTE = 60 * 1000; const HOUR = 60 * MINUTE; const DAY = 24 * HOUR;
 
-// 🚨 촘촘했던 오리지널 금연 단계 100% 복구
 const smokeStages = [
     { ms: 0, label: "0분", msg: "몸이 회복을 시작합니다." },
     { ms: 20 * MINUTE, label: "20분", msg: "혈압과 맥박이 안정됩니다." },
@@ -25,7 +24,6 @@ const smokeStages = [
     { ms: 730 * DAY, label: "730일", msg: "비흡연자 수준에 가까워집니다." }
 ];
 
-// 🚨 촘촘했던 오리지널 금주 단계 100% 복구
 const drinkStages = [
     { ms: 0, label: "0시간", msg: "간이 회복을 시작합니다." },
     { ms: 6 * HOUR, label: "6시간", msg: "몸이 안정되기 시작합니다." },
@@ -68,7 +66,13 @@ const Data = {
         if (!localStorage.getItem("drinkMode")) localStorage.setItem("drinkMode", "quit");
     },
     getMode(type) { return localStorage.getItem(type + "Mode") || "quit"; },
-    getSetting(key, defaultVal) { return parseInt(localStorage.getItem(key)) || defaultVal; },
+
+    // 💡 버그 수정: 0을 입력해도 기본값으로 바뀌지 않도록 null 체크 방식으로 변경
+    getSetting(key, defaultVal) {
+        let val = localStorage.getItem(key);
+        return val !== null ? parseInt(val) : defaultVal;
+    },
+
     getLogs(type) { return JSON.parse(localStorage.getItem(type + "Logs")) || []; },
     getRecords(type) { return JSON.parse(localStorage.getItem(type + "Records")) || [0, 0, 0]; },
     getStartTime(type) { return parseInt(localStorage.getItem(type + "Start")) || Date.now(); },

@@ -16,6 +16,8 @@
     --drink-light: #F0F4FF;
     --money-main: #34C759;
     --status-fail: #FF5B73;
+    --status-success: #34C759;
+    /* 추가: 게임 버튼 텍스트 보이기 용도 */
     --shadow-sm: 0 4px 16px rgba(0, 0, 0, 0.03);
     --shadow-lg: 0 16px 36px rgba(0, 0, 0, 0.06);
     --max-gold: linear-gradient(90deg, #FFD700, #FFA500);
@@ -58,7 +60,6 @@ body {
     font-family: 'Pretendard', sans-serif !important;
 }
 
-/* 🚀 앱 상단 고정 탭 메뉴 */
 .top-nav {
     position: sticky;
     top: 0;
@@ -133,7 +134,6 @@ body {
     transform: scale(0.95);
 }
 
-/* 메인 컨테이너 */
 .container {
     margin: 0 auto;
     padding: 15px 0 40px 0;
@@ -172,7 +172,6 @@ body {
     }
 }
 
-/* 풀 위드스 카드 (가로 100% 모바일 최적화) */
 .full-width {
     width: 100%;
     box-sizing: border-box;
@@ -195,7 +194,6 @@ body {
     text-align: center;
 }
 
-/* 텍스트 및 시계 */
 .card-header-text {
     display: flex;
     justify-content: center;
@@ -221,13 +219,13 @@ body {
 .time-display {
     font-size: clamp(34px, 10vw, 48px);
     font-weight: 900;
-    letter-spacing: -2px;
+    letter-spacing: -1px;
     margin: 10px 0;
     color: var(--text-main);
     font-variant-numeric: tabular-nums;
 }
 
-/* 💰 절약 금액 디자인 분리 */
+/* 💰 절약 금액 디자인 (통합형) */
 .saved-money-box {
     padding: 24px 20px;
     border-radius: 24px;
@@ -238,6 +236,13 @@ body {
     box-shadow: var(--shadow-sm);
     transition: all 0.3s;
     margin-bottom: 10px;
+}
+
+.money-divider {
+    width: 100%;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.3);
+    margin: 8px 0;
 }
 
 .saved-money-box.mode-quit {
@@ -282,7 +287,6 @@ body {
     opacity: 0.9;
 }
 
-/* 모듈화 된 뱃지 및 박스들 */
 .health-msg,
 .ranking-badge,
 .highlight-stat,
@@ -307,7 +311,6 @@ body {
     background: var(--drink-light);
 }
 
-/* 건강 박스 */
 .health-header {
     display: flex;
     align-items: center;
@@ -405,7 +408,6 @@ body {
     color: var(--text-gray);
 }
 
-/* 🚨 회복 도감 버튼 예쁘게 복구 */
 .roadmap-btn {
     margin-top: 8px;
     background: var(--card-bg);
@@ -430,7 +432,6 @@ body {
     opacity: 0.8;
 }
 
-/* 명예의 전당 & 누적 금액 (세로 분리) */
 .ranking-badge {
     display: flex;
     flex-direction: column;
@@ -476,7 +477,6 @@ body {
     color: var(--text-sub);
 }
 
-/* 차트 및 통계 */
 .highlight-stat {
     font-size: 15px;
     font-weight: 600;
@@ -534,7 +534,6 @@ body {
     height: 130px;
 }
 
-/* 풀 사이즈 버튼 */
 .full-btn {
     width: 100%;
     border-radius: 20px;
@@ -564,7 +563,15 @@ body {
     transform: scale(0.96);
 }
 
-/* 모달 및 기타 */
+/* 추가: 비활성화 버튼 (방금 마셨음 1회 제한용) */
+.disabled-btn {
+    background: #8B95A1 !important;
+    box-shadow: none !important;
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -698,7 +705,7 @@ body {
     font-size: 16px;
     font-weight: 900;
     color: var(--smoke-main);
-    width: 80px;
+    width: 100px;
     background: transparent;
 }
 

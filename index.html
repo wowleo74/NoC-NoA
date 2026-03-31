@@ -37,15 +37,16 @@
         <div id="smokeSection" class="tab-content active">
             <div class="card full-width smoke-card" id="smokeCard">
                 <div class="card-body">
-                    <div class="card-header-text">
-                        <div class="title" id="smokeTitle">금연 시간</div>
-                        <div class="streak" id="smokeStreak">🔥 0일째</div>
-                    </div>
-                    <div class="time-display" id="smokeTime">0일 00:00:00</div>
+                    <div class="time-display" id="smokeTitle" style="font-size: 26px;">금연기간 : 0일 00:00:00</div>
 
                     <div class="saved-money-box" id="smokeMainBoard">
-                        <div class="money-label" id="smokeBoardLabel">현재 절약 금액</div>
-                        <div class="money-amount"><span id="smokeBoardText">0</span><span class="unit">원</span></div>
+                        <div class="money-label" id="smokeBoardLabel">현재 진행중인 절약 금액</div>
+                        <div class="money-amount"><span id="smokeBoardText">0</span><span class="unit"
+                                id="smokeUnit">원</span></div>
+                        <div class="money-divider hide-on-reduce"></div>
+                        <div class="money-label hide-on-reduce">지금까지 모은 누적 총액</div>
+                        <div class="money-amount hide-on-reduce" style="font-size: 22px;"><span
+                                id="smokeTotalMoney">0</span><span class="unit">원</span></div>
                     </div>
 
                     <div id="smokeHealth" class="health-msg full-width">
@@ -76,17 +77,9 @@
                         <div class="rank-item sub"><span>🥉 3위</span> <span id="smokeTop3Val">기록 없음</span></div>
                     </div>
 
-                    <div class="ranking-badge full-width money-badge hide-on-reduce">
-                        <div class="title">💰 누적 총 절약 금액</div>
-                        <div class="total-amount"><span id="smokeTotalMoney">0</span><span class="unit">원</span></div>
-                    </div>
-
-                    <div class="highlight-stat full-width hide-on-reduce">오늘 유혹 실패 🚬 <span class="stat-num"
-                            id="todaySmoke">0</span>번</div>
-
                     <div class="chart-container full-width">
                         <div class="chart-title"><span class="material-symbols-rounded">bar_chart</span>최근 30일 데이터 <span
-                                class="scroll-hint">◀ 스와이프</span></div>
+                                class="scroll-hint">◀ 옆으로 밀기</span></div>
                         <div class="scroll-chart-wrapper" id="smokeChartWrapper">
                             <div class="scroll-chart-inner"><canvas id="smokeChart"></canvas></div>
                         </div>
@@ -100,15 +93,16 @@
         <div id="drinkSection" class="tab-content">
             <div class="card full-width drink-card" id="drinkCard">
                 <div class="card-body">
-                    <div class="card-header-text">
-                        <div class="title" id="drinkTitle">금주 시간</div>
-                        <div class="streak" id="drinkStreak">🔥 0일째</div>
-                    </div>
-                    <div class="time-display" id="drinkDay">0일 0시간</div>
+                    <div class="time-display" id="drinkTitle" style="font-size: 26px;">금주기간 : 0일 0시간</div>
 
                     <div class="saved-money-box" id="drinkMainBoard">
-                        <div class="money-label" id="drinkBoardLabel">현재 절약 금액</div>
-                        <div class="money-amount"><span id="drinkBoardText">0</span><span class="unit">원</span></div>
+                        <div class="money-label" id="drinkBoardLabel">현재 진행중인 절약 금액</div>
+                        <div class="money-amount"><span id="drinkBoardText">0</span><span class="unit"
+                                id="drinkUnit">원</span></div>
+                        <div class="money-divider hide-on-reduce"></div>
+                        <div class="money-label hide-on-reduce">지금까지 모은 누적 총액</div>
+                        <div class="money-amount hide-on-reduce" style="font-size: 22px;"><span
+                                id="drinkTotalMoney">0</span><span class="unit">원</span></div>
                     </div>
 
                     <div id="drinkHealth" class="health-msg full-width">
@@ -139,17 +133,12 @@
                         <div class="rank-item sub"><span>🥉 3위</span> <span id="drinkTop3Val">기록 없음</span></div>
                     </div>
 
-                    <div class="ranking-badge full-width money-badge hide-on-reduce">
-                        <div class="title">💰 누적 총 절약 금액</div>
-                        <div class="total-amount"><span id="drinkTotalMoney">0</span><span class="unit">원</span></div>
-                    </div>
-
                     <div class="highlight-stat full-width hide-on-reduce">최근 30일 실패 기록 🍺 <span class="stat-num drink"
                             id="monthDrink">0</span>번</div>
 
                     <div class="chart-container full-width">
                         <div class="chart-title"><span class="material-symbols-rounded">bar_chart</span>최근 30일 데이터 <span
-                                class="scroll-hint">◀ 스와이프</span></div>
+                                class="scroll-hint">◀ 옆으로 밀기</span></div>
                         <div class="scroll-chart-wrapper" id="drinkChartWrapper">
                             <div class="scroll-chart-inner"><canvas id="drinkChart"></canvas></div>
                         </div>
@@ -185,12 +174,13 @@
                     <input type="radio" name="setSmokeMode" id="sm_off" value="off"><label for="sm_off">끄기</label>
                 </div>
                 <div class="settings-list">
-                    <div class="setting-row" id="wrapSmokePrice"><span>1갑 가격 (원)</span><input type="number"
-                            id="setSmokePrice" placeholder="4500"></div>
-                    <div class="setting-row" id="wrapSmokeOriginal"><span>원래 하루 흡연량</span><input type="number"
-                            id="setSmokePerDay" placeholder="10"></div>
+                    <div class="setting-row" id="wrapSmokePrice"><span>1갑 가격 (원)</span><input type="text"
+                            inputmode="numeric" id="setSmokePrice" class="comma-input" placeholder="4,500"></div>
+                    <div class="setting-row" id="wrapSmokeOriginal"><span>원래 하루 흡연량</span><input type="text"
+                            inputmode="numeric" id="setSmokePerDay" class="comma-input" placeholder="10"></div>
                     <div class="setting-row" id="wrapSmokeTarget" style="display:none;"><span>목표 하루 흡연량</span><input
-                            type="number" id="setSmokeTarget" placeholder="5"></div>
+                            type="text" inputmode="numeric" id="setSmokeTarget" class="comma-input" placeholder="5">
+                    </div>
                 </div>
             </div>
 
@@ -203,12 +193,13 @@
                     <input type="radio" name="setDrinkMode" id="dr_off" value="off"><label for="dr_off">끄기</label>
                 </div>
                 <div class="settings-list">
-                    <div class="setting-row" id="wrapDrinkCost"><span>1회 평균 비용 (원)</span><input type="number"
-                            id="setDrinkCost" placeholder="50000"></div>
-                    <div class="setting-row" id="wrapDrinkOriginal"><span>원래 1주 음주 (회)</span><input type="number"
-                            id="setDrinkPerWeek" placeholder="2"></div>
+                    <div class="setting-row" id="wrapDrinkCost"><span>1회 평균 비용 (원)</span><input type="text"
+                            inputmode="numeric" id="setDrinkCost" class="comma-input" placeholder="50,000"></div>
+                    <div class="setting-row" id="wrapDrinkOriginal"><span>원래 1주 음주 (회)</span><input type="text"
+                            inputmode="numeric" id="setDrinkPerWeek" class="comma-input" placeholder="2"></div>
                     <div class="setting-row" id="wrapDrinkTarget" style="display:none;"><span>목표 1주 음주 (회)</span><input
-                            type="number" id="setDrinkTarget" placeholder="1"></div>
+                            type="text" inputmode="numeric" id="setDrinkTarget" class="comma-input" placeholder="1">
+                    </div>
                 </div>
             </div>
 
