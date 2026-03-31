@@ -37,14 +37,14 @@
         <div id="smokeSection" class="tab-content active">
             <div class="card full-width smoke-card" id="smokeCard">
                 <div class="card-body">
-                    <div class="time-display" id="smokeTitle" style="font-size: 26px;">금연기간 : 0일 00:00:00</div>
+                    <div class="time-display" id="smokeTitle" style="font-size: 26px;">금연기간 : 00:00:00</div>
 
                     <div class="saved-money-box" id="smokeMainBoard">
                         <div class="money-label" id="smokeBoardLabel">현재 진행중인 절약 금액</div>
                         <div class="money-amount"><span id="smokeBoardText">0</span><span class="unit"
                                 id="smokeUnit">원</span></div>
                         <div class="money-divider hide-on-reduce"></div>
-                        <div class="money-label hide-on-reduce">지금까지 모은 누적 총액</div>
+                        <div class="money-label hide-on-reduce">지금까지 모은 누적 총액 (기준 소비량 대비)</div>
                         <div class="money-amount hide-on-reduce" style="font-size: 22px;"><span
                                 id="smokeTotalMoney">0</span><span class="unit">원</span></div>
                     </div>
@@ -93,14 +93,14 @@
         <div id="drinkSection" class="tab-content">
             <div class="card full-width drink-card" id="drinkCard">
                 <div class="card-body">
-                    <div class="time-display" id="drinkTitle" style="font-size: 26px;">금주기간 : 0일 0시간</div>
+                    <div class="time-display" id="drinkTitle" style="font-size: 26px;">금주기간 : 00:00:00</div>
 
                     <div class="saved-money-box" id="drinkMainBoard">
                         <div class="money-label" id="drinkBoardLabel">현재 진행중인 절약 금액</div>
                         <div class="money-amount"><span id="drinkBoardText">0</span><span class="unit"
                                 id="drinkUnit">원</span></div>
                         <div class="money-divider hide-on-reduce"></div>
-                        <div class="money-label hide-on-reduce">지금까지 모은 누적 총액</div>
+                        <div class="money-label hide-on-reduce">지금까지 모은 누적 총액 (기준 소비량 대비)</div>
                         <div class="money-amount hide-on-reduce" style="font-size: 22px;"><span
                                 id="drinkTotalMoney">0</span><span class="unit">원</span></div>
                     </div>
@@ -161,6 +161,13 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="alertModal">
+        <div class="modal-box">
+            <div class="modal-msg" id="alertMsg">메시지</div>
+            <button class="modal-btn btn-confirm" id="btnAlertConfirm" style="width:100%; margin-top:10px;">확인</button>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="settingsModal">
         <div class="modal-box settings-box">
             <div class="modal-msg" style="margin-bottom: 20px; font-size: 20px;">⚙️ 앱 설정</div>
@@ -209,8 +216,8 @@
             </div>
 
             <div class="reset-zone">
-                <button class="reset-btn" id="btnResetSmoke">⚠️ 담배 기록 완전 초기화</button>
-                <button class="reset-btn" id="btnResetDrink">⚠️ 술 기록 완전 초기화</button>
+                <button class="reset-btn" id="btnResetSmoke">⚠️ 담배 관련 모든 기록 초기화</button>
+                <button class="reset-btn" id="btnResetDrink">⚠️ 술 관련 모든 기록 초기화</button>
             </div>
         </div>
     </div>

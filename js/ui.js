@@ -1,7 +1,6 @@
 let smokeChartObj = null; let drinkChartObj = null; Chart.register(ChartDataLabels);
 
 const UI = {
-    // 💡 모달 단일화: 모든 모달을 열고 닫는 전담 함수 생성
     openModal(id) {
         document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
         document.getElementById(id).classList.add('active');
@@ -34,7 +33,6 @@ const UI = {
         this.switchTab(State.currentTab);
     },
 
-    // 💡 탭 상태를 State로 통합
     switchTab(tab) {
         State.currentTab = tab;
         if (document.getElementById('smokeSection')) document.getElementById('smokeSection').style.display = (tab === 'smoke') ? 'block' : 'none';
@@ -46,43 +44,49 @@ const UI = {
         this.updateCharts();
     },
 
+    formatTimeDisplay(ms) {
+        let s = Data.getTimeParsed(ms);
+        let timeStr = `${String(s.hour).padStart(2, '0')}:${String(s.min).padStart(2, '0')}:${String(s.sec).padStart(2, '0')}`;
+        return s.day > 0 ? `${s.day}일 ${timeStr}` : timeStr; // 24시간 미만이면 0일 생략
+    },
+
     updateTime() {
         let now = Date.now();
-        let sT = Data.getTimeParsed(now - Data.getStartTime('smoke'));
-        let dT = Data.getTimeParsed(now - Data.getStartTime('drink'));
+        let sT = now - Data.getStartTime('smoke');
+        let dT = now - Data.getStartTime('drink');
         const $ = id => document.getElementById(id);
 
-        if ($('smokeTitle')) $('smokeTitle').innerText = `금연기간 : ${sT.day}일 ${String(sT.hour).padStart(2, '0')}:${String(sT.min).padStart(2, '0')}:${String(sT.sec).padStart(2, '0')}`;
-        if ($('drinkTitle')) $('drinkTitle').innerText = `금주기간 : ${dT.day}일 ${dT.hour}시간`;
-
-        let drinkBtn = $('btnRecordDrink');
-        if (drinkBtn) {
-            let todayStr = new Date().toDateString();
-            if (localStorage.getItem('lastDrinkDate') === todayStr) {
-                drinkBtn.classList.add('disabled-btn');
-                drinkBtn.innerText = "오늘의 기록 완료 (내일 초기화)";
-                drinkBtn.disabled = true;
-            } else {
-                drinkBtn.classList.remove('disabled-btn');
-                drinkBtn.innerText = "방금 마셨음 🥲 (하루 1회 제한)";
-                drinkBtn.disabled = false;
-            }
-        }
+        if ($('smokeTitle')) $('smokeTitle').innerText = `금연기간 : ${this.formatTimeDisplay(sT)}`;
+        if ($('drinkTitle')) $('drinkTitle').innerText = `금주기간 : ${this.formatTimeDisplay(dT)}`;
     },
 
     updateMoney() {
         let now = Date.now();
         let sMode = Data.getMode('smoke'), dMode = Data.getMode('drink');
-        let sStart = Data.getStartTime('smoke'), dStart = Data.getStartTime('drink');
         const $ = id => document.getElementById(id);
 
+        // 🚬 금연 금액 처리
         if (sMode === 'quit' && $('smokeMainBoard')) {
-            let targetMoney = Math.floor(Math.max(0, (now - sStart) / (1000 * 60 * 60 * 24)) * Data.getSetting("smokePerDay", 10) * (Data.getSetting("smokePrice", 4500) / 20));
             $('smokeMainBoard').className = 'saved-money-box mode-quit smoke';
             $('smokeBoardLabel').innerText = '현재 진행중인 절약 금액';
+
+            // 1. 현재 진행중(Streak) 절약 금액 = (최근 시작점부터 지금까지의 날짜) * 소비기준
+            let sStart = Data.getStartTime('smoke');
+            let streakDays = (now - sStart) / (1000 * 60 * 60 * 24);
+            let targetMoney = Math.floor(streakDays * Data.getSetting("smokePerDay", 10)) * Math.floor(Data.getSetting("smokePrice", 4500) / 20);
             $('smokeBoardText').innerText = targetMoney.toLocaleString();
-            if ($('smokeTotalMoney')) $('smokeTotalMoney').innerText = (Data.getTotalMoney('smoke') + targetMoney).toLocaleString();
+
+            // 2. 누적 총 절약 금액 (앱 시작 이후 예상 총량 - 실제 흡연량) * 단가
+            if ($('smokeTotalMoney')) {
+                let appStart = Data.getAppStartTime('smoke');
+                let totalDays = (now - appStart) / (1000 * 60 * 60 * 24);
+                let expectedTotal = totalDays * Data.getSetting("smokePerDay", 10);
+                let actualTotal = Data.getLogs('smoke').filter(t => t >= appStart).length;
+                let totalSavedMoney = Math.floor(Math.max(0, expectedTotal - actualTotal)) * Math.floor(Data.getSetting("smokePrice", 4500) / 20);
+                $('smokeTotalMoney').innerText = totalSavedMoney.toLocaleString();
+            }
             if ($('smokeUnit')) $('smokeUnit').style.display = 'inline';
+
         } else if (sMode === 'reduce' && $('smokeMainBoard')) {
             let stat = Data.getReduceStatus('smoke');
             let target = Data.getSetting("smokeTarget", 5);
@@ -92,13 +96,28 @@ const UI = {
             if ($('smokeUnit')) $('smokeUnit').style.display = 'none';
         }
 
+        // 🍺 금주 금액 처리
         if (dMode === 'quit' && $('drinkMainBoard')) {
-            let targetMoney = Math.floor(Math.max(0, (now - dStart) / (1000 * 60 * 60 * 24)) * (Data.getSetting("drinkPerWeek", 2) / 7) * Data.getSetting("drinkCost", 50000));
             $('drinkMainBoard').className = 'saved-money-box mode-quit drink';
             $('drinkBoardLabel').innerText = '현재 진행중인 절약 금액';
+
+            // 1. 현재 진행중(Streak)
+            let dStart = Data.getStartTime('drink');
+            let streakWeeks = (now - dStart) / (1000 * 60 * 60 * 24 * 7);
+            let targetMoney = Math.floor(streakWeeks * Data.getSetting("drinkPerWeek", 2)) * Data.getSetting("drinkCost", 50000);
             $('drinkBoardText').innerText = targetMoney.toLocaleString();
-            if ($('drinkTotalMoney')) $('drinkTotalMoney').innerText = (Data.getTotalMoney('drink') + targetMoney).toLocaleString();
+
+            // 2. 누적 총 절약 금액
+            if ($('drinkTotalMoney')) {
+                let appStart = Data.getAppStartTime('drink');
+                let totalWeeks = (now - appStart) / (1000 * 60 * 60 * 24 * 7);
+                let expectedTotal = totalWeeks * Data.getSetting("drinkPerWeek", 2);
+                let actualTotal = Data.getLogs('drink').filter(t => t >= appStart).length;
+                let totalSavedMoney = Math.floor(Math.max(0, expectedTotal - actualTotal)) * Data.getSetting("drinkCost", 50000);
+                $('drinkTotalMoney').innerText = totalSavedMoney.toLocaleString();
+            }
             if ($('drinkUnit')) $('drinkUnit').style.display = 'inline';
+
         } else if (dMode === 'reduce' && $('drinkMainBoard')) {
             let stat = Data.getReduceStatus('drink');
             let target = Data.getSetting("drinkTarget", 1);
@@ -154,7 +173,6 @@ const UI = {
         }
     },
 
-    // 💡 updateAll 구조 분리: 무거운 차트 그리기와 핵심 데이터 업데이트를 분리
     updateCore() {
         this.updateTime(); this.updateMoney(); this.updateRanking(); this.updateStats(); this.updateHealth();
     },
@@ -205,7 +223,7 @@ const UI = {
         }
 
         listContainer.innerHTML = html;
-        this.openModal('roadmapModal'); // 통일된 모달 열기 적용
+        this.openModal('roadmapModal');
 
         setTimeout(() => {
             const currentEl = listContainer.querySelector('.current');
@@ -253,7 +271,7 @@ const UI = {
 
         document.getElementById(`sm_${Data.getMode('smoke')}`).checked = true; document.getElementById(`dr_${Data.getMode('drink')}`).checked = true;
         this.toggleSettingsInputs();
-        this.openModal('settingsModal'); // 통일된 모달 열기 적용
+        this.openModal('settingsModal');
     },
 
     toggleSettingsInputs() {
@@ -269,6 +287,13 @@ const UI = {
     showCustomModal(msg, action) {
         document.getElementById('modalMsg').innerText = msg;
         window.currentModalAction = action;
-        this.openModal('customModal'); // 통일된 모달 열기 적용
+        this.openModal('customModal');
+    },
+
+    // 단순 확인용 Alert (취소 버튼 없음)
+    showAlertModal(msg) {
+        document.getElementById('alertMsg').innerText = msg;
+        this.openModal('alertModal');
+        document.getElementById('btnAlertConfirm').onclick = () => this.closeModal('alertModal');
     }
 };

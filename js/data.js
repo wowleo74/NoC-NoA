@@ -50,10 +50,12 @@ const drinkStages = [
 const Data = {
     init() {
         let now = Date.now();
-        if (!localStorage.getItem("smokeStart")) localStorage.setItem("smokeStart", now);
-        if (!localStorage.getItem("drinkStart")) localStorage.setItem("drinkStart", now);
-        if (!localStorage.getItem("smokeLogs")) localStorage.setItem("smokeLogs", "[]");
-        if (!localStorage.getItem("drinkLogs")) localStorage.setItem("drinkLogs", "[]");
+        ['smoke', 'drink', 'smokeReduce', 'drinkReduce'].forEach(key => {
+            if (!localStorage.getItem(key + "Start")) localStorage.setItem(key + "Start", now);
+            if (!localStorage.getItem(key + "AppStart")) localStorage.setItem(key + "AppStart", now);
+            if (!localStorage.getItem(key + "Logs")) localStorage.setItem(key + "Logs", "[]");
+            if (!localStorage.getItem(key + "Records")) localStorage.setItem(key + "Records", "[0,0,0]");
+        });
 
         if (!localStorage.getItem("smokePrice")) localStorage.setItem("smokePrice", "4500");
         if (!localStorage.getItem("drinkCost")) localStorage.setItem("drinkCost", "50000");
@@ -65,61 +67,55 @@ const Data = {
         if (!localStorage.getItem("smokeMode")) localStorage.setItem("smokeMode", "quit");
         if (!localStorage.getItem("drinkMode")) localStorage.setItem("drinkMode", "quit");
     },
+
     getMode(type) { return localStorage.getItem(type + "Mode") || "quit"; },
+    getPrefix(type) { return this.getMode(type) === 'reduce' ? type + 'Reduce' : type; },
+    getSetting(key, defaultVal) { let val = localStorage.getItem(key); return val !== null ? parseInt(val) : defaultVal; },
 
-    // 💡 버그 수정: 0을 입력해도 기본값으로 바뀌지 않도록 null 체크 방식으로 변경
-    getSetting(key, defaultVal) {
-        let val = localStorage.getItem(key);
-        return val !== null ? parseInt(val) : defaultVal;
-    },
+    getLogs(type) { return JSON.parse(localStorage.getItem(this.getPrefix(type) + "Logs")) || []; },
+    getRecords(type) { return JSON.parse(localStorage.getItem(this.getPrefix(type) + "Records")) || [0, 0, 0]; },
+    getStartTime(type) { return parseInt(localStorage.getItem(this.getPrefix(type) + "Start")) || Date.now(); },
+    getAppStartTime(type) { return parseInt(localStorage.getItem(this.getPrefix(type) + "AppStart")) || Date.now(); },
 
-    getLogs(type) { return JSON.parse(localStorage.getItem(type + "Logs")) || []; },
-    getRecords(type) { return JSON.parse(localStorage.getItem(type + "Records")) || [0, 0, 0]; },
-    getStartTime(type) { return parseInt(localStorage.getItem(type + "Start")) || Date.now(); },
-    getTotalMoney(type) { return parseInt(localStorage.getItem(type === 'smoke' ? "totalSmokeMoney" : "totalDrinkMoney")) || 0; },
     saveSettings(obj) { Object.keys(obj).forEach(k => localStorage.setItem(k, obj[k])); },
+
+    // 💡 버그 수정: 완전 끊기와 줄이기 모드를 한꺼번에 초기화하고 술 제한 자물쇠도 제거
     resetData(type) {
-        localStorage.setItem(type + "Start", Date.now());
-        localStorage.setItem(type + "Logs", "[]");
-        localStorage.setItem(type + "Records", "[0,0,0]");
-        localStorage.setItem(type === 'smoke' ? "totalSmokeMoney" : "totalDrinkMoney", "0");
+        let now = Date.now();
+        let prefixes = [type, type + 'Reduce']; // 예: ['smoke', 'smokeReduce']
+
+        prefixes.forEach(prefix => {
+            localStorage.setItem(prefix + "Start", now);
+            localStorage.setItem(prefix + "AppStart", now);
+            localStorage.setItem(prefix + "Logs", "[]");
+            localStorage.setItem(prefix + "Records", "[0,0,0]");
+        });
+
+        // 술 초기화 시 '오늘 이미 마셨음' 1일 1회 제한 자물쇠 완전히 풀기
+        if (type === 'drink') {
+            localStorage.removeItem('lastDrinkDate');
+        }
     },
 
     addLog(type) {
         let now = Date.now();
+        let prefix = this.getPrefix(type);
 
         if (type === 'drink') {
-            let todayStr = new Date().toDateString();
-            if (localStorage.getItem('lastDrinkDate') === todayStr) {
-                return false;
-            }
-            localStorage.setItem('lastDrinkDate', todayStr);
+            localStorage.setItem('lastDrinkDate', new Date().toDateString());
         }
 
         let startTime = this.getStartTime(type);
         let elapsedMs = now - startTime;
-        let isSmokeCooldown = (type === 'smoke' && elapsedMs < (1 * HOUR));
 
         let logs = this.getLogs(type); logs.push(now);
-        localStorage.setItem(type + "Logs", JSON.stringify(logs));
+        localStorage.setItem(prefix + "Logs", JSON.stringify(logs));
 
         let recordsArr = this.getRecords(type); recordsArr.push(elapsedMs);
         recordsArr.sort((a, b) => b - a);
-        localStorage.setItem(type + "Records", JSON.stringify(recordsArr.slice(0, 3)));
+        localStorage.setItem(prefix + "Records", JSON.stringify(recordsArr.slice(0, 3)));
 
-        if (this.getMode(type) === 'quit') {
-            let elapsedDays = Math.max(0, elapsedMs / DAY);
-            if (type === 'smoke') {
-                let earned = Math.floor(elapsedDays * this.getSetting("smokePerDay", 10) * (this.getSetting("smokePrice", 4500) / 20));
-                let penalty = isSmokeCooldown ? 0 : Math.floor(this.getSetting("smokePrice", 4500) / 20);
-                localStorage.setItem("totalSmokeMoney", this.getTotalMoney('smoke') + earned - penalty);
-            } else {
-                let earned = Math.floor(elapsedDays * (this.getSetting("drinkPerWeek", 2) / 7) * this.getSetting("drinkCost", 50000));
-                let penalty = this.getSetting("drinkCost", 50000);
-                localStorage.setItem("totalDrinkMoney", this.getTotalMoney('drink') + earned - penalty);
-            }
-        }
-        localStorage.setItem(type + "Start", now);
+        localStorage.setItem(prefix + "Start", now);
         return true;
     },
 

@@ -1,4 +1,3 @@
-// 💡 전역 상태 관리 객체 (State 도입)
 const State = {
     currentTab: 'smoke',
     currentModal: null,
@@ -10,11 +9,9 @@ const App = {
         Data.init();
         this.bindEvents();
         UI.updateAll();
-        // 매 초마다 갱신할 때는 무거운 전체 갱신 대신 시간과 핵심 정보만 가볍게 갱신
         setInterval(() => UI.updateCore(), 1000);
     },
 
-    // 💡 이벤트 구조를 역할별로 깔끔하게 분리
     bindEvents() {
         this.bindTabEvents();
         this.bindModalEvents();
@@ -35,10 +32,14 @@ const App = {
         });
 
         $('btnRecordDrink')?.addEventListener('click', () => {
-            UI.showCustomModal('정말 마셨나요? (하루 1회만 카운트됩니다)', () => {
-                let success = Data.addLog('drink');
-                if (success) UI.updateAll();
-            });
+            let todayStr = new Date().toDateString();
+            if (localStorage.getItem('lastDrinkDate') === todayStr) {
+                UI.showAlertModal('오늘은 이미 기록되었습니다.\n(기록은 하루 1회만 가능합니다)');
+            } else {
+                UI.showCustomModal('정말 마셨나요? (하루 1회만 카운트됩니다)', () => {
+                    Data.addLog('drink'); UI.updateAll();
+                });
+            }
         });
 
         $('modalConfirmBtn')?.addEventListener('click', () => {
@@ -63,7 +64,6 @@ const App = {
         $('btnResetSmoke')?.addEventListener('click', () => this.askReset('smoke'));
         $('btnResetDrink')?.addEventListener('click', () => this.askReset('drink'));
 
-        // 설정 창 입력 시 자동 콤마(,) 찍기
         document.querySelectorAll('.comma-input').forEach(input => {
             input.addEventListener('input', function (e) {
                 let val = this.value.replace(/[^0-9]/g, '');
@@ -83,9 +83,12 @@ const App = {
     saveSettings() {
         let sMode = document.querySelector('input[name="setSmokeMode"]:checked').value;
         let dMode = document.querySelector('input[name="setDrinkMode"]:checked').value;
-        if (sMode === 'off' && dMode === 'off') { alert("최소 하나의 목표는 켜져 있어야 합니다!"); return; }
 
-        // 💡 입력값 처리 안정화 (콤마 제거 및 빈 값 방어)
+        if (sMode === 'off' && dMode === 'off') {
+            UI.showAlertModal("최소 하나의 목표는 켜져 있어야 앱 사용이 가능합니다!");
+            return;
+        }
+
         const parseVal = (id, def) => {
             let val = document.getElementById(id).value.replace(/,/g, '');
             return (val !== '' && !isNaN(val)) ? parseInt(val) : def;
@@ -104,10 +107,11 @@ const App = {
         UI.updateAll();
     },
 
+    // 💡 초기화 팝업 안내 문구를 두 모드 모두 지워진다고 명확히 변경
     askReset(type) {
         let name = type === 'smoke' ? '담배' : '술';
         UI.closeModal('settingsModal');
-        UI.showCustomModal(`⚠️ ${name} 관련 모든 기록을 초기화할까요?\n삭제된 데이터는 복구할 수 없습니다.`, () => {
+        UI.showCustomModal(`⚠️ ${name} 관련 모든 기록(완전 끊기 및 줄이기)을 초기화하시겠습니까?\n삭제된 기록은 복구할 수 없습니다.`, () => {
             Data.resetData(type); UI.updateAll();
         });
     },
@@ -120,7 +124,6 @@ const App = {
         UI.openModal('defenseModal');
     },
 
-    // 💡 게임 상태 완벽 초기화 수정
     closeDefenseGame() {
         cancelAnimationFrame(this.gameTimerId);
         State.isGameRunning = false;
