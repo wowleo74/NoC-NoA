@@ -65,11 +65,13 @@ const UI = {
         let sMode = Data.getMode('smoke'), dMode = Data.getMode('drink');
         const $ = id => document.getElementById(id);
 
+        // 🚬 금연 금액 처리
         if (sMode === 'quit' && $('smokeMainBoard')) {
             $('smokeMainBoard').className = 'saved-money-box mode-quit smoke';
             $('smokeBoardLabel').innerText = '현재 진행중인 절약 금액';
 
             let sStart = Data.getStartTime('smoke');
+            // 실시간 진행 금액 (초 단위 반영)
             let streakDays = (now - sStart) / (1000 * 60 * 60 * 24);
             let cigPrice = Data.getSetting("smokePrice", 4500) / 20;
             let smokePerDay = Data.getSetting("smokePerDay", 10);
@@ -77,15 +79,25 @@ const UI = {
             let targetMoney = Math.floor(streakDays * smokePerDay * cigPrice);
             $('smokeBoardText').innerText = targetMoney.toLocaleString();
 
+            // 💡 [기획 반영] 자정 기준 일일 정산 로직
             if ($('smokeTotalMoney')) {
                 let appStart = Data.getAppStartTime('smoke');
-                let totalDays = (now - appStart) / (1000 * 60 * 60 * 24);
-                let expectedTotal = totalDays * smokePerDay;
-                let actualTotal = Data.getLogs('smoke').filter(t => t >= appStart).length;
 
-                let computedTotal = Math.floor(Math.max(0, expectedTotal - actualTotal) * cigPrice);
-                let totalSavedMoney = Math.max(targetMoney, computedTotal);
+                let todayMidnight = new Date(now).setHours(0, 0, 0, 0);
+                let appStartMidnight = new Date(appStart).setHours(0, 0, 0, 0);
+
+                // 앱 설치일로부터 '어제'까지 완전히 지난 일수
+                let passedDays = Math.max(0, (todayMidnight - appStartMidnight) / (1000 * 60 * 60 * 24));
+
+                let expectedTotal = passedDays * smokePerDay;
+                // 오늘 자정(00:00) 이전의 실패 기록만 추출
+                let actualTotal = Data.getLogs('smoke').filter(t => t >= appStart && t < todayMidnight).length;
+
+                // 확정된 누적 금액 (금연은 마이너스 방지 유지)
+                let totalSavedMoney = Math.max(0, Math.floor((expectedTotal - actualTotal) * cigPrice));
+
                 $('smokeTotalMoney').innerText = totalSavedMoney.toLocaleString();
+                $('smokeTotalMoney').style.color = 'inherit';
             }
             if ($('smokeUnit')) $('smokeUnit').style.display = 'inline';
 
@@ -98,11 +110,13 @@ const UI = {
             if ($('smokeUnit')) $('smokeUnit').style.display = 'none';
         }
 
+        // 🍺 금주 금액 처리
         if (dMode === 'quit' && $('drinkMainBoard')) {
             $('drinkMainBoard').className = 'saved-money-box mode-quit drink';
             $('drinkBoardLabel').innerText = '현재 진행중인 절약 금액';
 
             let dStart = Data.getStartTime('drink');
+            // 실시간 진행 금액
             let streakWeeks = (now - dStart) / (1000 * 60 * 60 * 24 * 7);
             let drinkCost = Data.getSetting("drinkCost", 50000);
             let drinkPerWeek = Data.getSetting("drinkPerWeek", 2);
@@ -110,15 +124,35 @@ const UI = {
             let targetMoney = Math.floor(streakWeeks * drinkPerWeek * drinkCost);
             $('drinkBoardText').innerText = targetMoney.toLocaleString();
 
+            // 💡 [기획 반영] 주간 정산 로직 (월요일 시작 기준)
             if ($('drinkTotalMoney')) {
                 let appStart = Data.getAppStartTime('drink');
-                let totalWeeks = (now - appStart) / (1000 * 60 * 60 * 24 * 7);
-                let expectedTotal = totalWeeks * drinkPerWeek;
-                let actualTotal = Data.getLogs('drink').filter(t => t >= appStart).length;
 
-                let computedTotal = Math.floor(Math.max(0, expectedTotal - actualTotal) * drinkCost);
-                let totalSavedMoney = Math.max(targetMoney, computedTotal);
+                // 특정 날짜가 속한 주의 '월요일 자정(00:00)'을 구하는 함수
+                const getMondayMidnight = (d) => {
+                    let date = new Date(d);
+                    let day = date.getDay(); // 0(일) ~ 6(토)
+                    let diff = date.getDate() - day + (day === 0 ? -6 : 1); // 일요일이면 지난주 월요일로
+                    return new Date(date.getFullYear(), date.getMonth(), diff).setHours(0, 0, 0, 0);
+                };
+
+                let currentMonday = getMondayMidnight(now);
+                let appStartMonday = getMondayMidnight(appStart);
+
+                // 앱 설치 주차부터 '지난주'까지 온전히 끝난 주(Week)의 수
+                let passedWeeks = Math.max(0, Math.round((currentMonday - appStartMonday) / (1000 * 60 * 60 * 24 * 7)));
+
+                let expectedTotal = passedWeeks * drinkPerWeek;
+                // 이번 주 월요일 00:00 이전의 실패 기록만 추출 (지난주까지의 성적표)
+                let actualTotal = Data.getLogs('drink').filter(t => t >= appStart && t < currentMonday).length;
+
+                // 확정된 누적 금액
+                let totalSavedMoney = Math.floor((expectedTotal - actualTotal) * drinkCost);
+
                 $('drinkTotalMoney').innerText = totalSavedMoney.toLocaleString();
+
+                // 💡 금주는 초과 실패 시 마이너스 금액(적자) 허용 및 빨간색 표시!
+                $('drinkTotalMoney').style.color = totalSavedMoney < 0 ? 'var(--status-fail)' : 'inherit';
             }
             if ($('drinkUnit')) $('drinkUnit').style.display = 'inline';
 
@@ -212,7 +246,7 @@ const UI = {
     },
     updateCharts() {
         this.renderCharts();
-        this.renderDrinkCalendar(); // 💡 달력 그리기 호출
+        this.renderDrinkCalendar();
     },
     updateAll() {
         this.initTabs(); this.updateCore(); this.updateCharts();
@@ -266,7 +300,6 @@ const UI = {
         }, 100);
     },
 
-    // 🚬 금연 탭: 기존 막대그래프 유지
     renderCharts() {
         Chart.defaults.color = '#8B95A1'; Chart.defaults.font.family = "'Pretendard', sans-serif"; Chart.defaults.font.weight = '800';
         const smokeBarColor = '#FF5B73';
@@ -298,12 +331,10 @@ const UI = {
         setTimeout(() => { if (sWrap) sWrap.scrollLeft = sWrap.scrollWidth; }, 50);
     },
 
-    // 🍺 금주 탭: 6개월 미니 달력 렌더링
     renderDrinkCalendar() {
         const slider = document.getElementById('drinkCalendarSlider');
         if (!slider) return;
 
-        // 저장된 음주 기록을 빠른 검색을 위해 Set(YYYY-M-D)으로 변환
         const drinkLogs = Data.getLogs('drink');
         const drinkDates = new Set(drinkLogs.map(ms => {
             let d = new Date(ms);
@@ -315,7 +346,6 @@ const UI = {
         let now = new Date();
         let todayStr = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`;
 
-        // 최근 6개월 치 달력 생성 (이번 달이 가장 먼저 보이게)
         for (let i = 0; i < 6; i++) {
             let d = new Date(now.getFullYear(), now.getMonth() - i, 1);
             let year = d.getFullYear();
@@ -327,20 +357,17 @@ const UI = {
                                 <div class="calendar-month-title">${year}년 ${month + 1}월</div>
                                 <div class="calendar-grid">`;
 
-            // 1. 요일 헤더 그리기 (일~토)
             dayNames.forEach((name, idx) => {
                 let cls = 'cal-day-header';
-                if (idx === 0) cls += ' sun'; // 일요일 빨강
-                if (idx === 6) cls += ' sat'; // 토요일 파랑
+                if (idx === 0) cls += ' sun';
+                if (idx === 6) cls += ' sat';
                 gridHtml += `<div class="${cls}">${name}</div>`;
             });
 
-            // 2. 1일 전까지 빈칸 채우기
             for (let j = 0; j < firstDayIndex; j++) {
                 gridHtml += `<div class="cal-day empty"></div>`;
             }
 
-            // 3. 날짜 그리기
             for (let day = 1; day <= daysInMonth; day++) {
                 let currentStr = `${year}-${month}-${day}`;
                 let isToday = (currentStr === todayStr);
@@ -348,10 +375,10 @@ const UI = {
                 let dayOfWeek = (firstDayIndex + day - 1) % 7;
 
                 let cls = 'cal-day';
-                if (dayOfWeek === 0) cls += ' sun'; // 일요일
-                if (dayOfWeek === 6) cls += ' sat'; // 토요일
-                if (isToday) cls += ' today';       // 오늘
-                if (hasDrank) cls += ' drank';      // 술 마신 날 (스탬프)
+                if (dayOfWeek === 0) cls += ' sun';
+                if (dayOfWeek === 6) cls += ' sat';
+                if (isToday) cls += ' today';
+                if (hasDrank) cls += ' drank';
 
                 gridHtml += `<div class="${cls}">${day}</div>`;
             }
