@@ -1,4 +1,4 @@
-let smokeChartObj = null; let drinkChartObj = null; Chart.register(ChartDataLabels);
+let smokeChartObj = null; Chart.register(ChartDataLabels);
 
 const UI = {
     openModal(id) {
@@ -47,7 +47,7 @@ const UI = {
     formatTimeDisplay(ms) {
         let s = Data.getTimeParsed(ms);
         let timeStr = `${String(s.hour).padStart(2, '0')}:${String(s.min).padStart(2, '0')}:${String(s.sec).padStart(2, '0')}`;
-        return s.day > 0 ? `${s.day}일 ${timeStr}` : timeStr; // 24시간 미만이면 0일 생략
+        return s.day > 0 ? `${s.day}일 ${timeStr}` : timeStr;
     },
 
     updateTime() {
@@ -65,24 +65,26 @@ const UI = {
         let sMode = Data.getMode('smoke'), dMode = Data.getMode('drink');
         const $ = id => document.getElementById(id);
 
-        // 🚬 금연 금액 처리
         if (sMode === 'quit' && $('smokeMainBoard')) {
             $('smokeMainBoard').className = 'saved-money-box mode-quit smoke';
             $('smokeBoardLabel').innerText = '현재 진행중인 절약 금액';
 
-            // 1. 현재 진행중(Streak) 절약 금액 = (최근 시작점부터 지금까지의 날짜) * 소비기준
             let sStart = Data.getStartTime('smoke');
             let streakDays = (now - sStart) / (1000 * 60 * 60 * 24);
-            let targetMoney = Math.floor(streakDays * Data.getSetting("smokePerDay", 10)) * Math.floor(Data.getSetting("smokePrice", 4500) / 20);
+            let cigPrice = Data.getSetting("smokePrice", 4500) / 20;
+            let smokePerDay = Data.getSetting("smokePerDay", 10);
+
+            let targetMoney = Math.floor(streakDays * smokePerDay * cigPrice);
             $('smokeBoardText').innerText = targetMoney.toLocaleString();
 
-            // 2. 누적 총 절약 금액 (앱 시작 이후 예상 총량 - 실제 흡연량) * 단가
             if ($('smokeTotalMoney')) {
                 let appStart = Data.getAppStartTime('smoke');
                 let totalDays = (now - appStart) / (1000 * 60 * 60 * 24);
-                let expectedTotal = totalDays * Data.getSetting("smokePerDay", 10);
+                let expectedTotal = totalDays * smokePerDay;
                 let actualTotal = Data.getLogs('smoke').filter(t => t >= appStart).length;
-                let totalSavedMoney = Math.floor(Math.max(0, expectedTotal - actualTotal)) * Math.floor(Data.getSetting("smokePrice", 4500) / 20);
+
+                let computedTotal = Math.floor(Math.max(0, expectedTotal - actualTotal) * cigPrice);
+                let totalSavedMoney = Math.max(targetMoney, computedTotal);
                 $('smokeTotalMoney').innerText = totalSavedMoney.toLocaleString();
             }
             if ($('smokeUnit')) $('smokeUnit').style.display = 'inline';
@@ -96,24 +98,26 @@ const UI = {
             if ($('smokeUnit')) $('smokeUnit').style.display = 'none';
         }
 
-        // 🍺 금주 금액 처리
         if (dMode === 'quit' && $('drinkMainBoard')) {
             $('drinkMainBoard').className = 'saved-money-box mode-quit drink';
             $('drinkBoardLabel').innerText = '현재 진행중인 절약 금액';
 
-            // 1. 현재 진행중(Streak)
             let dStart = Data.getStartTime('drink');
             let streakWeeks = (now - dStart) / (1000 * 60 * 60 * 24 * 7);
-            let targetMoney = Math.floor(streakWeeks * Data.getSetting("drinkPerWeek", 2)) * Data.getSetting("drinkCost", 50000);
+            let drinkCost = Data.getSetting("drinkCost", 50000);
+            let drinkPerWeek = Data.getSetting("drinkPerWeek", 2);
+
+            let targetMoney = Math.floor(streakWeeks * drinkPerWeek * drinkCost);
             $('drinkBoardText').innerText = targetMoney.toLocaleString();
 
-            // 2. 누적 총 절약 금액
             if ($('drinkTotalMoney')) {
                 let appStart = Data.getAppStartTime('drink');
                 let totalWeeks = (now - appStart) / (1000 * 60 * 60 * 24 * 7);
-                let expectedTotal = totalWeeks * Data.getSetting("drinkPerWeek", 2);
+                let expectedTotal = totalWeeks * drinkPerWeek;
                 let actualTotal = Data.getLogs('drink').filter(t => t >= appStart).length;
-                let totalSavedMoney = Math.floor(Math.max(0, expectedTotal - actualTotal)) * Data.getSetting("drinkCost", 50000);
+
+                let computedTotal = Math.floor(Math.max(0, expectedTotal - actualTotal) * drinkCost);
+                let totalSavedMoney = Math.max(targetMoney, computedTotal);
                 $('drinkTotalMoney').innerText = totalSavedMoney.toLocaleString();
             }
             if ($('drinkUnit')) $('drinkUnit').style.display = 'inline';
@@ -132,16 +136,46 @@ const UI = {
     },
 
     updateRanking() {
-        let now = Date.now(); const $ = id => document.getElementById(id);
-        let smokeRecs = Data.getRecords('smoke'); let combinedSmoke = [...smokeRecs, now - Data.getStartTime('smoke')].sort((a, b) => b - a);
-        if ($('smokeTop1Val')) $('smokeTop1Val').innerText = Data.getExactDurationText(combinedSmoke[0]);
-        if ($('smokeTop2Val')) $('smokeTop2Val').innerText = Data.getExactDurationText(combinedSmoke[1]);
-        if ($('smokeTop3Val')) $('smokeTop3Val').innerText = Data.getExactDurationText(combinedSmoke[2]);
+        let now = Date.now();
+        const $ = id => document.getElementById(id);
 
-        let drinkRecs = Data.getRecords('drink'); let combinedDrink = [...drinkRecs, now - Data.getStartTime('drink')].sort((a, b) => b - a);
-        if ($('drinkTop1Val')) $('drinkTop1Val').innerText = Data.getExactDurationText(combinedDrink[0]);
-        if ($('drinkTop2Val')) $('drinkTop2Val').innerText = Data.getExactDurationText(combinedDrink[1]);
-        if ($('drinkTop3Val')) $('drinkTop3Val').innerText = Data.getExactDurationText(combinedDrink[2]);
+        const renderRank = (prefix, dataArr) => {
+            for (let i = 0; i < 3; i++) {
+                let r = dataArr[i];
+                let dateEl = $(`${prefix}Top${i + 1}Date`);
+                let valEl = $(`${prefix}Top${i + 1}Val`);
+
+                if (!r || r.duration === 0) {
+                    if (dateEl) { dateEl.innerText = "-"; dateEl.style.color = "var(--text-gray)"; }
+                    if (valEl) valEl.innerText = "기록 없음";
+                    continue;
+                }
+
+                if (valEl) valEl.innerText = Data.getExactDurationText(r.duration);
+
+                if (dateEl) {
+                    if (r.date === 'current') {
+                        dateEl.innerText = "현재 진행중";
+                        dateEl.style.color = prefix === 'smoke' ? "var(--smoke-main)" : "var(--drink-main)";
+                    } else if (!r.date) {
+                        dateEl.innerText = "과거 기록";
+                        dateEl.style.color = "var(--text-gray)";
+                    } else {
+                        let d = new Date(r.date);
+                        dateEl.innerText = `${d.getFullYear().toString().slice(2)}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
+                        dateEl.style.color = "var(--text-gray)";
+                    }
+                }
+            }
+        };
+
+        let smokeRecs = Data.getRecords('smoke');
+        let combinedSmoke = [...smokeRecs, { duration: now - Data.getStartTime('smoke'), date: 'current' }].sort((a, b) => b.duration - a.duration);
+        renderRank('smoke', combinedSmoke);
+
+        let drinkRecs = Data.getRecords('drink');
+        let combinedDrink = [...drinkRecs, { duration: now - Data.getStartTime('drink'), date: 'current' }].sort((a, b) => b.duration - a.duration);
+        renderRank('drink', combinedDrink);
     },
 
     updateStats() {
@@ -178,6 +212,7 @@ const UI = {
     },
     updateCharts() {
         this.renderCharts();
+        this.renderDrinkCalendar(); // 💡 달력 그리기 호출
     },
     updateAll() {
         this.initTabs(); this.updateCore(); this.updateCharts();
@@ -231,34 +266,101 @@ const UI = {
         }, 100);
     },
 
+    // 🚬 금연 탭: 기존 막대그래프 유지
     renderCharts() {
         Chart.defaults.color = '#8B95A1'; Chart.defaults.font.family = "'Pretendard', sans-serif"; Chart.defaults.font.weight = '800';
-        const smokeBarColor = '#FF5B73'; const drinkBarColor = '#5C80FF';
+        const smokeBarColor = '#FF5B73';
 
-        let now = new Date(); let smokeLogs = Data.getLogs('smoke'), drinkLogs = Data.getLogs('drink');
-        const labels = [], smokeData = [], drinkData = [];
+        let now = new Date(); let smokeLogs = Data.getLogs('smoke');
+        const labels = [], smokeData = [];
         for (let i = 29; i >= 0; i--) {
             let d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
             let sDay = d.setHours(0, 0, 0, 0); let eDay = d.setHours(23, 59, 59, 999);
             labels.push(`${d.getMonth() + 1}/${d.getDate()}`);
             smokeData.push(smokeLogs.filter(t => t >= sDay && t <= eDay).length);
-            drinkData.push(drinkLogs.filter(t => t >= sDay && t <= eDay).length);
         }
 
-        const commonOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { anchor: 'end', align: 'end', color: '#8B95A1', font: { weight: 'bold', size: 12 }, formatter: function (v) { return v > 0 ? v : ''; } } }, layout: { padding: { top: 20 } }, scales: { y: { display: false, beginAtZero: true }, x: { grid: { display: false }, border: { display: false } } }, animation: { duration: 0 } };
+        const commonOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, datalabels: { anchor: 'end', align: 'end', color: '#8B95A1', font: { weight: 'bold', size: 12 }, formatter: function (v) { return v > 0 ? v : ''; } } }, layout: { padding: { top: 20 } }, scales: { y: { display: false, beginAtZero: true, suggestedMax: 4 }, x: { grid: { display: false }, border: { display: false } } }, animation: { duration: 0 } };
 
-        if (!smokeChartObj && document.getElementById('smokeChart')) {
-            smokeChartObj = new Chart(document.getElementById('smokeChart').getContext('2d'), { type: 'bar', data: { labels: labels, datasets: [{ data: smokeData, backgroundColor: smokeBarColor, borderRadius: 6 }] }, options: commonOptions });
-        } else if (smokeChartObj) { smokeChartObj.data.datasets[0].data = smokeData; smokeChartObj.update(); }
+        let sWrap = document.getElementById('smokeChartWrapper');
+        if (document.getElementById('smokeChart')) {
+            if (smokeChartObj && document.getElementById('smokeChart').clientHeight === 0 && sWrap.offsetWidth > 0) {
+                smokeChartObj.destroy(); smokeChartObj = null;
+            }
+            if (!smokeChartObj && sWrap.offsetWidth > 0) {
+                smokeChartObj = new Chart(document.getElementById('smokeChart').getContext('2d'), { type: 'bar', data: { labels: labels, datasets: [{ data: smokeData, backgroundColor: smokeBarColor, borderRadius: 6 }] }, options: commonOptions });
+            } else if (smokeChartObj) {
+                smokeChartObj.data.labels = labels;
+                smokeChartObj.data.datasets[0].data = smokeData;
+                smokeChartObj.update();
+            }
+        }
+        setTimeout(() => { if (sWrap) sWrap.scrollLeft = sWrap.scrollWidth; }, 50);
+    },
 
-        if (!drinkChartObj && document.getElementById('drinkChart')) {
-            drinkChartObj = new Chart(document.getElementById('drinkChart').getContext('2d'), { type: 'bar', data: { labels: labels, datasets: [{ data: drinkData, backgroundColor: drinkBarColor, borderRadius: 6 }] }, options: commonOptions });
-        } else if (drinkChartObj) { drinkChartObj.data.datasets[0].data = drinkData; drinkChartObj.update(); }
+    // 🍺 금주 탭: 6개월 미니 달력 렌더링
+    renderDrinkCalendar() {
+        const slider = document.getElementById('drinkCalendarSlider');
+        if (!slider) return;
 
-        setTimeout(() => {
-            let sWrap = document.getElementById('smokeChartWrapper'); let dWrap = document.getElementById('drinkChartWrapper');
-            if (sWrap) sWrap.scrollLeft = sWrap.scrollWidth; if (dWrap) dWrap.scrollLeft = dWrap.scrollWidth;
-        }, 50);
+        // 저장된 음주 기록을 빠른 검색을 위해 Set(YYYY-M-D)으로 변환
+        const drinkLogs = Data.getLogs('drink');
+        const drinkDates = new Set(drinkLogs.map(ms => {
+            let d = new Date(ms);
+            return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+        }));
+
+        const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+        let html = '';
+        let now = new Date();
+        let todayStr = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`;
+
+        // 최근 6개월 치 달력 생성 (이번 달이 가장 먼저 보이게)
+        for (let i = 0; i < 6; i++) {
+            let d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            let year = d.getFullYear();
+            let month = d.getMonth();
+            let daysInMonth = new Date(year, month + 1, 0).getDate();
+            let firstDayIndex = new Date(year, month, 1).getDay();
+
+            let gridHtml = `<div class="calendar-month-wrapper">
+                                <div class="calendar-month-title">${year}년 ${month + 1}월</div>
+                                <div class="calendar-grid">`;
+
+            // 1. 요일 헤더 그리기 (일~토)
+            dayNames.forEach((name, idx) => {
+                let cls = 'cal-day-header';
+                if (idx === 0) cls += ' sun'; // 일요일 빨강
+                if (idx === 6) cls += ' sat'; // 토요일 파랑
+                gridHtml += `<div class="${cls}">${name}</div>`;
+            });
+
+            // 2. 1일 전까지 빈칸 채우기
+            for (let j = 0; j < firstDayIndex; j++) {
+                gridHtml += `<div class="cal-day empty"></div>`;
+            }
+
+            // 3. 날짜 그리기
+            for (let day = 1; day <= daysInMonth; day++) {
+                let currentStr = `${year}-${month}-${day}`;
+                let isToday = (currentStr === todayStr);
+                let hasDrank = drinkDates.has(currentStr);
+                let dayOfWeek = (firstDayIndex + day - 1) % 7;
+
+                let cls = 'cal-day';
+                if (dayOfWeek === 0) cls += ' sun'; // 일요일
+                if (dayOfWeek === 6) cls += ' sat'; // 토요일
+                if (isToday) cls += ' today';       // 오늘
+                if (hasDrank) cls += ' drank';      // 술 마신 날 (스탬프)
+
+                gridHtml += `<div class="${cls}">${day}</div>`;
+            }
+
+            gridHtml += `</div></div>`;
+            html += gridHtml;
+        }
+
+        slider.innerHTML = html;
     },
 
     openSettingsModal() {
@@ -290,7 +392,6 @@ const UI = {
         this.openModal('customModal');
     },
 
-    // 단순 확인용 Alert (취소 버튼 없음)
     showAlertModal(msg) {
         document.getElementById('alertMsg').innerText = msg;
         this.openModal('alertModal');

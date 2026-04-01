@@ -32,8 +32,11 @@ const App = {
         });
 
         $('btnRecordDrink')?.addEventListener('click', () => {
+            // 💡 현재 모드('drink' 또는 'drinkReduce')를 파악하여 전용 자물쇠 확인
+            let prefix = Data.getPrefix('drink');
             let todayStr = new Date().toDateString();
-            if (localStorage.getItem('lastDrinkDate') === todayStr) {
+
+            if (localStorage.getItem(prefix + 'LastDate') === todayStr) {
                 UI.showAlertModal('오늘은 이미 기록되었습니다.\n(기록은 하루 1회만 가능합니다)');
             } else {
                 UI.showCustomModal('정말 마셨나요? (하루 1회만 카운트됩니다)', () => {
@@ -107,7 +110,6 @@ const App = {
         UI.updateAll();
     },
 
-    // 💡 초기화 팝업 안내 문구를 두 모드 모두 지워진다고 명확히 변경
     askReset(type) {
         let name = type === 'smoke' ? '담배' : '술';
         UI.closeModal('settingsModal');

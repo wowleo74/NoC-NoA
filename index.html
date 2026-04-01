@@ -72,9 +72,12 @@
 
                     <div class="ranking-badge full-width hide-on-reduce">
                         <div class="title">🏆 명예의 전당 (최장 기록)</div>
-                        <div class="rank-item"><span>🥇 1위</span> <span id="smokeTop1Val">기록 없음</span></div>
-                        <div class="rank-item sub"><span>🥈 2위</span> <span id="smokeTop2Val">기록 없음</span></div>
-                        <div class="rank-item sub"><span>🥉 3위</span> <span id="smokeTop3Val">기록 없음</span></div>
+                        <div class="rank-item"><span class="rank-badge">🥇 1위</span> <span class="rank-date"
+                                id="smokeTop1Date">-</span> <span class="rank-val" id="smokeTop1Val">기록 없음</span></div>
+                        <div class="rank-item sub"><span class="rank-badge">🥈 2위</span> <span class="rank-date"
+                                id="smokeTop2Date">-</span> <span class="rank-val" id="smokeTop2Val">기록 없음</span></div>
+                        <div class="rank-item sub"><span class="rank-badge">🥉 3위</span> <span class="rank-date"
+                                id="smokeTop3Date">-</span> <span class="rank-val" id="smokeTop3Val">기록 없음</span></div>
                     </div>
 
                     <div class="chart-container full-width">
@@ -85,7 +88,7 @@
                         </div>
                     </div>
 
-                    <button class="button full-btn smoke-btn" id="btnRecordSmoke">방금 피웠음 🥲</button>
+                    <button class="button full-btn smoke-btn" id="btnRecordSmoke">방금 피웠음</button>
                 </div>
             </div>
         </div>
@@ -128,23 +131,25 @@
 
                     <div class="ranking-badge full-width hide-on-reduce">
                         <div class="title">🏆 명예의 전당 (최장 기록)</div>
-                        <div class="rank-item"><span>🥇 1위</span> <span id="drinkTop1Val">기록 없음</span></div>
-                        <div class="rank-item sub"><span>🥈 2위</span> <span id="drinkTop2Val">기록 없음</span></div>
-                        <div class="rank-item sub"><span>🥉 3위</span> <span id="drinkTop3Val">기록 없음</span></div>
+                        <div class="rank-item"><span class="rank-badge">🥇 1위</span> <span class="rank-date"
+                                id="drinkTop1Date">-</span> <span class="rank-val" id="drinkTop1Val">기록 없음</span></div>
+                        <div class="rank-item sub"><span class="rank-badge">🥈 2위</span> <span class="rank-date"
+                                id="drinkTop2Date">-</span> <span class="rank-val" id="drinkTop2Val">기록 없음</span></div>
+                        <div class="rank-item sub"><span class="rank-badge">🥉 3위</span> <span class="rank-date"
+                                id="drinkTop3Date">-</span> <span class="rank-val" id="drinkTop3Val">기록 없음</span></div>
                     </div>
 
                     <div class="highlight-stat full-width hide-on-reduce">최근 30일 실패 기록 🍺 <span class="stat-num drink"
                             id="monthDrink">0</span>번</div>
 
                     <div class="chart-container full-width">
-                        <div class="chart-title"><span class="material-symbols-rounded">bar_chart</span>최근 30일 데이터 <span
-                                class="scroll-hint">◀ 옆으로 밀기</span></div>
-                        <div class="scroll-chart-wrapper" id="drinkChartWrapper">
-                            <div class="scroll-chart-inner"><canvas id="drinkChart"></canvas></div>
+                        <div class="chart-title"><span class="material-symbols-rounded">calendar_month</span>월별 음주 기록
+                            <span class="scroll-hint">◀ 옆으로 밀기 (최근 6개월)</span></div>
+                        <div class="calendar-slider" id="drinkCalendarSlider">
                         </div>
                     </div>
 
-                    <button class="button full-btn drink-btn" id="btnRecordDrink">방금 마셨음 🥲 (하루 1회 제한)</button>
+                    <button class="button full-btn drink-btn" id="btnRecordDrink">방금 마셨음 (하루 1회 제한)</button>
                 </div>
             </div>
         </div>
@@ -216,8 +221,11 @@
             </div>
 
             <div class="reset-zone">
-                <button class="reset-btn" id="btnResetSmoke">⚠️ 담배 관련 모든 기록 초기화</button>
-                <button class="reset-btn" id="btnResetDrink">⚠️ 술 관련 모든 기록 초기화</button>
+                <div class="settings-title" style="color: var(--status-fail);">🚨 데이터 관리 구역</div>
+                <button class="reset-btn" id="btnResetSmoke"><span
+                        class="material-symbols-rounded">delete_forever</span>담배 기록 전체 초기화</button>
+                <button class="reset-btn" id="btnResetDrink"><span
+                        class="material-symbols-rounded">delete_forever</span>술 기록 전체 초기화</button>
             </div>
         </div>
     </div>
@@ -228,7 +236,7 @@
             <div style="font-size: 13px; color: var(--text-gray); font-weight: 700; margin-bottom: 15px;">앞으로 다가올 내 몸의
                 기적같은 변화들</div>
             <div class="roadmap-list" id="roadmapList"></div>
-            <button class="button reset-btn" id="btnRoadmapClose"
+            <button class="button reset-btn roadmap-close-btn" id="btnRoadmapClose"
                 style="width: 100%; margin-top: 10px; background: transparent; color: var(--text-sub);">닫기</button>
         </div>
     </div>
@@ -249,7 +257,7 @@
                 style="min-height: 48px; font-size: 15px; font-weight: 800; margin-bottom: 25px; color: var(--text-streak); line-height: 1.4; display: flex; align-items: center; justify-content: center;">
             </div>
             <button class="game-main-btn" id="gameMainBtn">🔥 10초 버티기 시작</button>
-            <button class="button reset-btn" id="btnDefenseClose"
+            <button class="button reset-btn roadmap-close-btn" id="btnDefenseClose"
                 style="width: 100%; margin-top: 15px; background: transparent; color: var(--text-sub);">종료하고
                 돌아가기</button>
         </div>

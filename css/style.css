@@ -224,7 +224,6 @@ body {
     font-variant-numeric: tabular-nums;
 }
 
-/* 금액 박스 디자인 및 텍스트 자동 조정 */
 .saved-money-box {
     padding: 24px 20px;
     border-radius: 24px;
@@ -281,7 +280,6 @@ body {
     align-items: baseline;
     gap: 4px;
     flex-wrap: wrap;
-    /* 글씨 길어지면 줄바꿈 처리 */
     word-break: keep-all;
 }
 
@@ -452,8 +450,8 @@ body {
 
 .rank-item {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
     font-size: 15px;
     font-weight: 800;
     color: var(--text-main);
@@ -463,6 +461,24 @@ body {
     font-size: 13px;
     font-weight: 700;
     color: var(--text-sub);
+}
+
+.rank-badge {
+    flex: 0 0 55px;
+    text-align: left;
+}
+
+.rank-date {
+    flex: 1;
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-gray);
+    font-weight: 600;
+}
+
+.rank-val {
+    flex: 0 0 90px;
+    text-align: right;
 }
 
 .total-amount {
@@ -751,27 +767,56 @@ body {
 }
 
 .reset-zone {
-    margin-top: 30px;
-    border-top: 2px dashed var(--tab-bg);
-    padding-top: 30px;
+    margin-top: 35px;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    padding-top: 25px;
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
+@media (prefers-color-scheme: dark) {
+    .reset-zone {
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+}
+
 .reset-btn {
-    background: var(--card-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: rgba(255, 91, 115, 0.08);
     color: var(--status-fail);
     font-size: 14px;
     padding: 16px;
     border-radius: 16px;
     font-weight: 800;
-    border: none;
-    transition: transform 0.1s;
+    border: 1px solid rgba(255, 91, 115, 0.2);
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.reset-btn .material-symbols-rounded {
+    font-size: 18px;
 }
 
 .reset-btn:active {
+    background: var(--status-fail);
+    color: white;
     transform: scale(0.97);
+}
+
+.roadmap-close-btn {
+    border: none !important;
+    background: transparent !important;
+    color: var(--text-sub) !important;
+    box-shadow: none !important;
+}
+
+.roadmap-close-btn:active {
+    transform: scale(0.97);
+    opacity: 0.8;
 }
 
 .roadmap-list {
@@ -793,13 +838,31 @@ body {
     transition: all 0.3s;
 }
 
+/* 💡 도감: 과거(달성 완료) 항목을 '성공' 느낌으로 화사하게 수정 */
 .roadmap-item.past {
-    opacity: 0.5;
+    opacity: 1;
+    /* 투명도 제거 */
+    background: rgba(52, 199, 89, 0.08);
+    /* 연한 초록색 배경 */
+    border: 1px solid rgba(52, 199, 89, 0.3);
+    /* 초록색 테두리 */
 }
 
 .roadmap-item.past .rm-icon {
-    filter: grayscale(100%);
+    filter: none;
 }
+
+/* 흑백 필터 제거 */
+.roadmap-item.past .rm-label {
+    color: var(--status-success);
+}
+
+/* '달성 완료!' 글자를 초록색으로 */
+.roadmap-item.past .rm-msg {
+    color: var(--text-main);
+}
+
+/* 설명 글자 또렷하게 복구 */
 
 .roadmap-item.current.smoke-theme {
     border: 2px solid var(--smoke-main);
@@ -884,4 +947,92 @@ body {
 .game-main-btn.stop {
     background: var(--status-fail);
     box-shadow: 0 10px 20px rgba(255, 91, 115, 0.3);
+}
+
+.calendar-slider {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 10px;
+    padding-bottom: 5px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.calendar-slider::-webkit-scrollbar {
+    display: none;
+}
+
+.calendar-month-wrapper {
+    flex: 0 0 100%;
+    scroll-snap-align: center;
+}
+
+.calendar-month-title {
+    text-align: center;
+    font-size: 14px;
+    font-weight: 800;
+    margin-bottom: 12px;
+    color: var(--text-main);
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    text-align: center;
+}
+
+.cal-day-header {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--text-gray);
+    margin-bottom: 4px;
+}
+
+.cal-day-header.sun,
+.cal-day.sun {
+    color: var(--status-fail);
+}
+
+.cal-day-header.sat,
+.cal-day.sat {
+    color: var(--drink-main);
+}
+
+.cal-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    border-radius: 50%;
+    position: relative;
+    color: var(--text-main);
+}
+
+.cal-day.empty {
+    visibility: hidden;
+}
+
+.cal-day.today {
+    border: 2px solid var(--text-gray);
+    font-weight: 900;
+}
+
+.cal-day.drank {
+    background: var(--drink-main);
+    color: white !important;
+    font-weight: 900;
+    box-shadow: 0 4px 10px rgba(92, 128, 255, 0.3);
+    border: none;
+}
+
+.cal-day.drank::after {
+    content: '🍺';
+    position: absolute;
+    font-size: 10px;
+    top: -4px;
+    right: -4px;
 }

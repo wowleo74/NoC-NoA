@@ -54,7 +54,7 @@ const Data = {
             if (!localStorage.getItem(key + "Start")) localStorage.setItem(key + "Start", now);
             if (!localStorage.getItem(key + "AppStart")) localStorage.setItem(key + "AppStart", now);
             if (!localStorage.getItem(key + "Logs")) localStorage.setItem(key + "Logs", "[]");
-            if (!localStorage.getItem(key + "Records")) localStorage.setItem(key + "Records", "[0,0,0]");
+            if (!localStorage.getItem(key + "Records")) localStorage.setItem(key + "Records", "[]");
         });
 
         if (!localStorage.getItem("smokePrice")) localStorage.setItem("smokePrice", "4500");
@@ -73,25 +73,33 @@ const Data = {
     getSetting(key, defaultVal) { let val = localStorage.getItem(key); return val !== null ? parseInt(val) : defaultVal; },
 
     getLogs(type) { return JSON.parse(localStorage.getItem(this.getPrefix(type) + "Logs")) || []; },
-    getRecords(type) { return JSON.parse(localStorage.getItem(this.getPrefix(type) + "Records")) || [0, 0, 0]; },
+
+    getRecords(type) {
+        let raw = JSON.parse(localStorage.getItem(this.getPrefix(type) + "Records")) || [];
+        raw = raw.filter(r => r !== 0 && r !== null);
+        return raw.map(r => typeof r === 'number' ? { duration: r, date: null } : r);
+    },
+
     getStartTime(type) { return parseInt(localStorage.getItem(this.getPrefix(type) + "Start")) || Date.now(); },
     getAppStartTime(type) { return parseInt(localStorage.getItem(this.getPrefix(type) + "AppStart")) || Date.now(); },
 
     saveSettings(obj) { Object.keys(obj).forEach(k => localStorage.setItem(k, obj[k])); },
 
-    // 💡 버그 수정: 완전 끊기와 줄이기 모드를 한꺼번에 초기화하고 술 제한 자물쇠도 제거
     resetData(type) {
         let now = Date.now();
-        let prefixes = [type, type + 'Reduce']; // 예: ['smoke', 'smokeReduce']
+        let prefixes = [type, type + 'Reduce'];
 
         prefixes.forEach(prefix => {
             localStorage.setItem(prefix + "Start", now);
             localStorage.setItem(prefix + "AppStart", now);
             localStorage.setItem(prefix + "Logs", "[]");
-            localStorage.setItem(prefix + "Records", "[0,0,0]");
+            localStorage.setItem(prefix + "Records", "[]");
+
+            // 💡 해당 모드의 1일 제한 자물쇠도 개별적으로 완벽 초기화!
+            localStorage.removeItem(prefix + "LastDate");
         });
 
-        // 술 초기화 시 '오늘 이미 마셨음' 1일 1회 제한 자물쇠 완전히 풀기
+        // 💡 구버전 자물쇠 찌꺼기 청소
         if (type === 'drink') {
             localStorage.removeItem('lastDrinkDate');
         }
@@ -101,8 +109,9 @@ const Data = {
         let now = Date.now();
         let prefix = this.getPrefix(type);
 
+        // 💡 현재 모드 전용 자물쇠 채우기 (완전 금주와 줄이기 분리)
         if (type === 'drink') {
-            localStorage.setItem('lastDrinkDate', new Date().toDateString());
+            localStorage.setItem(prefix + 'LastDate', new Date().toDateString());
         }
 
         let startTime = this.getStartTime(type);
@@ -111,8 +120,9 @@ const Data = {
         let logs = this.getLogs(type); logs.push(now);
         localStorage.setItem(prefix + "Logs", JSON.stringify(logs));
 
-        let recordsArr = this.getRecords(type); recordsArr.push(elapsedMs);
-        recordsArr.sort((a, b) => b - a);
+        let recordsArr = this.getRecords(type);
+        recordsArr.push({ duration: elapsedMs, date: now });
+        recordsArr.sort((a, b) => b.duration - a.duration);
         localStorage.setItem(prefix + "Records", JSON.stringify(recordsArr.slice(0, 3)));
 
         localStorage.setItem(prefix + "Start", now);
