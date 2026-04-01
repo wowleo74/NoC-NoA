@@ -52,9 +52,9 @@ const Data = {
         let now = Date.now();
         ['smoke', 'drink', 'smokeReduce', 'drinkReduce'].forEach(key => {
             if (!localStorage.getItem(key + "Start")) localStorage.setItem(key + "Start", now);
-            if (!localStorage.getItem(key + "AppStart")) localStorage.setItem(key + "AppStart", now);
+            if (!localStorage.getItem(key + "AppStart")) localStorage.setItem(key + "AppStart", now); 
             if (!localStorage.getItem(key + "Logs")) localStorage.setItem(key + "Logs", "[]");
-            if (!localStorage.getItem(key + "Records")) localStorage.setItem(key + "Records", "[]");
+            if (!localStorage.getItem(key + "Records")) localStorage.setItem(key + "Records", "[]"); 
         });
 
         if (!localStorage.getItem("smokePrice")) localStorage.setItem("smokePrice", "4500");
@@ -64,44 +64,42 @@ const Data = {
         if (!localStorage.getItem("drinkPerWeek")) localStorage.setItem("drinkPerWeek", "2");
         if (!localStorage.getItem("drinkTarget")) localStorage.setItem("drinkTarget", "1");
 
-        if (!localStorage.getItem("smokeMode")) localStorage.setItem("smokeMode", "quit");
-        if (!localStorage.getItem("drinkMode")) localStorage.setItem("drinkMode", "quit");
+        // 💡 앱 최초 실행 시 빈 화면을 보기 위해 기본값을 'off'로 설정
+        if (!localStorage.getItem("smokeMode")) localStorage.setItem("smokeMode", "off");
+        if (!localStorage.getItem("drinkMode")) localStorage.setItem("drinkMode", "off");
     },
-
-    getMode(type) { return localStorage.getItem(type + "Mode") || "quit"; },
-    getPrefix(type) { return this.getMode(type) === 'reduce' ? type + 'Reduce' : type; },
+    
+    getMode(type) { return localStorage.getItem(type + "Mode") || "off"; },
+    getPrefix(type) { return this.getMode(type) === 'reduce' ? type + 'Reduce' : type; }, 
     getSetting(key, defaultVal) { let val = localStorage.getItem(key); return val !== null ? parseInt(val) : defaultVal; },
-
+    
     getLogs(type) { return JSON.parse(localStorage.getItem(this.getPrefix(type) + "Logs")) || []; },
-
-    getRecords(type) {
+    
+    getRecords(type) { 
         let raw = JSON.parse(localStorage.getItem(this.getPrefix(type) + "Records")) || [];
         raw = raw.filter(r => r !== 0 && r !== null);
         return raw.map(r => typeof r === 'number' ? { duration: r, date: null } : r);
     },
-
+    
     getStartTime(type) { return parseInt(localStorage.getItem(this.getPrefix(type) + "Start")) || Date.now(); },
     getAppStartTime(type) { return parseInt(localStorage.getItem(this.getPrefix(type) + "AppStart")) || Date.now(); },
-
+    
     saveSettings(obj) { Object.keys(obj).forEach(k => localStorage.setItem(k, obj[k])); },
-
+    
     resetData(type) {
         let now = Date.now();
-        let prefixes = [type, type + 'Reduce'];
-
+        let prefixes = [type, type + 'Reduce']; 
+        
         prefixes.forEach(prefix => {
             localStorage.setItem(prefix + "Start", now);
             localStorage.setItem(prefix + "AppStart", now);
             localStorage.setItem(prefix + "Logs", "[]");
             localStorage.setItem(prefix + "Records", "[]");
-
-            // 💡 해당 모드의 1일 제한 자물쇠도 개별적으로 완벽 초기화!
             localStorage.removeItem(prefix + "LastDate");
         });
 
-        // 💡 구버전 자물쇠 찌꺼기 청소
         if (type === 'drink') {
-            localStorage.removeItem('lastDrinkDate');
+            localStorage.removeItem('lastDrinkDate'); 
         }
     },
 
@@ -109,7 +107,6 @@ const Data = {
         let now = Date.now();
         let prefix = this.getPrefix(type);
 
-        // 💡 현재 모드 전용 자물쇠 채우기 (완전 금주와 줄이기 분리)
         if (type === 'drink') {
             localStorage.setItem(prefix + 'LastDate', new Date().toDateString());
         }
@@ -120,7 +117,7 @@ const Data = {
         let logs = this.getLogs(type); logs.push(now);
         localStorage.setItem(prefix + "Logs", JSON.stringify(logs));
 
-        let recordsArr = this.getRecords(type);
+        let recordsArr = this.getRecords(type); 
         recordsArr.push({ duration: elapsedMs, date: now });
         recordsArr.sort((a, b) => b.duration - a.duration);
         localStorage.setItem(prefix + "Records", JSON.stringify(recordsArr.slice(0, 3)));
