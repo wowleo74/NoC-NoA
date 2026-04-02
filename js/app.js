@@ -46,7 +46,6 @@ const App = {
         let btnRecordSmoke = $('btnRecordSmoke');
         if (btnRecordSmoke) {
             btnRecordSmoke.addEventListener('click', () => {
-                // 💡 문구 순화 반영
                 UI.showCustomModal('정말 피우셨습니까?\n(기록 시 타이머가 다시 시작됩니다.)', () => {
                     Data.addLog('smoke');
                     UI.updateAll();
@@ -150,6 +149,26 @@ const App = {
                 }
             });
         });
+
+        // 💡 친구에게 추천하기 이벤트 추가
+        let btnShareApp = $('btnShareApp');
+        if (btnShareApp) {
+            btnShareApp.addEventListener('click', () => {
+                let shareData = {
+                    title: '노담 노술 관리자',
+                    text: '완벽한 금연, 금주를 위한 타이머와 회복 도감! 같이 시작해볼래?',
+                    url: 'https://wowleo74.github.io/NoC-NoA/'
+                };
+
+                if (navigator.share) {
+                    navigator.share(shareData).catch(err => console.log('공유 취소됨', err));
+                } else {
+                    navigator.clipboard.writeText(shareData.url).then(() => {
+                        UI.showAlertModal('앱 링크가 클립보드에 복사되었습니다!\n친구에게 붙여넣기 해주세요.');
+                    });
+                }
+            });
+        }
     },
 
     saveSettings() {

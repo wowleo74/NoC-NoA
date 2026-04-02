@@ -237,6 +237,12 @@
                 <button class="modal-btn btn-confirm" id="btnSettingsSave">저장</button>
             </div>
 
+            <div style="margin-top: 20px; text-align: center;">
+                <a href="privacy.html" target="_blank"
+                    style="color: var(--text-gray); font-size: 13px; text-decoration: underline; font-weight: 700;">개인정보처리방침
+                    보기</a>
+            </div>
+
             <div class="reset-zone">
                 <div class="settings-title" style="color: var(--status-fail);">🚨 데이터 관리 구역</div>
                 <button class="reset-btn" id="btnResetSmoke"><span
@@ -283,6 +289,20 @@
     <script src="js/data.js"></script>
     <script src="js/ui.js"></script>
     <script src="js/app.js"></script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => {
+                        console.log('서비스 워커 등록 성공! 오프라인 캐싱이 활성화되었습니다:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('서비스 워커 등록 실패:', error);
+                    });
+            });
+        }
+    </script>
 </body>
 
 </html>

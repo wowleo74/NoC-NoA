@@ -373,7 +373,6 @@ body {
     background: var(--drink-light);
 }
 
-/* 💡 회복 도감 UI 디자인 전면 수정 */
 .health-header {
     display: flex;
     align-items: flex-start;
@@ -1187,4 +1186,33 @@ body {
     top: -4px;
     right: -4px;
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+/* 💡 친구 추천 버튼 디자인 */
+.share-zone {
+    margin-top: 15px;
+    text-align: center;
+}
+
+.share-btn {
+    width: 100%;
+    padding: 18px;
+    border-radius: 16px;
+    border: none;
+    background: linear-gradient(135deg, #FFB800, #FF8A00);
+    color: white;
+    font-weight: 800;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(255, 138, 0, 0.3);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.share-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(255, 138, 0, 0.4);
+}
+
+.share-btn:active {
+    transform: translateY(1px) scale(0.98);
 }
