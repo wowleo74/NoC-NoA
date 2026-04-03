@@ -155,9 +155,10 @@ body {
     transform: translateY(1px) scale(0.98);
 }
 
+/* 💡 스크롤 시 광고 배너에 가려지지 않도록 하단 여백(padding-bottom) 90px 적용 */
 .container {
     margin: 0 auto;
-    padding: 15px 0 40px 0;
+    padding: 15px 0 90px 0 !important;
     display: flex;
     flex-direction: column;
     flex-grow: 1;
@@ -1188,7 +1189,7 @@ body {
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
-/* 💡 친구 추천 버튼 디자인 */
+/* 친구 추천 버튼 디자인 */
 .share-zone {
     margin-top: 15px;
     text-align: center;
@@ -1215,4 +1216,27 @@ body {
 
 .share-btn:active {
     transform: translateY(1px) scale(0.98);
+}
+
+/* 💡 하단 광고 배너 영역 디자인 */
+.ad-banner-zone {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 600px;
+    height: 60px;
+    background-color: var(--tab-bg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 900;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+@media (prefers-color-scheme: dark) {
+    .ad-banner-zone {
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
 }
