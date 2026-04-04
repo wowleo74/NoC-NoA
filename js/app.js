@@ -155,7 +155,7 @@ const App = {
         if (btnShareApp) {
             btnShareApp.addEventListener('click', () => {
                 let shareData = {
-                    title: '노담 노술 관리자',
+                    title: '노담노술 - 금연·금주 도전기',
                     text: '완벽한 금연, 금주를 위한 타이머와 회복 도감! 같이 시작해볼래?',
                     url: 'https://wowleo74.github.io/NoC-NoA/'
                 };
