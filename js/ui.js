@@ -73,8 +73,17 @@ const UI = {
 
     formatTimeDisplay(ms) {
         let s = Data.getTimeParsed(ms);
-        let timeStr = `${String(s.hour).padStart(2, '0')}:${String(s.min).padStart(2, '0')}:${String(s.sec).padStart(2, '0')}`;
-        return s.day > 0 ? `${s.day}일 ${timeStr}` : timeStr;
+        let hStr = String(s.hour).padStart(2, '0');
+        let mStr = String(s.min).padStart(2, '0');
+        let secStr = String(s.sec).padStart(2, '0');
+
+        if (s.day < 1) {
+            return `${hStr}:${mStr}:${secStr}`;
+        } else if (s.day < 10) {
+            return `${s.day}일 ${hStr}:${mStr}:${secStr}`;
+        } else {
+            return `${s.day}일 ${hStr}:${mStr}`;
+        }
     },
 
     updateTime() {
@@ -85,8 +94,14 @@ const UI = {
         let smokeTitle = document.getElementById('smokeTitle');
         let drinkTitle = document.getElementById('drinkTitle');
 
-        if (smokeTitle) smokeTitle.innerText = `금연기간 : ${this.formatTimeDisplay(sT)}`;
-        if (drinkTitle) drinkTitle.innerText = `금주기간 : ${this.formatTimeDisplay(dT)}`;
+        if (smokeTitle) {
+            let span = smokeTitle.querySelector('.fit-text');
+            if(span) span.innerText = `금연기간 : ${this.formatTimeDisplay(sT)}`;
+        }
+        if (drinkTitle) {
+            let span = drinkTitle.querySelector('.fit-text');
+            if(span) span.innerText = `금주기간 : ${this.formatTimeDisplay(dT)}`;
+        }
     },
 
     updateMoney() {
@@ -95,9 +110,14 @@ const UI = {
         let dMode = Data.getMode('drink');
 
         let smokeMainBoard = document.getElementById('smokeMainBoard');
+        let smokeReduceBoard = document.getElementById('smokeReduceBoard');
         let drinkMainBoard = document.getElementById('drinkMainBoard');
+        let drinkReduceBoard = document.getElementById('drinkReduceBoard');
 
+        // 🚬 담배 로직
         if (sMode === 'quit' && smokeMainBoard) {
+            smokeMainBoard.style.display = '';
+            if (smokeReduceBoard) smokeReduceBoard.style.display = 'none';
             smokeMainBoard.className = 'saved-money-box mode-quit smoke';
 
             let smokeBoardLabel = document.getElementById('smokeBoardLabel');
@@ -133,30 +153,68 @@ const UI = {
                 smokeUnit.style.display = 'inline';
             }
 
-        } else if (sMode === 'reduce' && smokeMainBoard) {
+        } else if (sMode === 'reduce' && smokeReduceBoard) {
+            if (smokeMainBoard) smokeMainBoard.style.display = 'none';
+            smokeReduceBoard.style.display = 'block';
+
             let stat = Data.getReduceStatus('smoke');
             let target = Data.getSetting("smokeTarget", 5);
+            let remaining = stat.remaining;
+            let isFail = stat.isFail;
+            let used = target - remaining;
+            if (isFail) used = target + Math.abs(remaining);
 
-            smokeMainBoard.className = stat.isFail ? 'saved-money-box mode-fail' : 'saved-money-box mode-reduce smoke';
+            let percentage = target > 0 ? Math.floor((used / target) * 100) : 0;
 
-            let smokeBoardLabel = document.getElementById('smokeBoardLabel');
-            if (smokeBoardLabel) {
-                smokeBoardLabel.innerText = stat.isFail ? `🚨 일일 목표 초과! (목표: ${target}개)` : `🚬 오늘 남은 담배 (목표: ${target}개)`;
+            // 💡 텍스트 다이어트: 짧고 강렬하게 변경 완료!
+            let msg = "";
+            if (isFail) msg = "앗, 목표 초과. 내일은 꼭 성공해요! 🥲";
+            else if (used === target) msg = "오늘 목표 달성! 여기서 멈추면 성공 🛑";
+            else if (percentage >= 90) msg = "목표가 코앞! 이번 한 번만 꾹 참기 🚨";
+            else if (percentage >= 50) msg = "절반 썼어요! 페이스 조절 타임 🤔";
+            else if (percentage >= 1) msg = "페이스 굿! 아주 잘하고 있어요 👏";
+            else msg = "하루의 시작! 오늘도 화이팅 ☀️";
+
+            let barsHtml = '';
+            if (target <= 10) {
+                barsHtml = '<div class="pr-bar-container">';
+                for (let i = 0; i < target; i++) {
+                    barsHtml += `<div class="pr-bar-segment ${i < used ? 'filled' : ''}"></div>`;
+                }
+                barsHtml += '</div>';
+            } else {
+                barsHtml = `<div class="pr-bar-smooth"><div class="pr-bar-smooth-fill" style="width: ${Math.min(percentage, 100)}%;"></div></div>`;
             }
 
-            let smokeBoardText = document.getElementById('smokeBoardText');
-            if (smokeBoardText) {
-                smokeBoardText.innerText = stat.isFail ? Math.abs(stat.remaining) : stat.remaining;
-            }
-
-            let smokeUnit = document.getElementById('smokeUnit');
-            if (smokeUnit) {
-                smokeUnit.innerText = stat.isFail ? '개 초과' : '개비';
-                smokeUnit.style.display = 'inline';
-            }
+            // 💡 감성 터치 메시지 부분에 `<span class="fit-text">` 추가!
+            smokeReduceBoard.className = `premium-reduce-board smoke ${isFail ? 'fail' : ''}`;
+            smokeReduceBoard.innerHTML = `
+                <div class="pr-header">
+                    <div class="pr-title">🚬 오늘 남은 담배</div>
+                    <div class="pr-target-badge">목표 ${target}개</div>
+                </div>
+                <div class="pr-body">
+                    <div class="pr-number-wrap">
+                        <div><span class="pr-number">${isFail ? 0 : remaining}</span><span class="pr-unit">개</span></div>
+                        <div class="pr-used-badge">${used}개 사용</div>
+                    </div>
+                    <div class="pr-icon-wrap">🚬</div>
+                </div>
+                <div class="pr-message"><span class="fit-text">${msg}</span></div>
+                <div class="pr-progress-wrap">
+                    <div class="pr-progress-header">
+                        <span>오늘 진행률</span>
+                        <span>${Math.min(percentage, 100)}%</span>
+                    </div>
+                    ${barsHtml}
+                </div>
+            `;
         }
 
+        // 🍺 술 로직
         if (dMode === 'quit' && drinkMainBoard) {
+            drinkMainBoard.style.display = '';
+            if (drinkReduceBoard) drinkReduceBoard.style.display = 'none';
             drinkMainBoard.className = 'saved-money-box mode-quit drink';
 
             let drinkBoardLabel = document.getElementById('drinkBoardLabel');
@@ -196,27 +254,62 @@ const UI = {
                 drinkUnit.style.display = 'inline';
             }
 
-        } else if (dMode === 'reduce' && drinkMainBoard) {
+        } else if (dMode === 'reduce' && drinkReduceBoard) {
+            if (drinkMainBoard) drinkMainBoard.style.display = 'none';
+            drinkReduceBoard.style.display = 'block';
+
             let stat = Data.getReduceStatus('drink');
             let target = Data.getSetting("drinkTarget", 1);
+            let remaining = stat.remaining;
+            let isFail = stat.isFail;
+            let used = target - remaining;
+            if (isFail) used = target + Math.abs(remaining);
 
-            drinkMainBoard.className = stat.isFail ? 'saved-money-box mode-fail' : 'saved-money-box mode-reduce drink';
+            let percentage = target > 0 ? Math.floor((used / target) * 100) : 0;
 
-            let drinkBoardLabel = document.getElementById('drinkBoardLabel');
-            if (drinkBoardLabel) {
-                drinkBoardLabel.innerText = stat.isFail ? `🚨 주간 목표 초과! (목표: ${target}회)` : `🍺 이번 주 남은 기회 (목표: ${target}회)`;
+            // 💡 텍스트 다이어트: 술 부분도 통일감 있게 짧게!
+            let msg = "";
+            if (isFail) msg = "앗, 목표 초과. 다음 주엔 꼭 성공해요 🥲";
+            else if (used === target) msg = "이번 주 달성! 주말까지 꾹 참기 🛑";
+            else if (percentage >= 90) msg = "마지막 기회일지도! 신중하게 🚨";
+            else if (percentage >= 50) msg = "벌써 절반! 남은 일정을 관리해요 🗓️";
+            else if (percentage >= 1) msg = "기회가 넉넉해요! 페이스 굿 🥂";
+            else msg = "새로운 한 주! 건강하게 시작해요 ✨";
+
+            let barsHtml = '';
+            if (target <= 10) {
+                barsHtml = '<div class="pr-bar-container">';
+                for (let i = 0; i < target; i++) {
+                    barsHtml += `<div class="pr-bar-segment ${i < used ? 'filled' : ''}"></div>`;
+                }
+                barsHtml += '</div>';
+            } else {
+                barsHtml = `<div class="pr-bar-smooth"><div class="pr-bar-smooth-fill" style="width: ${Math.min(percentage, 100)}%;"></div></div>`;
             }
 
-            let drinkBoardText = document.getElementById('drinkBoardText');
-            if (drinkBoardText) {
-                drinkBoardText.innerText = stat.isFail ? Math.abs(stat.remaining) : stat.remaining;
-            }
-
-            let drinkUnit = document.getElementById('drinkUnit');
-            if (drinkUnit) {
-                drinkUnit.innerText = stat.isFail ? '회 초과' : '번';
-                drinkUnit.style.display = 'inline';
-            }
+            // 💡 감성 터치 메시지 부분에 `<span class="fit-text">` 추가!
+            drinkReduceBoard.className = `premium-reduce-board drink ${isFail ? 'fail' : ''}`;
+            drinkReduceBoard.innerHTML = `
+                <div class="pr-header">
+                    <div class="pr-title">🍺 이번 주 남은 기회</div>
+                    <div class="pr-target-badge">목표 ${target}번</div>
+                </div>
+                <div class="pr-body">
+                    <div class="pr-number-wrap">
+                        <div><span class="pr-number">${isFail ? 0 : remaining}</span><span class="pr-unit">번</span></div>
+                        <div class="pr-used-badge">${used}번 사용</div>
+                    </div>
+                    <div class="pr-icon-wrap">🍺</div>
+                </div>
+                <div class="pr-message"><span class="fit-text">${msg}</span></div>
+                <div class="pr-progress-wrap">
+                    <div class="pr-progress-header">
+                        <span>이번 주 진행률</span>
+                        <span>${Math.min(percentage, 100)}%</span>
+                    </div>
+                    ${barsHtml}
+                </div>
+            `;
         }
 
         document.querySelectorAll('.smoke-card .hide-on-reduce').forEach(el => {
@@ -232,7 +325,6 @@ const UI = {
         let now = Date.now();
 
         const renderRank = (prefix, dataArr) => {
-            // 💡 화면 렌더링도 5위까지 반영되도록 변경
             for (let i = 0; i < 5; i++) {
                 let r = dataArr[i];
                 let dateEl = document.getElementById(`${prefix}Top${i + 1}Date`);
@@ -331,7 +423,6 @@ const UI = {
         }
     },
 
-    // 💡 불필요한 updateStats 제거 
     updateCore() {
         this.updateTime();
         this.updateMoney();

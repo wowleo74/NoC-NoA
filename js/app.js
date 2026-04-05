@@ -4,15 +4,45 @@ const State = {
     isGameRunning: false
 };
 
+// 💡 마법의 함수 업그레이드: 타이머와 메시지를 모두 감지하여 맞춤형으로 폰트를 조절합니다.
+function fitTextToContainer() {
+    document.querySelectorAll('.fit-text').forEach(span => {
+        const container = span.parentElement;
+        if (!container) return;
+        
+        // 부모가 감성 메시지 박스인지, 타이머 박스인지 확인
+        const isMessage = container.classList.contains('pr-message');
+        
+        // 💡 메시지 박스는 패딩(양옆 여백)을 넉넉히 빼주고, 타이머는 조금만 뺌
+        const padding = isMessage ? 32 : 20; 
+        const containerWidth = container.offsetWidth - padding; 
+        
+        // 💡 시작 폰트 크기 세팅 (메시지는 14px, 타이머는 26px 시작)
+        let fontSize = isMessage ? 14 : 26; 
+
+        span.style.fontSize = fontSize + 'px';
+        span.style.display = 'inline-block';
+        span.style.whiteSpace = 'nowrap'; // 절대 줄 바꿈 금지
+
+        // 텍스트가 컨테이너 폭보다 넓으면 1px씩 줄임 (최소 10px까지)
+        while (span.offsetWidth > containerWidth && fontSize > 10) {
+            fontSize--;
+            span.style.fontSize = fontSize + 'px';
+        }
+    });
+}
+
 const App = {
     init() {
         Data.init();
         this.bindEvents();
         UI.updateAll();
+        fitTextToContainer(); 
 
         setInterval(() => {
             try {
                 UI.updateCore();
+                fitTextToContainer(); 
             } catch (error) {
                 console.error("타이머 에러 방어:", error);
             }
@@ -150,7 +180,6 @@ const App = {
             });
         });
 
-        // 💡 친구에게 추천하기 이벤트 추가
         let btnShareApp = $('btnShareApp');
         if (btnShareApp) {
             btnShareApp.addEventListener('click', () => {
@@ -221,7 +250,7 @@ const App = {
     askReset(type) {
         let name = type === 'smoke' ? '담배' : '술';
         UI.closeModal('settingsModal');
-        UI.showCustomModal(`⚠️ ${name} 관련 모든 기록(완전 끊기 및 줄이기)을 초기화하시겠습니까?\n삭제된 기록은 복구할 수 없습니다.`, () => {
+        UI.showCustomModal(`⚠️ ${name} 관련 모든 기록(완전 끊기 및 줄이기)을 초기화하시겠습니까?\n삭제된 기록은 복구할 수 복구할 수 없습니다.`, () => {
             Data.resetData(type);
             UI.updateAll();
         });
@@ -313,3 +342,4 @@ const App = {
 };
 
 window.onload = () => App.init();
+window.addEventListener('resize', fitTextToContainer);
