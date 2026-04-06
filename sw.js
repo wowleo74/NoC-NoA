@@ -1,56 +1,52 @@
-const CACHE_NAME = 'nodam-nosul-v2';
+const CACHE_NAME = 'noc-noa-cache-v2';
+
+// 💡 핵심 수정: 모든 파일 경로를 상대경로('./')로 통일하여 GitHub Pages 하위 폴더에서도 완벽 작동하게 만듭니다.
 const urlsToCache = [
-    '/',
-    '/index.html',
-    '/css/style.css',
-    '/js/app.js',
-    '/js/data.js',
-    '/js/ui.js',
-    '/icon.png',
-    '/manifest.json'
+  './',
+  './index.html',
+  './css/style.css',
+  './js/app.js',
+  './js/data.js',
+  './js/ui.js',
+  './icon.png',
+  './manifest.json',
+  './privacy.html'
 ];
 
-// 1. 설치: 캐시 저장
 self.addEventListener('install', event => {
-    event.waitUntil(
-        caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
-    );
-    self.skipWaiting(); // 즉시 활성화
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => {
+        console.log('Opened cache');
+        return cache.addAll(urlsToCache);
+      })
+  );
 });
 
-// 2. 활성화: 옛날 버전 캐시 쓰레기통에 버리기
-self.addEventListener('activate', event => {
-    event.waitUntil(
-        caches.keys().then(cacheNames => {
-            return Promise.all(
-                cacheNames.map(cacheName => {
-                    if (cacheName !== CACHE_NAME) {
-                        return caches.delete(cacheName);
-                    }
-                })
-            );
-        })
-    );
-    self.clients.claim();
-});
-
-// 3. 인터넷 요청: [네트워크 먼저] -> 실패 시 [캐시] 
 self.addEventListener('fetch', event => {
-    event.respondWith(
-        fetch(event.request)
-            .then(response => {
-                // 네트워크 성공 시 새로운 데이터로 캐시 업데이트
-                if (response && response.status === 200) {
-                    let responseClone = response.clone();
-                    caches.open(CACHE_NAME).then(cache => {
-                        cache.put(event.request, responseClone);
-                    });
-                }
-                return response;
-            })
-            .catch(() => {
-                // 인터넷이 끊겼을 때만 캐시에서 가져오기
-                return caches.match(event.request);
-            })
-    );
+  event.respondWith(
+    caches.match(event.request)
+      .then(response => {
+        if (response) {
+          return response; // 캐시에 있으면 캐시된 파일 반환 (오프라인 지원)
+        }
+        return fetch(event.request); // 없으면 네트워크에서 가져오기
+      })
+  );
+});
+
+self.addEventListener('activate', event => {
+  const cacheWhitelist = [CACHE_NAME];
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          if (cacheWhitelist.indexOf(cacheName) === -1) {
+            // 새 버전이 나오면 이전 캐시 삭제
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
 });
