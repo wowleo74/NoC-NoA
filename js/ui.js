@@ -70,7 +70,6 @@ const UI = {
 
         this.updateCharts();
 
-        // 💡 [핵심 방어 코드] 탭이 바뀌는 즉시 0.01초 안에 폰트 사이즈를 먼저 맞춥니다! (타이머 1초 대기 안 함)
         if (typeof fitTextToContainer === 'function') {
             setTimeout(fitTextToContainer, 10);
         }
@@ -142,7 +141,8 @@ const UI = {
 
             let numClass = smokedToday === 0 ? "pq-number" : "pq-number fail";
 
-            smokeQuitBoard.className = `premium-quit-board smoke ${smokedToday > 0 ? 'fail' : ''}`;
+            // 💡 카드 전체가 회색으로 변하는 fail 클래스 조건 삭제! 원래 핑크색 유지
+            smokeQuitBoard.className = 'premium-quit-board smoke';
             smokeQuitBoard.innerHTML = `
                 <div class="pq-header">
                     <div class="pq-title">🚬 오늘 피운 담배</div>
@@ -249,7 +249,8 @@ const UI = {
 
             let numClass = drankThisWeek === 0 ? "pq-number" : "pq-number fail";
 
-            drinkQuitBoard.className = `premium-quit-board drink ${drankThisWeek > 0 ? 'fail' : ''}`;
+            // 💡 카드 전체가 회색으로 변하는 fail 클래스 조건 삭제! 원래 오렌지색 유지
+            drinkQuitBoard.className = 'premium-quit-board drink';
             drinkQuitBoard.innerHTML = `
                 <div class="pq-header">
                     <div class="pq-title">🍺 이번 주 마신 횟수</div>
