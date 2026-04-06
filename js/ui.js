@@ -69,6 +69,11 @@ const UI = {
         if (tabDrink) tabDrink.classList.toggle('active', tab === 'drink');
 
         this.updateCharts();
+
+        // 💡 [핵심 방어 코드] 탭이 바뀌는 즉시 0.01초 안에 폰트 사이즈를 먼저 맞춥니다! (타이머 1초 대기 안 함)
+        if (typeof fitTextToContainer === 'function') {
+            setTimeout(fitTextToContainer, 10);
+        }
     },
 
     formatTimeDisplay(ms) {
@@ -109,52 +114,59 @@ const UI = {
         let sMode = Data.getMode('smoke');
         let dMode = Data.getMode('drink');
 
-        let smokeMainBoard = document.getElementById('smokeMainBoard');
+        let smokeQuitBoard = document.getElementById('smokeQuitBoard');
         let smokeReduceBoard = document.getElementById('smokeReduceBoard');
-        let drinkMainBoard = document.getElementById('drinkMainBoard');
+        let drinkQuitBoard = document.getElementById('drinkQuitBoard');
         let drinkReduceBoard = document.getElementById('drinkReduceBoard');
 
-        // 🚬 담배 로직
-        if (sMode === 'quit' && smokeMainBoard) {
-            smokeMainBoard.style.display = '';
+        // 🚬 담배 완전 끊기 모드
+        if (sMode === 'quit' && smokeQuitBoard) {
             if (smokeReduceBoard) smokeReduceBoard.style.display = 'none';
-            smokeMainBoard.className = 'saved-money-box mode-quit smoke';
+            smokeQuitBoard.style.display = 'block';
 
-            let smokeBoardLabel = document.getElementById('smokeBoardLabel');
-            if (smokeBoardLabel) smokeBoardLabel.innerText = '절약금액';
+            let todayMidnight = new Date(now).setHours(0, 0, 0, 0);
+            let smokedToday = Data.getLogs('smoke').filter(t => t >= todayMidnight).length;
 
             let sStart = Data.getStartTime('smoke');
             let streakDays = Math.max(0, (now - sStart) / (1000 * 60 * 60 * 24));
             let cigPrice = Data.getSetting("smokePrice", 4500) / 20;
             let smokePerDay = Data.getSetting("smokePerDay", 10);
+            let currentSaved = Math.floor(streakDays * smokePerDay * cigPrice);
 
-            let targetMoney = Math.floor(streakDays * smokePerDay * cigPrice);
+            let appStart = Data.getAppStartTime('smoke');
+            let appStartMidnight = new Date(appStart).setHours(0, 0, 0, 0);
+            let passedDays = Math.max(0, (todayMidnight - appStartMidnight) / (1000 * 60 * 60 * 24));
+            let expectedTotal = passedDays * smokePerDay;
+            let actualTotal = Data.getLogs('smoke').filter(t => t >= appStart && t < todayMidnight).length;
+            let totalSavedMoney = Math.max(0, Math.floor((expectedTotal - actualTotal) * cigPrice));
 
-            let smokeBoardText = document.getElementById('smokeBoardText');
-            if (smokeBoardText) smokeBoardText.innerText = targetMoney.toLocaleString();
+            let numClass = smokedToday === 0 ? "pq-number" : "pq-number fail";
 
-            let smokeTotalMoney = document.getElementById('smokeTotalMoney');
-            if (smokeTotalMoney) {
-                let appStart = Data.getAppStartTime('smoke');
-                let todayMidnight = new Date(now).setHours(0, 0, 0, 0);
-                let appStartMidnight = new Date(appStart).setHours(0, 0, 0, 0);
-
-                let passedDays = Math.max(0, (todayMidnight - appStartMidnight) / (1000 * 60 * 60 * 24));
-                let expectedTotal = passedDays * smokePerDay;
-                let actualTotal = Data.getLogs('smoke').filter(t => t >= appStart && t < todayMidnight).length;
-
-                let totalSavedMoney = Math.max(0, Math.floor((expectedTotal - actualTotal) * cigPrice));
-                smokeTotalMoney.innerText = totalSavedMoney.toLocaleString();
-            }
-
-            let smokeUnit = document.getElementById('smokeUnit');
-            if (smokeUnit) {
-                smokeUnit.innerText = '원';
-                smokeUnit.style.display = 'inline';
-            }
+            smokeQuitBoard.className = `premium-quit-board smoke ${smokedToday > 0 ? 'fail' : ''}`;
+            smokeQuitBoard.innerHTML = `
+                <div class="pq-header">
+                    <div class="pq-title">🚬 오늘 피운 담배</div>
+                </div>
+                <div class="pq-body">
+                    <div class="pq-number-wrap">
+                        <div><span class="${numClass}">${smokedToday}</span><span class="pq-unit">개</span></div>
+                    </div>
+                    <div class="pq-icon-wrap">🚬</div>
+                </div>
+                <div class="pq-money-grid">
+                    <div class="pq-money-box">
+                        <div class="pq-money-label">현재 절약 금액</div>
+                        <div class="pq-money-value"><span class="fit-text">${currentSaved.toLocaleString()}</span><span class="unit">원</span></div>
+                    </div>
+                    <div class="pq-money-box">
+                        <div class="pq-money-label">총 누적 (자정 업데이트)</div>
+                        <div class="pq-money-value"><span class="fit-text">${totalSavedMoney.toLocaleString()}</span><span class="unit">원</span></div>
+                    </div>
+                </div>
+            `;
 
         } else if (sMode === 'reduce' && smokeReduceBoard) {
-            if (smokeMainBoard) smokeMainBoard.style.display = 'none';
+            if (smokeQuitBoard) smokeQuitBoard.style.display = 'none';
             smokeReduceBoard.style.display = 'block';
 
             let stat = Data.getReduceStatus('smoke');
@@ -166,7 +178,6 @@ const UI = {
 
             let percentage = target > 0 ? Math.floor((used / target) * 100) : 0;
 
-            // 💡 텍스트 다이어트: 짧고 강렬하게 변경 완료!
             let msg = "";
             if (isFail) msg = "앗, 목표 초과. 내일은 꼭 성공해요! 🥲";
             else if (used === target) msg = "오늘 목표 달성! 여기서 멈추면 성공 🛑";
@@ -186,7 +197,6 @@ const UI = {
                 barsHtml = `<div class="pr-bar-smooth"><div class="pr-bar-smooth-fill" style="width: ${Math.min(percentage, 100)}%;"></div></div>`;
             }
 
-            // 💡 감성 터치 메시지 부분에 `<span class="fit-text">` 추가!
             smokeReduceBoard.className = `premium-reduce-board smoke ${isFail ? 'fail' : ''}`;
             smokeReduceBoard.innerHTML = `
                 <div class="pr-header">
@@ -211,51 +221,59 @@ const UI = {
             `;
         }
 
-        // 🍺 술 로직
-        if (dMode === 'quit' && drinkMainBoard) {
-            drinkMainBoard.style.display = '';
+        // 🍺 술 완전 끊기 모드
+        if (dMode === 'quit' && drinkQuitBoard) {
             if (drinkReduceBoard) drinkReduceBoard.style.display = 'none';
-            drinkMainBoard.className = 'saved-money-box mode-quit drink';
+            drinkQuitBoard.style.display = 'block';
 
-            let drinkBoardLabel = document.getElementById('drinkBoardLabel');
-            if (drinkBoardLabel) drinkBoardLabel.innerText = '절약금액';
+            let curr = new Date(now);
+            let day = curr.getDay(); 
+            let diff = curr.getDate() - day + (day === 0 ? -6 : 1); 
+            let startOfWeek = new Date(curr.setDate(diff)).setHours(0, 0, 0, 0);
+            let drankThisWeek = Data.getLogs('drink').filter(t => t >= startOfWeek).length;
 
             let dStart = Data.getStartTime('drink');
             let streakWeeks = Math.max(0, (now - dStart) / (1000 * 60 * 60 * 24 * 7));
             let drinkCost = Data.getSetting("drinkCost", 50000);
             let drinkPerWeek = Data.getSetting("drinkPerWeek", 2);
+            let currentSaved = Math.floor(streakWeeks * drinkPerWeek * drinkCost);
 
-            let targetMoney = Math.floor(streakWeeks * drinkPerWeek * drinkCost);
+            let appStart = Data.getAppStartTime('drink');
+            let appStartMidnight = new Date(appStart).setHours(0, 0, 0, 0);
+            let todayMidnight = new Date(now).setHours(0, 0, 0, 0);
+            let passedDays = Math.max(0, (todayMidnight - appStartMidnight) / (1000 * 60 * 60 * 24));
+            let dailyDrinkBudget = (drinkPerWeek * drinkCost) / 7;
+            let expectedSaved = passedDays * dailyDrinkBudget;
+            let actualSpent = Data.getLogs('drink').filter(t => t >= appStart && t < todayMidnight).length * drinkCost;
+            let totalSavedMoney = Math.floor(expectedSaved - actualSpent);
 
-            let drinkBoardText = document.getElementById('drinkBoardText');
-            if (drinkBoardText) drinkBoardText.innerText = targetMoney.toLocaleString();
+            let numClass = drankThisWeek === 0 ? "pq-number" : "pq-number fail";
 
-            let drinkTotalMoney = document.getElementById('drinkTotalMoney');
-            if (drinkTotalMoney) {
-                let appStart = Data.getAppStartTime('drink');
-                let todayMidnight = new Date(now).setHours(0, 0, 0, 0);
-                let appStartMidnight = new Date(appStart).setHours(0, 0, 0, 0);
-
-                let passedDays = Math.max(0, (todayMidnight - appStartMidnight) / (1000 * 60 * 60 * 24));
-                let dailyDrinkBudget = (drinkPerWeek * drinkCost) / 7;
-
-                let expectedSaved = passedDays * dailyDrinkBudget;
-                let actualSpent = Data.getLogs('drink').filter(t => t >= appStart && t < todayMidnight).length * drinkCost;
-
-                let totalSavedMoney = Math.floor(expectedSaved - actualSpent);
-
-                drinkTotalMoney.innerText = totalSavedMoney.toLocaleString();
-                drinkTotalMoney.style.color = totalSavedMoney < 0 ? 'var(--status-fail)' : 'inherit';
-            }
-
-            let drinkUnit = document.getElementById('drinkUnit');
-            if (drinkUnit) {
-                drinkUnit.innerText = '원';
-                drinkUnit.style.display = 'inline';
-            }
+            drinkQuitBoard.className = `premium-quit-board drink ${drankThisWeek > 0 ? 'fail' : ''}`;
+            drinkQuitBoard.innerHTML = `
+                <div class="pq-header">
+                    <div class="pq-title">🍺 이번 주 마신 횟수</div>
+                </div>
+                <div class="pq-body">
+                    <div class="pq-number-wrap">
+                        <div><span class="${numClass}">${drankThisWeek}</span><span class="pq-unit">번</span></div>
+                    </div>
+                    <div class="pq-icon-wrap">🍺</div>
+                </div>
+                <div class="pq-money-grid">
+                    <div class="pq-money-box">
+                        <div class="pq-money-label">현재 절약 금액</div>
+                        <div class="pq-money-value"><span class="fit-text">${currentSaved.toLocaleString()}</span><span class="unit">원</span></div>
+                    </div>
+                    <div class="pq-money-box">
+                        <div class="pq-money-label">총 누적 (자정 업데이트)</div>
+                        <div class="pq-money-value"><span class="fit-text">${totalSavedMoney.toLocaleString()}</span><span class="unit">원</span></div>
+                    </div>
+                </div>
+            `;
 
         } else if (dMode === 'reduce' && drinkReduceBoard) {
-            if (drinkMainBoard) drinkMainBoard.style.display = 'none';
+            if (drinkQuitBoard) drinkQuitBoard.style.display = 'none';
             drinkReduceBoard.style.display = 'block';
 
             let stat = Data.getReduceStatus('drink');
@@ -267,7 +285,6 @@ const UI = {
 
             let percentage = target > 0 ? Math.floor((used / target) * 100) : 0;
 
-            // 💡 텍스트 다이어트: 술 부분도 통일감 있게 짧게!
             let msg = "";
             if (isFail) msg = "앗, 목표 초과. 다음 주엔 꼭 성공해요 🥲";
             else if (used === target) msg = "이번 주 달성! 주말까지 꾹 참기 🛑";
@@ -287,7 +304,6 @@ const UI = {
                 barsHtml = `<div class="pr-bar-smooth"><div class="pr-bar-smooth-fill" style="width: ${Math.min(percentage, 100)}%;"></div></div>`;
             }
 
-            // 💡 감성 터치 메시지 부분에 `<span class="fit-text">` 추가!
             drinkReduceBoard.className = `premium-reduce-board drink ${isFail ? 'fail' : ''}`;
             drinkReduceBoard.innerHTML = `
                 <div class="pr-header">

@@ -4,27 +4,36 @@ const State = {
     isGameRunning: false
 };
 
-// 💡 마법의 함수 업그레이드: 타이머와 메시지를 모두 감지하여 맞춤형으로 폰트를 조절합니다.
+// 💡 돈 박스까지 완벽하게 커버하는 글씨 크기 조절기
 function fitTextToContainer() {
     document.querySelectorAll('.fit-text').forEach(span => {
         const container = span.parentElement;
         if (!container) return;
         
-        // 부모가 감성 메시지 박스인지, 타이머 박스인지 확인
-        const isMessage = container.classList.contains('pr-message');
+        let padding = 0;
+        let fontSize = 16;
+
+        // 부모의 형태에 따라 패딩과 시작 폰트를 유동적으로 세팅!
+        if (container.classList.contains('pr-message')) {
+            padding = 32; fontSize = 14;
+        } else if (container.classList.contains('time-display')) {
+            padding = 20; fontSize = 26;
+        } else if (container.classList.contains('pq-money-value')) {
+            padding = 5; fontSize = 20; // 💡 새로운 돈통 박스는 20px부터 시작
+        } else {
+            padding = 10; fontSize = 20;
+        }
         
-        // 💡 메시지 박스는 패딩(양옆 여백)을 넉넉히 빼주고, 타이머는 조금만 뺌
-        const padding = isMessage ? 32 : 20; 
         const containerWidth = container.offsetWidth - padding; 
         
-        // 💡 시작 폰트 크기 세팅 (메시지는 14px, 타이머는 26px 시작)
-        let fontSize = isMessage ? 14 : 26; 
+        // 깜빡임 방지용 안전장치
+        if (containerWidth <= 0) return; 
 
         span.style.fontSize = fontSize + 'px';
         span.style.display = 'inline-block';
-        span.style.whiteSpace = 'nowrap'; // 절대 줄 바꿈 금지
+        span.style.whiteSpace = 'nowrap'; 
 
-        // 텍스트가 컨테이너 폭보다 넓으면 1px씩 줄임 (최소 10px까지)
+        // 텍스트가 박스보다 크면 무조건 1px씩 줄임
         while (span.offsetWidth > containerWidth && fontSize > 10) {
             fontSize--;
             span.style.fontSize = fontSize + 'px';
@@ -37,7 +46,8 @@ const App = {
         Data.init();
         this.bindEvents();
         UI.updateAll();
-        fitTextToContainer(); 
+        
+        setTimeout(fitTextToContainer, 50); 
 
         setInterval(() => {
             try {
@@ -245,14 +255,17 @@ const App = {
 
         UI.closeModal('settingsModal');
         UI.updateAll();
+        
+        setTimeout(fitTextToContainer, 50);
     },
 
     askReset(type) {
         let name = type === 'smoke' ? '담배' : '술';
         UI.closeModal('settingsModal');
-        UI.showCustomModal(`⚠️ ${name} 관련 모든 기록(완전 끊기 및 줄이기)을 초기화하시겠습니까?\n삭제된 기록은 복구할 수 복구할 수 없습니다.`, () => {
+        UI.showCustomModal(`⚠️ ${name} 관련 모든 기록(완전 끊기 및 줄이기)을 초기화하시겠습니까?\n삭제된 기록은 복구할 수 없습니다.`, () => {
             Data.resetData(type);
             UI.updateAll();
+            setTimeout(fitTextToContainer, 50);
         });
     },
 
