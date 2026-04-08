@@ -1,11 +1,13 @@
 // 💡 1. 캐시 버전 관리: 업데이트를 원할 때마다 v2, v3... 숫자를 하나씩 올려주세요!
-const CACHE_NAME = 'nocnoa-cache-v2';
+const CACHE_NAME = 'nocnoa-cache-v3';
 
 // 미리 저장해둘 핵심 파일 (정적 파일)
 const urlsToCache = [
   './',
   './index.html',
   './css/style.css',
+  './js/data.js',
+  './js/ui.js',
   './js/app.js'
 ];
 
