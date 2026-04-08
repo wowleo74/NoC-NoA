@@ -519,11 +519,11 @@ const UI = {
     renderCharts() {
         if (typeof Chart === 'undefined') return;
 
-        Chart.defaults.color = '#8B95A1';
+        Chart.defaults.color = '#9CA3AF';
         Chart.defaults.font.family = "'Pretendard', sans-serif";
         Chart.defaults.font.weight = '800';
 
-        const smokeBarColor = '#FF5B73';
+        const smokeBarColor = '#10B981';
         let now = new Date();
         let smokeLogs = Data.getLogs('smoke');
         const labels = [];

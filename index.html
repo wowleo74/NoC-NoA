@@ -26,11 +26,11 @@
 
     <style>
         .premium-reduce-board {
-            background: linear-gradient(135deg, #FF5B73 0%, #FF3B5B 100%);
+            background: linear-gradient(135deg, #10B981 0%, #065F46 100%);
             border-radius: 20px; padding: 24px; color: white; margin-top: 15px;
-            box-shadow: 0 10px 20px rgba(255, 91, 115, 0.2); position: relative; overflow: hidden; display: none; 
+            box-shadow: 0 10px 28px rgba(16, 185, 129, 0.3); position: relative; overflow: hidden; display: none;
         }
-        .premium-reduce-board.drink { background: linear-gradient(135deg, #FFA726 0%, #FB8C00 100%); box-shadow: 0 10px 20px rgba(255, 152, 0, 0.2); }
+        .premium-reduce-board.drink { background: linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%); box-shadow: 0 10px 28px rgba(59, 130, 246, 0.3); }
         .premium-reduce-board.fail { background: linear-gradient(135deg, #595959 0%, #3a3a3a 100%); box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); }
         
         .pr-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
@@ -52,13 +52,13 @@
         .pr-bar-smooth-fill { height: 100%; background: white; box-shadow: 0 0 8px rgba(255,255,255,0.4); transition: width 0.4s ease; border-radius: 6px; }
 
         .premium-quit-board {
-            background: linear-gradient(135deg, #FF5B73 0%, #FF3B5B 100%);
+            background: linear-gradient(135deg, #10B981 0%, #065F46 100%);
             border-radius: 20px; padding: 24px; color: white; margin-top: 15px;
-            box-shadow: 0 10px 20px rgba(255, 91, 115, 0.2); position: relative; overflow: hidden; display: none;
+            box-shadow: 0 10px 28px rgba(16, 185, 129, 0.3); position: relative; overflow: hidden; display: none;
         }
         .premium-quit-board.drink {
-            background: linear-gradient(135deg, #FFA726 0%, #FB8C00 100%);
-            box-shadow: 0 10px 20px rgba(255, 152, 0, 0.2);
+            background: linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%);
+            box-shadow: 0 10px 28px rgba(59, 130, 246, 0.3);
         }
         .premium-quit-board.fail {
             background: linear-gradient(135deg, #595959 0%, #3a3a3a 100%);
@@ -85,6 +85,11 @@
 
 <body>
 
+    <div id="rotate-overlay">
+        <div class="rotate-icon">📱</div>
+        <div class="rotate-msg">세로 모드로 돌려주세요</div>
+    </div>
+
     <div class="top-nav" id="mainNav">
         <div class="tab-group" id="tabGroup">
             <button class="nav-btn active" id="tabSmoke">🚬 금연</button>
@@ -103,7 +108,7 @@
             <div class="empty-title">새로운 도전을 시작해보세요!</div>
             <div class="empty-desc">아직 설정된 목표가 없습니다.<br>금연이나 금주 도전을 시작하고<br>건강한 습관을 만들어보세요.</div>
             <button class="action-btn" id="btnStartChallenge"
-                style="background: var(--smoke-main); color: white; padding: 16px 28px; font-size: 16px; font-weight: 800; border-radius: 16px; box-shadow: 0 8px 16px rgba(255, 91, 115, 0.25);">⚙️
+                style="background: var(--smoke-main); color: white; padding: 16px 28px; font-size: 16px; font-weight: 800; border-radius: 16px; box-shadow: 0 8px 16px rgba(16, 185, 129, 0.3);">⚙️
                 목표 설정하기</button>
         </div>
 
@@ -289,12 +294,12 @@
 
             <details style="margin-top: 25px; font-size: 11px; color: var(--text-gray); text-align: center;">
                 <summary style="cursor: pointer; text-decoration: underline; margin-bottom: 10px;">사업자 정보 및 개인정보처리방침</summary>
-                <div style="line-height: 1.6; background-color: #f8f9fa; padding: 12px; border-radius: 8px; text-align: left; display: inline-block; border: 1px solid #eee;">
+                <div style="line-height: 1.6; background-color: #1F2937; padding: 12px; border-radius: 8px; text-align: left; display: inline-block; border: 1px solid #374151;">
                     상호: 케이지에스 랩(KGS Lab)<br>
                     대표: 김래오<br>
                     사업자등록번호: 602-18-52880<br>
-                    이메일: <a href="mailto:KGSLab.2026@gmail.com" style="color: #666; text-decoration: none;">KGSLab.2026@gmail.com</a><br><br>
-                    <a href="https://wowleo74.github.io/NoC-NoA/privacy.html" target="_blank" style="color: #FF5B73; text-decoration: underline; font-weight: bold;">개인정보처리방침 전문 보기</a>
+                    이메일: <a href="mailto:KGSLab.2026@gmail.com" style="color: #9CA3AF; text-decoration: none;">KGSLab.2026@gmail.com</a><br><br>
+                    <a href="https://wowleo74.github.io/NoC-NoA/privacy.html" target="_blank" style="color: #10B981; text-decoration: underline; font-weight: bold;">개인정보처리방침 전문 보기</a>
                 </div>
             </details>
 
@@ -354,6 +359,11 @@
     <script src="js/app.js"></script>
 
     <script>
+        // 화면 방향 잠금 (PWA 설치 시)
+        if (screen.orientation && screen.orientation.lock) {
+            screen.orientation.lock('portrait').catch(() => {});
+        }
+
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
