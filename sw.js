@@ -1,5 +1,6 @@
-// 💡 1. 캐시 버전 관리: 업데이트를 원할 때마다 v2, v3... 숫자를 하나씩 올려주세요!
-const CACHE_NAME = 'nocnoa-cache-v3';
+// 💡 1. 캐시 버전 관리: v3에서 v5로 올렸습니다. 
+// 이렇게 숫자를 바꿔줘야 폰이 새로운 index.html과 style.css를 다시 받아갑니다!
+const CACHE_NAME = 'nocnoa-cache-v5';
 
 // 미리 저장해둘 핵심 파일 (정적 파일)
 const urlsToCache = [

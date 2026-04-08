@@ -85,11 +85,6 @@
 
 <body>
 
-    <div id="rotate-overlay">
-        <div class="rotate-icon">📱</div>
-        <div class="rotate-msg">세로 모드로 돌려주세요</div>
-    </div>
-
     <div class="top-nav" id="mainNav">
         <div class="tab-group" id="tabGroup">
             <button class="nav-btn active" id="tabSmoke">🚬 금연</button>
@@ -357,7 +352,7 @@
     <script src="js/app.js"></script>
 
     <script>
-        // 화면 방향 잠금 (PWA 설치 시)
+        // 💡 화면 방향 잠금 (PWA 설치 시 보조 수단)
         if (screen.orientation && screen.orientation.lock) {
             screen.orientation.lock('portrait').catch(() => {});
         }
