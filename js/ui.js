@@ -245,7 +245,7 @@ const UI = {
             let dailyDrinkBudget = (drinkPerWeek * drinkCost) / 7;
             let expectedSaved = passedDays * dailyDrinkBudget;
             let actualSpent = Data.getLogs('drink').filter(t => t >= appStart && t < todayMidnight).length * drinkCost;
-            let totalSavedMoney = Math.floor(expectedSaved - actualSpent);
+            let totalSavedMoney = Math.max(0, Math.floor(expectedSaved - actualSpent));
 
             let numClass = drankThisWeek === 0 ? "pq-number" : "pq-number fail";
 
